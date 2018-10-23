@@ -12,7 +12,7 @@ RUN sed -i 's@http://archive.ubuntu.com/@http://mirror.kakao.com/@g' /etc/apt/so
 RUN sed -i 's@http://security.ubuntu.com/@http://mirror.kakao.com/@g' /etc/apt/sources.list
 RUN apt-get update -qq && apt-get -y upgrade
 
-RUN apt-get -y install sudo
+RUN apt-get -y install sudo tree nano build-essential
 RUN apt-get clean
 
 RUN mkdir -p /docker-entrypoint.d
