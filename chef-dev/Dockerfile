@@ -6,6 +6,7 @@ LABEL maintainer="archmagece@gmail.com"
 
 ARG CUSTOM_USER=$CUSTOM_USER
 
+RUN gem install knife-solo --pre
 
 RUN sed -i 's@http://archive.ubuntu.com/@http://mirror.kakao.com/@g' /etc/apt/sources.list
 RUN sed -i 's@http://security.ubuntu.com/@http://mirror.kakao.com/@g' /etc/apt/sources.list
