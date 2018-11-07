@@ -1,0 +1,30 @@
+FROM ubuntu:16.04
+
+RUN apt-get update
+# gcc
+RUN apt-get install -y build-essential automake pkg-config libevent-dev bsdmainutils
+# OPenSSL
+RUN apt-get install -y libtool autotools-dev autoconf libssl-dev
+# Boost
+RUN apt-get install -y libboost-all-dev
+# libdb4.8
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository -y ppa:bitcoin/bitcoin
+RUN apt-get update
+RUN apt-get install -y libdb4.8-dev libdb4.8++-dev
+# 기타 lib
+RUN apt-get install -y libminiupnpc-dev libqrencode-dev
+# GUI 라이브러리
+RUN apt-get install -y libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler
+
+RUN apt-get install -y git-core
+# bitcoin-core 빌드
+WORKDIR /app
+RUN git clone https://github.com/bitcoin/bitcoin.git /app
+RUN ./autogen.sh
+RUN ./configure
+RUN make
+# bitcoin-core 설치
+RUN sudo make install
+
+ENTRYPOINT [ "bitcoind -regtest -daemon" ]
