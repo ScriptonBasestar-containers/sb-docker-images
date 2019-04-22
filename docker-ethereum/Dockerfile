@@ -1,20 +1,18 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
-WORKDIR /app
 
-# geth 소스 코드 다운로드
-RUN git clone -b release/1.3.6 https://github.com/ethereum/go-ethereum.git /app
-# go 환경 설치
-RUN apt-get install -y build-essential libqmp3-dev golang
+RUN apt-get update
+RUN sudo apt-get install software-properties-common
+RUN sudo add-apt-repository -y ppa:ethereum/ethereum
+RUN sudo apt-get update
+RUN sudo apt-get install -y ethereum
 
-WORKDIR /app
-# geth 빌드
-RUN make -C go-ethereum geth
-#빌드 성공 확인
-RUN ./go-ethereum/build/bin/geth version
-# 복사
-RUN cp ./go-ethereum/build/bin/geth /usr/bin/
 
-#테스트넷 실행
-ENTRYPOINT geth ---networkid "123" --dadadir "/app" --olympic console
+ENTRYPOINT []
+ENTRYPOINT [/usr/bin/rungeth]
 
+# use non-standard ports so don't accidently connect to real servers
+# XXX Docker inheritance doesn't override, it extends the port      list...
+EXPOSE 8110
+EXPOSE 30310
+EXPOSE 6110
