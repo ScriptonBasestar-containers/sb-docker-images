@@ -1,14 +1,15 @@
-
+# Bitcoin
 
 테스트 모드 2가지
 Testnet : 공개 테스트 네트워크.
 Regtest : 로컬 테스트 환경
 
-docker build . -t bitcoin-core
-docker run -it --rm bitcoin-core bash
+docker build . -t sb-bitcoin-node
+docker run -it --rm sb-bitcoin-node bash
 
 # 미트코인은 100블록 생성전엔 송금이 불가. 100개 생성.
-docker run -it --rm bitcoin-core bitcoin-cli -regtest generate 101
+docker run -it --rm sb-bitcoin-node bitcoin-cli -regtest generate 101
+
 # 현재 블록 수 확인
 bitcoin-cli -regtest getblockcount
 # 계좌생성
