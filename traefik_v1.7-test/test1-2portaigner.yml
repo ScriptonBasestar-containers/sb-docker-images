@@ -23,7 +23,7 @@ services:
       - portainer-data:/data
     networks:
       - private
-      - public
+      - traefik-public
     deploy:
       placement:
         constraints:
@@ -32,8 +32,8 @@ services:
         - traefik.frontend.rule=Host:portainer.${DOMAIN}
         - traefik.enable=true
         - traefik.port=9000
-        - traefik.tags=public
-        - traefik.docker.network=public
+        - traefik.tags=traefik-public
+        - traefik.docker.network=traefik-public
         - traefik.redirectorservice.frontend.entryPoints=http
         - traefik.redirectorservice.frontend.redirect.entryPoint=https
         - traefik.webservice.frontend.entryPoints=https
@@ -42,9 +42,9 @@ networks:
   private:
     driver: overlay
     name: private
-  public:
+  traefik-public:
     external: true
-    name: public
+    name: traefik-public
 
 volumes:
   portainer-data: {}

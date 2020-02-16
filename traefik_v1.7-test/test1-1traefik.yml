@@ -37,7 +37,7 @@ services:
       - source: traefik_htpasswd
         target: /etc/htpasswd
     networks:
-      - public
+      - traefik-public
     deploy:
       mode: replicated
       replicas: 1
@@ -50,7 +50,7 @@ services:
       restart_policy:
         condition: on-failure
       labels:
-        - "traefik.docker.network=public"
+        - "traefik.docker.network=traefik-public"
         - "traefik.port=8080"
         - "traefik.backend=traefik"
         - "traefik.enable=true"
@@ -64,9 +64,9 @@ configs:
     file: ./htpasswd
 
 networks:
-  public:
+  traefik-public:
     driver: overlay
-    name: public
+    name: traefik-public
 
 volumes:
   traefik_certs: {}
