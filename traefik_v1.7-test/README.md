@@ -9,8 +9,13 @@ htpasswd -c htpasswd admin
 export DOMAIN=polypia.net
 export EMAIL=your@email-domain.com
 
-curl -H Host:portainer.polypia.net localhost
 
+docker stack deploy -c test1-1traefik.yml proxy
+docker stack deploy -c test1-2portaigner.yml port
+
+curl -H Host:traefik.polypia.net localhost
+curl -H Host:portainer.polypia.net localhost
+curl -H Host:wordpress.polypia.net localhost
 
 ## Test2
 

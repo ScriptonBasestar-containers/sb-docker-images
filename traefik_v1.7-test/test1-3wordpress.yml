@@ -1,0 +1,58 @@
+version: "3.7"
+
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    container_name: wp
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - traefik-public
+      - backend
+    deploy:
+      # placement:
+        # constraints:
+          # - node.role == manager
+      labels:
+        - traefik.frontend.rule=Host:wordpress.${DOMAIN}
+        - traefik.enable=true
+        - traefik.port=80
+        - traefik.tags=traefik-public
+        - traefik.docker.network=traefik-public
+        - traefik.redirectorservice.frontend.entryPoints=http
+        - traefik.redirectorservice.frontend.redirect.entryPoint=https
+        - traefik.webservice.frontend.entryPoints=https
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: overlay
+    # external: true
+    name: backend
+  traefik-public:
+    # driver: overlay
+    external: true
+    # name: traefik-public
+
+volumes:
+  wordpress: {}
+  db: {}
