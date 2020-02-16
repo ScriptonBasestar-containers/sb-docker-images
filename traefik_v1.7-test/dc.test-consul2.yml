@@ -1,0 +1,59 @@
+version: '3.7'
+
+services:
+  nexus3:
+    image: sonatype/nexus3:latest
+    container_name: nexus3
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.frontend.rule=Host:nexus.${DOMAIN}
+        - traefik.enable=true
+        - traefik.port=8081
+        - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+        - traefik.docker.network=traefik-public
+        # Traefik service that listens to HTTP
+        - traefik.redirectorservice.frontend.entryPoints=http
+        - traefik.redirectorservice.frontend.redirect.entryPoint=https
+        # Traefik service that listens to HTTPS
+        - traefik.webservice.frontend.entryPoints=https
+        # - traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}
+      placement:
+        constraints:
+          - node.hostname == polypia-sheepdog1
+    networks:
+      - traefik-public
+ 
+volumes:
+  consul-data-leader:
+  consul-data-replica:
+
+networks:
+  traefik-public:
+    external: true
+
+
+  # #xwiki
+  # xw-work:
+  #   image: xwiki:lts-mysql-tomcat
+  #   environment:
+  #     - VIRTUAL_HOST=tutorial2.polypia.net
+  #     - LETSENCRYPT_HOST=tutorial2.polypia.net,cheatsheet.polypia.net
+  #     - LETSENCRYPT_EMAIL=contact@scriptonbasestar.com
+  #     - DB_USER=web_user
+  #     - DB_PASSWORD=a+cdefE2^jkEmARp
+  #     - DB_DATABASE=web_tutorial2
+  #     - DB_HOST=data-mysql
+  #     # 8080
+  #   networks:
+  #     - polypia-backend
+  #     - polypia-frontend
+  #   # links:
+  #   external_links:
+  #     - data-mysql:polypia-backend
+  #     - nginx-proxy:polypia-frontend
+  #   # depends_on:
+  #   #   - data-mysql
+  #   #   - nginx-proxy
+  #   volumes:
+  #     - /work/web/xw-tutorial:/usr/local/xwiki

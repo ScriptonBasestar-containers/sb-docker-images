@@ -1,0 +1,73 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: traefik:v2.1
+    restart: always
+    container_name: traefik
+    ports:
+      - "80:80"
+      # - "8080:8080" # traefik dashboard
+      - "443:443"
+    command:
+      # - --api.insecure=true # set to 'false' on production
+      # - --api.dashboard=true # see https://docs.traefik.io/v2.0/operations/dashboard/#secure-mode for how to secure the dashboard
+      # - --api.debug=true # enable additional endpoints for debugging and profiling
+      # - --log.level=DEBUG # debug while we get it working, for more levels/info see https://docs.traefik.io/observability/logs/
+      - --providers.docker=true
+      - --providers.docker.swarmMode=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=traefik-public
+      - --global.sendAnonymousUsage=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      # - --certificatesresolvers.mytlschallenge.acme.httpChallenge=true
+      # - --certificatesresolvers.mytlschallenge.acme.httpChallenge.entryPoint=web
+      # - --certificatesresolvers.mytlschallenge.acme.email=you@whatever.com
+      # - --certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json
+      # - --certificatesresolvers.mytlschallenge.acme.tlschallenge=true
+    volumes:
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-public
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+          - node.hostname == polypia-sheepdog1
+      labels:
+        - "traefik.enable=true"
+
+        # # Dashboard
+        # # - "traefik.http.routers.traefik.rule=Host(`traefik.polypia.net`)"
+        # # - "traefik.http.routers.traefik.service=api@internal"
+        # # - "traefik.http.routers.traefik.middlewares=admin,redirect-to-https"
+        # # - "traefik.http.routers.traefik.tls.certresolver=mytlschallenge"
+        # # - "traefik.http.routers.traefik.entrypoints=websecure"
+        # # # - "traefik.http.middlewares.admin.basicauth.users=admin:xxx"
+        # # - "traefik.http.services.traefik.loadbalancer.server.port=8080" 
+      
+        # # middleware redirect
+        # - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+        # - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+
+        # # global redirect to https
+        # - "traefik.http.routers.redirs.rule=HostRegexp(`{any:.+}`)"
+        # # - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
+        # - "traefik.http.routers.redirs.entrypoints=web"
+        # - "traefik.http.routers.redirs.middlewares=redirect-to-https"
+        # - "traefik.http.routers.redirs.tls.certresolver=ssl"
+
+        - "traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)"
+        - "traefik.http.routers.http_catchall.entrypoints=web"
+        - "traefik.http.routers.http_catchall.middlewares=https_redirect"
+        - "traefik.http.middlewares.https_redirect.redirectscheme.scheme=https"
+        - "traefik.http.middlewares.https_redirect.redirectscheme.permanent=true"
+
+networks:
+  traefik-public:
+    external: true
+
+volumes:
+  letsencrypt:

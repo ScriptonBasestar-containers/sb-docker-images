@@ -1,0 +1,52 @@
+version: "3.7"
+
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    container_name: wp
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - traefik-public
+      - backend
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - traefik.backend=wp-memo
+        - traefik.frontend.rule=Host:memo.polypia.net
+        - traefik.docker.network=traefik-public
+        - traefik.port=80
+      placement:
+        constraints:
+          # - node.role == manager
+          # - node.hostname == polypia-sheepdog71
+          - node.hostname == polypia-tank1
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  backend:
+  traefik-public:
+    external: true
+
+volumes:
+  db:
+  wordpress:

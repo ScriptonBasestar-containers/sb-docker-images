@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  wp-memo:
+    image: wordpress:php7.3
+    container_name: nexus3
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.frontend.rule=Host:memo.${DOMAIN}
+        - traefik.enable=true
+        - traefik.port=80
+        - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+        - traefik.docker.network=traefik-public
+        # Traefik service that listens to HTTP
+        - traefik.redirectorservice.frontend.entryPoints=http
+        - traefik.redirectorservice.frontend.redirect.entryPoint=https
+        # Traefik service that listens to HTTPS
+        - traefik.webservice.frontend.entryPoints=https
+        # - traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}
+      placement:
+        constraints:
+          # - node.hostname == polypia-sheepdog1
+          - node.hostname == polypia-tank1
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true
