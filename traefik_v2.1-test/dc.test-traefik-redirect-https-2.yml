@@ -1,0 +1,60 @@
+version: "3.7"
+
+services:
+
+  wordpress:
+    image: wordpress
+    restart: always
+    container_name: wp
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - traefik-public
+      - backend
+    deploy:
+      labels:
+        # - "traefik.enable=true"
+        # - "traefik.http.services.wordpress.loadbalancer.server.port=80" # it seems you always need to give traefik a port so it 'notices' the service
+        # - "traefik.http.services.wordpress.loadbalancer.server.scheme=https"
+        traefik.http.routers.wordpress.rule: Host(`wordpress.polypia.net`)
+        traefik.http.routers.wordpress.entrypoints: web
+        traefik.http.routers.wordpress.middlewares: https_redirect
+
+        traefik.http.routers.wordpresssecured.rule: Host(`wordpress.polypia.net`)
+        traefik.http.routers.wordpresssecured.entrypoints: websecure
+        traefik.http.routers.wordpresssecured.tls: "true"
+
+        traefik.http.middlewares.https_redirect.redirectscheme.scheme: https
+        traefik.http.middlewares.https_redirect.redirectscheme.permanent: "true"
+      placement:
+        constraints:
+          # - node.role == manager
+          # - node.hostname == polypia-sheepdog71
+          - node.hostname == polypia-tank1
+
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  backend:
+  traefik-public:
+    external: true
+
+volumes:
+  db:
+  wordpress:

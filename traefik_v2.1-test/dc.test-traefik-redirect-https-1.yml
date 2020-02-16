@@ -1,0 +1,26 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: traefik:v2.1
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker=true
+    ports:
+      - 80:80
+      - 443:443
+    deploy:
+      labels:
+        traefik.http.routers.http_catchall.rule: HostRegexp(`{any:.+}`)
+        traefik.http.routers.http_catchall.entrypoints: web
+        traefik.http.routers.http_catchall.middlewares: https_redirect
+        traefik.http.middlewares.https_redirect.redirectscheme.scheme: https
+        traefik.http.middlewares.https_redirect.redirectscheme.permanent: "true"
+      # placement:
+      #   constraints:
+      #     - node.role == manager
+      #     - node.hostname == polypia-sheepdog1 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+

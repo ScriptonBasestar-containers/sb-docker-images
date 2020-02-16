@@ -1,0 +1,61 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: traefik:v1.7
+    restart: always
+    container_name: traefik
+    ports:
+      - "80:80"
+      # - "8080:8080" # traefik dashboard
+      - "443:443"
+    command:
+      - "--api"
+      - "--api.entrypoint=traefik"
+      - "--api.dashboard=true"
+      - "--entrypoints=Name:http Address::80 Redirect.EntryPoint:https"
+      - "--entrypoints=Name:https Address::443 TLS"
+      - "--defaultentrypoints=http,https"
+      - "--acme"
+      - "--acme.storage=/letsencrypt/acme/acme.json"
+      - "--acme.entryPoint=https"
+      - "--acme.httpChallenge.entryPoint=http"
+      - "--acme.onHostRule=true"
+      - "--acme.onDemand=false"
+      - "--acme.email=test@user.com"
+      - "--acme.acmelogging=true"
+      - "--docker"
+      - "--docker.swarmMode"
+      - "--docker.domain=polypia.net"
+      - "--docker.watch"
+      - "--docker.exposedbydefault=false"
+      # - "--constraints=tag==traefik-public"
+      - "--logLevel=INFO"
+      - "--accessLog"
+    volumes:
+      - letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-public
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+          - node.hostname == polypia-sheepdog1
+      labels:
+        # - "traefik.tags=traefik-public"
+        - "traefik.enable=true"
+        - "traefik.port=8080"
+        - "traefik.http.routers.dashboard.entryPoints=traefik"
+        - "traefik.docker.network=traefik-public"
+        - "traefik.redirectorservice.frontend.entryPoints=http"
+        - "traefik.redirectorservice.frontend.redirect.entryPoint=https"
+        - "traefik.webservice.frontend.entryPoints=https"
+        - "traefik.frontend.rule=Host:traefik.polypia.net"
+        # - "traefik.frontend.auth.basic.users=${USERNAME}:${HASHED_PASSWORD}"
+networks:
+  traefik-public:
+    external: true
+
+volumes:
+  letsencrypt:
