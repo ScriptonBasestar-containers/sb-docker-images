@@ -44,6 +44,8 @@ services:
       placement:
         constraints:
           - node.role == manager
+        preferences:
+          - spread: node.id
       update_config:
         parallelism: 1
         delay: 10s
@@ -61,7 +63,7 @@ services:
 
 configs:
   traefik_htpasswd:
-    file: ./htpasswd
+    file: $(pwd)/htpasswd
 
 networks:
   traefik-public:
