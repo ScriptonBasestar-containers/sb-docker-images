@@ -1,0 +1,16 @@
+site:
+    url: ${SITE_URL}
+    timezone: ${SITE_TIMEZONE}
+    locale: ${SITE_LOCALE}
+admin:
+    email: ${ADMIN_EMAIL}
+    password: ${ADMIN_PASSWORD}
+    display_name: ${ADMIN_DISPLAY_NAME}
+database:
+    driver: ${DB_DRIVER}
+    host: ${DB_HOST}
+    port: ${DB_PORT}
+    dbname: ${DB_DATABASE}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    prefix: ${DB_PREFIX}

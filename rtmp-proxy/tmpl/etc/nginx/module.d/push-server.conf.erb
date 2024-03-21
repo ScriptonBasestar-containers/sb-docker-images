@@ -1,0 +1,29 @@
+rtmp {
+	server {
+		listen 1935;
+		chunk_size 4096;
+
+		application cemacs {
+			live on;
+			record off;
+			# 방송IP 제한
+			## local 허용
+			allow publish 127.0.0.1;
+			## 사용할 서버 ip 파라미터로
+			allow publish 192.168.0.x;
+			# 기본값 제한
+			deny publish all;
+
+			<% if ENV['TWITCH_ADDRESS'] && ENV['TWITCH_STREAM_KEY'] %>
+				push rtmp://<%= ENV['TWITCH_ADDRESS'] %>/<%= ENV['TWITCH_STREAM_KEY'] %>;
+			<% end %>
+			<% if ENV['YOUTUBE_ADDRESS'] && ENV['YOUTUBE_STREAM_KEY'] %>
+				push rtmp://<%= ENV['YOUTUBE_ADDRESS'] %>/<%= ENV['YOUTUBE_STREAM_KEY'] %>;
+			<% end %>
+
+			# <% (ENV['UPSTREAM_SERVERS']).split(',').each do |server| %>
+			# 	server <%= server %>;
+			# <% end %>
+		}
+	}
+}
