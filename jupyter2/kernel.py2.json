@@ -1,0 +1,11 @@
+{
+    "language": "python",
+    "display_name": "Python 2",
+    "argv": [
+     "/Users/<USER>/.pyenv/versions/2.7.8/bin/python2.7",
+     "-m",
+     "IPython.kernel",
+     "-f",
+     "{connection_file}"
+    ]
+   }

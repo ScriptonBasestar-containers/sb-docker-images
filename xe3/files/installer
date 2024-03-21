@@ -1,0 +1,702 @@
+#!/usr/bin/env php
+<?php
+
+ini_set('display_errors', 1);
+error_reporting(-1);
+
+ini_set('allow_url_fopen', 1);
+
+if (!defined('PHP_VERSION_ID')) {
+    $version = explode('.', PHP_VERSION);
+
+    define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+}
+
+$params = getParameter(is_array($argv) ? $argv : []);
+$installer = new Installer($params['argument'], $params['options']);
+
+$installer->process();
+
+
+/**
+ * @package     Installer
+ * @author      XE Developers <developers@xpressengine.com>
+ * @license     http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html LGPL-2.1
+ * @link        http://www.xpressengine.com
+ */
+class Installer
+{
+
+    /**
+     * @var string
+     */
+    protected $server = 'http://start.xpressengine.io/download';
+
+    protected $argument = null;
+
+    /**
+     * @var null
+     */
+    protected $installPath;
+    /**
+     * @var null
+     */
+    protected $version;
+
+    /**
+     * @var null
+     */
+    protected $configFile = null;
+
+    protected $noInteract = false;
+
+    /**
+     * @var bool 소스코드 다운로드 여부
+     */
+    private $skipDownload;
+
+    /**
+     * XpressengineInstaller constructor.
+     */
+    public function __construct($argument, $options)
+    {
+        $this->argument = $argument;
+
+        if ($argument === 'install') {
+            $this->setInstallOptions($options);
+        } elseif ($argument === 'make') {
+            $this->setMakeOptions($options);
+        } else {
+            $this->output(PHP_EOL . 'Argument must be "install" or "make"', 'error');
+            exit(1);
+        }
+    }
+
+    /**
+     * for install options
+     *
+     * @param $options
+     * @return void
+     */
+    private function setInstallOptions($options)
+    {
+        list($installPath, $version, $configFile, $skipDownload, $noInteract) = $options;
+
+        $this->noInteract = $noInteract;
+
+        try {
+            $this->installPath = $this->getInstallPath($installPath);
+        } catch (\Exception $e) {
+            $this->output(PHP_EOL.$e->getMessage(), 'error');
+            exit (1);
+        }
+        $this->version = $version;
+
+        if ($configFile !== null) {
+            $this->configFile = realpath($configFile);
+        }
+
+        $this->skipDownload = $skipDownload;
+    }
+
+    /**
+     * for make config file options
+     *
+     * @param $options
+     * @return void
+     */
+    private function setMakeOptions($options)
+    {
+        list($file) = $options;
+
+        $this->configFile = $file;
+    }
+
+
+    /**
+     * process
+     *
+     * @return void
+     */
+    public function process()
+    {
+        if ($this->argument === 'install') {
+            $this->printLogo();
+
+            if(!$this->noInteract) {
+                $this->confirmInstallPath();
+            }
+
+            $this->systemCheck();
+
+            try {
+                $this->downloadXpressengine($this->version);
+                $this->installXpressengine();
+            } catch (\Exception $e) {
+                $this->output($e->getMessage(), 'error');
+                exit (1);
+            }
+        } elseif ($this->argument === 'make') {
+            file_put_contents($this->configFile, $this->getConfigData());
+
+            $this->output('Install configuration file is generated. (' . $this->configFile . ')', 'info');
+            $this->output('Write your configuration data to the file.');
+        }
+    }
+
+    /**
+     * printLogo
+     *
+     * @return void
+     */
+    protected function printLogo()
+    {
+        $this->output('   _  __                           ______            _           ');
+        $this->output('  | |/ /____  ________  __________/ ____/___  ____ _(_)___  ___  ');
+        $this->output('  |   // __ \/ ___/ _ \/ ___/ ___/ __/ / __ \/ __ `/ / __ \/ _ \ ');
+        $this->output(' /   |/ /_/ / /  /  __(__  |__  ) /___/ / / / /_/ / / / / /  __/ ');
+        $this->output('/_/|_/ .___/_/   \___/____/____/_____/_/ /_/\__, /_/_/ /_/\___/  ');
+        $this->output('    /_/                                    /____/                ');
+        $this->output('');
+        $this->output('http://xpressengine.io');
+        $this->output('');
+        $this->output('XpressEngine3 Installation.');
+        $this->output('');
+    }
+
+    /**
+     * confirmInstallPath
+     *
+     * @return void
+     */
+    private function confirmInstallPath()
+    {
+        $path = $this->installPath();
+        // todo confirm install path
+
+        $this->output("[Confirm path for install]", 'info');
+        $this->output("path: {$path}");
+        $this->output("Do you want to install? (yes/no) [no]:\n> ", 'question', false);
+
+        $this->input(
+            function ($input) {
+                if ($input !== 'yes') {
+                    $this->output("Installation was cancelled.", 'error');
+                    exit (0);
+                }
+            }
+        );
+    }
+
+    /**
+     * systemCheck
+     *
+     * @return void
+     */
+    private function systemCheck()
+    {
+        $versionCheck = PHP_VERSION_ID < 70000 ? false : true;
+
+        $this->output("\n[Check the system environment]", 'info');
+        $this->output("- PHP version(>= 7.0.0): ", 'question');
+        if ($versionCheck) {
+            $this->output("  [success]  ", 'succeed');
+        } else {
+            $this->output("  [fail]  ", 'error');
+        }
+
+        if (!$versionCheck) {
+            $this->output("\nCheck your system", 'error');
+            exit(1);
+        }
+
+        $this->output("Check complete.\n");
+    }
+
+    private function findBinary()
+    {
+        return $this->escapeArgument((new PhpExecutableFinder)->find(false));
+    }
+
+    /**
+     * Symfony\Component\Process\ProcessUtils
+     *
+     * Escapes a string to be used as a shell argument.
+     *
+     * @param string $argument The argument that will be escaped
+     *
+     * @return string The escaped argument
+     */
+    public function escapeArgument($argument)
+    {
+        //Fix for PHP bug #43784 escapeshellarg removes % from given string
+        //Fix for PHP bug #49446 escapeshellarg doesn't work on Windows
+        //@see https://bugs.php.net/bug.php?id=43784
+        //@see https://bugs.php.net/bug.php?id=49446
+        if ('\\' === DIRECTORY_SEPARATOR) {
+            if ('' === $argument) {
+                return escapeshellarg($argument);
+            }
+
+            $escapedArgument = '';
+            $quote = false;
+            foreach (preg_split('/(")/', $argument, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE) as $part) {
+                if ('"' === $part) {
+                    $escapedArgument .= '\\"';
+                } elseif ($this->isSurroundedBy($part, '%')) {
+                    // Avoid environment variable expansion
+                    $escapedArgument .= '^%"'.substr($part, 1, -1).'"^%';
+                } else {
+                    // escape trailing backslash
+                    if ('\\' === substr($part, -1)) {
+                        $part .= '\\';
+                    }
+                    $quote = true;
+                    $escapedArgument .= $part;
+                }
+            }
+            if ($quote) {
+                $escapedArgument = '"'.$escapedArgument.'"';
+            }
+
+            return $escapedArgument;
+        }
+
+        return escapeshellarg($argument);
+    }
+
+    /**
+     * Symfony\Component\Process\ProcessUtils
+     *
+     * @param $arg
+     * @param $char
+     * @return bool
+     */
+    private function isSurroundedBy($arg, $char)
+    {
+        return 2 < strlen($arg) && $char === $arg[0] && $char === $arg[strlen($arg) - 1];
+    }
+
+    /**
+     * downloadXpressengine
+     *
+     * @param $version
+     *
+     * @return void
+     */
+    protected function downloadXpressengine($version)
+    {
+
+        $this->output("[XpressEngine3 Download]", 'info');
+        if ($this->skipDownload === true) {
+            $this->output("Download is Skipped .\n");
+            return;
+        }
+
+        $this->output('Downloading Xpressengine3...');
+
+        $zipFile = $version.'.zip';
+        $url = $this->server.'/'.$zipFile;
+        $path = getcwd()."/$zipFile";
+        $con = file_get_contents($url);
+        file_put_contents($path, $con);
+
+        $this->output('Download is finished.');
+
+        $this->output('Extract Zip file...');
+        $this->extract($zipFile, $this->installPath);
+        unlink($path);
+        $this->output("Extraction is finished.\n");
+    }
+
+    /**
+     * installXpressengine
+     *
+     * @return void
+     * @throws Exception
+     */
+    protected function installXpressengine()
+    {
+        require $this->installPath('vendor/autoload.php');
+
+        $appFile = $this->installPath('bootstrap/app.php');
+        if (!file_exists($appFile)) {
+            throw new Exception('Unable to find app loader: ~/bootstrap/app.php');
+        }
+
+        $app = include($appFile);
+        /** @var \App\Console\Kernel $kernel */
+        $kernel = $app->make('Illuminate\Contracts\Console\Kernel');
+
+        $kernel->bootstrap();
+        $inputs = [
+            'xe:install',
+            '--config' => $this->configFile,
+        ];
+        if ($this->noInteract === true) {
+            $inputs = array_merge($inputs, ['--no-interaction' => $this->noInteract]);
+        }
+        $kernel->handle(
+            new Symfony\Component\Console\Input\ArrayInput($inputs),
+            new Symfony\Component\Console\Output\ConsoleOutput
+        );
+
+
+    }
+
+    /**
+     * getInstallPath
+     *
+     * @param $installPath
+     *
+     * @return string
+     */
+    protected function getInstallPath($installPath)
+    {
+        if ($installPath === null) {
+            $installPath = getcwd();
+        }
+        $path = realpath($installPath);
+        if ($path === false) {
+            throw new RuntimeException('Install path not found.');
+        }
+
+        return $path;
+    }
+
+    /**
+     * input
+     *
+     * @param $callback
+     *
+     * @return void
+     */
+    protected function input($callback)
+    {
+        flush();
+        @ob_flush();
+        $input = trim(fgets(STDIN));
+        $callback($input);
+    }
+
+    /**
+     * output
+     *
+     * @param           $text
+     * @param null      $color
+     * @param bool|true $newLine
+     *
+     * @return void
+     */
+    protected function output($text, $color = null, $newLine = true)
+    {
+        $styles = array(
+            'info' => "\033[0;32m%s\033[0m",
+            'error' => "\033[31;31m%s\033[0m",
+            'question' => "\033[33;33m%s\033[0m",
+            'succeed' => "\033[36m%s\033[0m"
+        );
+
+        $format = '%s';
+
+        if (isset($styles[$color])) {
+            $format = $styles[$color];
+        }
+
+        if ($newLine) {
+            $format .= PHP_EOL;
+        }
+
+        printf($format, $text);
+    }
+
+    /**
+     * extract
+     *
+     * @param $zipFile
+     * @param $directory
+     *
+     * @return void
+     */
+    protected function extract($zipFile, $directory)
+    {
+        $archive = new ZipArchive;
+
+        $archive->open($zipFile);
+
+        $archive->extractTo($directory);
+
+        $archive->close();
+    }
+
+    /**
+     * installPath
+     *
+     * @param null $path
+     *
+     * @return string
+     */
+    protected function installPath($path = null)
+    {
+        return $this->installPath.($path ? DIRECTORY_SEPARATOR.$path : $path);
+    }
+
+    /**
+     * Default config data
+     *
+     * @return string
+     */
+    private function getConfigData()
+    {
+        return 'site:
+    url: \'http://localhost\'
+    timezone: Asia/Seoul
+    locale: ko
+admin:
+    email: \'\'
+    password: \'\'
+    display_name: admin
+database:
+    driver: mysql
+    host: localhost
+    port: 3306
+    dbname: \'\'
+    username: root
+    password: \'\'
+    prefix: xe';
+    }
+}
+
+/**
+ * getParameter
+ *
+ * @param $argv
+ *
+ * @return array
+ */
+function getParameter($argv)
+{
+    $installPath = $configFile = null;
+    $version = 'latest';
+    $noInteract = $skipDownload = false;
+
+    // 이 파일의 이름 (버림)
+    array_shift($argv);
+
+    $argument = strpos($argv[0], '-') !== 0 ? array_shift($argv) : null;
+    $options = [];
+
+    if ($argument === 'install') {
+        foreach ($argv as $key => $val) {
+            if (0 === strpos($val, '--install-dir')) {
+                if (13 < strlen($val)) {
+                    $installPath = trim(substr($val, 14));
+                }
+            }
+
+            if (0 === strpos($val, '--version')) {
+                if (9 < strlen($val)) {
+                    $version = trim(substr($val, 10));
+                }
+            }
+
+            if (0 === strpos($val, '--config')) {
+                if (8 < strlen($val)) {
+                    $configFile = trim(substr($val, 9));
+                }
+            }
+
+            if (0 === strpos($val, '--skip-download')) {
+                if (15 === strlen($val)) {
+                    $skipDownload = true;
+                }
+            }
+
+            if (0 === strpos($val, '--no-interact')) {
+                if (13 === strlen($val)) {
+                    $noInteract = true;
+                }
+            }
+        }
+
+        $options = [$installPath, $version, $configFile, $skipDownload, $noInteract];
+    } elseif ($argument === 'make') {
+        $configFile = '.xe_install_config.yaml';
+        foreach ($argv as $key => $val) {
+
+            if (0 === strpos($val, '--file')) {
+                if (6 < strlen($val)) {
+                    $configFile = trim(substr($val, 7));
+                }
+            }
+        }
+        $options = [$configFile];
+    }
+
+    return [
+        'argument' => $argument,
+        'options' => $options
+    ];
+}
+
+
+
+/**
+ * Symfony\Component\Process
+ *
+ * Generic executable finder.
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ * @author Johannes M. Schmitt <schmittjoh@gmail.com>
+ */
+class ExecutableFinder
+{
+    private $suffixes = array('.exe', '.bat', '.cmd', '.com');
+
+    /**
+     * Replaces default suffixes of executable.
+     *
+     * @param array $suffixes
+     */
+    public function setSuffixes(array $suffixes)
+    {
+        $this->suffixes = $suffixes;
+    }
+
+    /**
+     * Adds new possible suffix to check for executable.
+     *
+     * @param string $suffix
+     */
+    public function addSuffix($suffix)
+    {
+        $this->suffixes[] = $suffix;
+    }
+
+    /**
+     * Finds an executable by name.
+     *
+     * @param string $name      The executable name (without the extension)
+     * @param string $default   The default to return if no executable is found
+     * @param array  $extraDirs Additional dirs to check into
+     *
+     * @return string The executable path or default value
+     */
+    public function find($name, $default = null, array $extraDirs = array())
+    {
+        if (ini_get('open_basedir')) {
+            $searchPath = explode(PATH_SEPARATOR, ini_get('open_basedir'));
+            $dirs = array();
+            foreach ($searchPath as $path) {
+                // Silencing against https://bugs.php.net/69240
+                if (@is_dir($path)) {
+                    $dirs[] = $path;
+                } else {
+                    if (basename($path) == $name && is_executable($path)) {
+                        return $path;
+                    }
+                }
+            }
+        } else {
+            $dirs = array_merge(
+                explode(PATH_SEPARATOR, getenv('PATH') ?: getenv('Path')),
+                $extraDirs
+            );
+        }
+
+        $suffixes = array('');
+        if ('\\' === DIRECTORY_SEPARATOR) {
+            $pathExt = getenv('PATHEXT');
+            $suffixes = $pathExt ? explode(PATH_SEPARATOR, $pathExt) : $this->suffixes;
+        }
+        foreach ($suffixes as $suffix) {
+            foreach ($dirs as $dir) {
+                if (is_file($file = $dir.DIRECTORY_SEPARATOR.$name.$suffix) && ('\\' === DIRECTORY_SEPARATOR || is_executable($file))) {
+                    return $file;
+                }
+            }
+        }
+
+        return $default;
+    }
+}
+
+/**
+ * Symfony\Component\Process
+ *
+ * An executable finder specifically designed for the PHP executable.
+ *
+ * @author Fabien Potencier <fabien@symfony.com>
+ * @author Johannes M. Schmitt <schmittjoh@gmail.com>
+ */
+class PhpExecutableFinder
+{
+    private $executableFinder;
+
+    public function __construct()
+    {
+        $this->executableFinder = new ExecutableFinder();
+    }
+
+    /**
+     * Finds The PHP executable.
+     *
+     * @param bool $includeArgs Whether or not include command arguments
+     *
+     * @return string|false The PHP executable path or false if it cannot be found
+     */
+    public function find($includeArgs = true)
+    {
+        $args = $this->findArguments();
+        $args = $includeArgs && $args ? ' '.implode(' ', $args) : '';
+
+        // HHVM support
+        if (defined('HHVM_VERSION')) {
+            return (getenv('PHP_BINARY') ?: PHP_BINARY).$args;
+        }
+
+        // PHP_BINARY return the current sapi executable
+        if (defined('PHP_BINARY') && PHP_BINARY && in_array(PHP_SAPI, array('cli', 'cli-server', 'phpdbg')) && is_file(PHP_BINARY)) {
+            return PHP_BINARY.$args;
+        }
+
+        if ($php = getenv('PHP_PATH')) {
+            if (!is_executable($php)) {
+                return false;
+            }
+
+            return $php;
+        }
+
+        if ($php = getenv('PHP_PEAR_PHP_BIN')) {
+            if (is_executable($php)) {
+                return $php;
+            }
+        }
+
+        $dirs = array(PHP_BINDIR);
+        if ('\\' === DIRECTORY_SEPARATOR) {
+            $dirs[] = 'C:\xampp\php\\';
+        }
+
+        return $this->executableFinder->find('php', false, $dirs);
+    }
+
+    /**
+     * Finds the PHP executable arguments.
+     *
+     * @return array The PHP executable arguments
+     */
+    public function findArguments()
+    {
+        $arguments = array();
+
+        if (defined('HHVM_VERSION')) {
+            $arguments[] = '--php';
+        } elseif ('phpdbg' === PHP_SAPI) {
+            $arguments[] = '-qrr';
+        }
+
+        return $arguments;
+    }
+}

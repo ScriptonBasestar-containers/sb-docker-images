@@ -1,0 +1,6 @@
+IMAGE_VERSION=0.1
+
+SOURCE_IMAGE[nginx-alpine]=alpine
+SOURCE_IMAGE[nginx-default]=latest
+SOURCE_IMAGE[ubuntu]=latest
+SOURCE_IMAGE[ubuntu]=18.04

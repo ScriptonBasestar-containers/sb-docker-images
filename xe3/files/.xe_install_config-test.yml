@@ -1,0 +1,16 @@
+site:
+    url: localhost
+    timezone: Asia/Seoul
+    locale: ko
+admin:
+    email: admin@geek.re.kr
+    password: password
+    display_name: Admin
+database:
+    driver: mysql
+    host: mariadb
+    port: 3306
+    dbname: xe_db
+    username: root
+    password: password
+    prefix: xe

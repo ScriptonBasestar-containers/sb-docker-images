@@ -1,0 +1,17 @@
+version: "3.3"
+
+services:
+  rtmp:
+    # image: rtmp-nginx:alpine
+    build:
+      context: .
+      dockerfile: ./alpine/Dockerfile
+    ports:
+      - 1935:1935
+    volumes:
+      - ./config:/etc/nginx/module.d/rtmp.conf
+    environment:
+      - TWITCH_ENDPOINT=
+      - TWITCH_CODE=
+      - YOUTUBE_ENDPOINT=
+      - YOUTUBE_CODE=
