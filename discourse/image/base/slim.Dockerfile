@@ -33,9 +33,9 @@ RUN apt-mark hold initscripts
 RUN apt-get -y upgrade
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y locales locales-all
-ENV LC_ALL en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
 
 RUN curl --silent --location https://deb.nodesource.com/setup_20.x | sudo bash -
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
@@ -75,7 +75,7 @@ RUN /tmp/install-imagemagick
 ADD install-jemalloc /tmp/install-jemalloc
 RUN /tmp/install-jemalloc
 
-ADD install-rust /tmp/install-rust
+#ADD install-rust /tmp/install-rust
 # ADD install-ruby /tmp/install-ruby
 ADD install-oxipng /tmp/install-oxipng
 # RUN /tmp/install-rust && /tmp/install-ruby $RUBY_VERSION && /tmp/install-oxipng && rustup self uninstall -y
@@ -117,8 +117,3 @@ RUN rm -f /etc/service
 
 COPY etc/  /etc
 COPY sbin/ /sbin
-
-# Discourse specific bits
-RUN install -dm 0755 -o discourse -g discourse /var/www/discourse &&\
-    sudo -u discourse git clone --filter=tree:0 https://github.com/discourse/discourse.git /var/www/discourse &&\
-    gem install bundler --conservative -v $(awk '/BUNDLED WITH/ { getline; gsub(/ /,""); print $0 }' /var/www/discourse/Gemfile.lock)

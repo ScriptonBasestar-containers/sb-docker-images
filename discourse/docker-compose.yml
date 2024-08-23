@@ -1,8 +1,9 @@
 services:
   discourse:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: discourse/app
+#    build:
+#      context: image/discourse_app
+#      dockerfile: Dockerfile
     container_name: discourse_dev
     ports:
       - "3000:3000"
