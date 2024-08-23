@@ -8,6 +8,7 @@ services:
     ports:
       - "3000:3000"
       - "8080:80"
+      - "8443:443"
     command: ["bash", "-c", "while true; do sleep 1000; done"]
     entrypoint: []
     # env_file:

@@ -41,7 +41,6 @@ RUN chown -R discourse /var/www/discourse
 #    sudo -u discourse git clone --filter=tree:0 https://github.com/discourse/discourse.git /var/www/discourse &&\
 #    gem install bundler --conservative -v $(awk '/BUNDLED WITH/ { getline; gsub(/ /,""); print $0 }' /var/www/discourse/Gemfile.lock)
 
-RUN bin/rails assets:precompile
 
 RUN gem install --force bundler
 RUN bundle config set deployment true
@@ -50,6 +49,7 @@ RUN bundle install --jobs=8
 RUN yarn install --frozen-lockfile
 RUN yarn cache clean
 # RUN find /var/www/discourse/vendor/bundle -name tmp -type d -exec rm -rf {} +
+# RUN bin/rails assets:precompile
 
 EXPOSE 80
 EXPOSE 443
