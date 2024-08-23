@@ -1,0 +1,600 @@
+#!/bin/bash
+set -e
+source ${NEXTCLOUD_RUNTIME_DIR}/env-defaults
+
+NEXTCLOUD_TEMPLATES_DIR=${NEXTCLOUD_RUNTIME_DIR}/config
+NEXTCLOUD_APP_CONFIG=${NEXTCLOUD_CONFIG_DIR}/config.php
+NEXTCLOUD_NGINX_CONFIG=/etc/nginx/sites-enabled/Nextcloud.conf
+
+# Compares two version strings `a` and `b`
+# Returns
+#   - negative integer, if `a` is less than `b`
+#   - 0, if `a` and `b` are equal
+#   - non-negative integer, if `a` is greater than `b`
+vercmp() {
+  expr '(' "$1" : '\([^.]*\)' ')' '-' '(' "$2" : '\([^.]*\)' ')' '|' \
+       '(' "$1.0" : '[^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0" : '[^.]*[.]\([^.]*\)' ')' '|' \
+       '(' "$1.0.0" : '[^.]*[.][^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0.0" : '[^.]*[.][^.]*[.]\([^.]*\)' ')' '|' \
+       '(' "$1.0.0.0" : '[^.]*[.][^.]*[.][^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0.0.0" : '[^.]*[.][^.]*[.][^.]*[.]\([^.]*\)' ')'
+}
+
+# Read YAML file from Bash script
+# Credits: https://gist.github.com/pkuczynski/8665367
+parse_yaml() {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p" $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
+
+get_php_param() {
+  local key=${1?key not specified}
+  sed -n -e "s/^\(${key}=\)\(.*\)\(.*\)$/\2/p" ${NEXTCLOUD_INSTALL_DIR}/.user.ini
+}
+
+set_php_param() {
+  local key=${1?key not specified}
+  local value=${2?value not specified}
+  local verbosity=${3:-verbose}
+
+  local current=$(get_php_param ${key})
+  if [[ "${current}" != "${value}" ]]; then
+    if [[ ${verbosity} == verbose ]]; then
+      echo "Setting .user.ini parameter: ${key}=${value}"
+    fi
+  fi
+
+  if [[ $(sed -n -e "s/^[;]*[ ]*\(${key}\)=.*/\1/p" .user.ini) == ${key} ]]; then
+    value="$(echo "${value}" | sed 's|[&]|\\&|g')"
+    sed -i "s|^[;]*[ ]*${key}=.*|${key}=${value}|" ${NEXTCLOUD_INSTALL_DIR}/.user.ini
+  else
+    echo "${key}=${value}" >> ${NEXTCLOUD_INSTALL_DIR}/.user.ini
+  fi
+}
+
+## Execute a command as NEXTCLOUD_USER
+exec_as_nextcloud() {
+  if [[ $(whoami) == ${NEXTCLOUD_USER} ]]; then
+    $@
+  else
+    sudo -HEu ${NEXTCLOUD_USER} "$@"
+  fi
+}
+
+occ_cli() {
+  exec_as_nextcloud php occ $@
+}
+
+## Copies configuration template in ${NEXTCLOUD_TEMPLATES_DIR} to the destination as the specified USER
+# $1: ownership of destination file, uses `chown`
+# $2: source file
+# $3: destination location
+# $4: mode of destination, uses `chmod` (default: 0644)
+install_template() {
+  local OWNERSHIP=${1}
+  local SRC=${2}
+  local DEST=${3}
+  local MODE=${4:-0644}
+  if [[ -f ${NEXTCLOUD_TEMPLATES_DIR}/${SRC} ]]; then
+    cp ${NEXTCLOUD_TEMPLATES_DIR}/${SRC} ${DEST}
+  fi
+  chmod ${MODE} ${DEST}
+  chown ${OWNERSHIP} ${DEST}
+}
+
+
+## Replace placeholders with values
+# $1: file with placeholders to replace
+# $x: placeholders to replace
+update_template() {
+  local FILE=${1?missing argument}
+  shift
+
+  [[ ! -f ${FILE} ]] && return 1
+
+  local VARIABLES=($@)
+  local USR=$(stat -c %U ${FILE})
+  local tmp_file=$(mktemp)
+  cp -a "${FILE}" ${tmp_file}
+
+  local variable
+  for variable in ${VARIABLES[@]}; do
+    # Keep the compatibilty: {{VAR}} => ${VAR}
+    sed -ri "s/[{]{2}$variable[}]{2}/\${$variable}/g" ${tmp_file}
+  done
+
+  # Replace placeholders
+  (
+    export ${VARIABLES[@]}
+    local IFS=":"; sudo -HEu ${USR} envsubst "${VARIABLES[*]/#/$}" < ${tmp_file} > ${FILE}
+  )
+  rm -f ${tmp_file}
+}
+
+nextcloud_finalize_database_parameters() {
+  # is a mysql or postgresql database linked?
+  # requires that the mysql or postgresql containers have exposed
+  # port 3306 and 5432 respectively.
+  if [[ -n ${MYSQL_PORT_3306_TCP_ADDR} ]]; then
+    DB_TYPE=${DB_TYPE:-mysql}
+    DB_HOST=${DB_HOST:-mysql}
+    DB_PORT=${DB_PORT:-$MYSQL_PORT_3306_TCP_PORT}
+
+    # support for linked sameersbn/mysql image
+    DB_USER=${DB_USER:-$MYSQL_ENV_DB_USER}
+    DB_PASS=${DB_PASS:-$MYSQL_ENV_DB_PASS}
+    DB_NAME=${DB_NAME:-$MYSQL_ENV_DB_NAME}
+
+    # support for linked orchardup/mysql and enturylink/mysql image
+    # also supports official mysql image
+    DB_USER=${DB_USER:-$MYSQL_ENV_MYSQL_USER}
+    DB_PASS=${DB_PASS:-$MYSQL_ENV_MYSQL_PASSWORD}
+    DB_NAME=${DB_NAME:-$MYSQL_ENV_MYSQL_DATABASE}
+  elif [[ -n ${POSTGRESQL_PORT_5432_TCP_ADDR} ]]; then
+    DB_TYPE=${DB_TYPE:-pgsql}
+    DB_HOST=${DB_HOST:-postgresql}
+    DB_PORT=${DB_PORT:-$POSTGRESQL_PORT_5432_TCP_PORT}
+
+    # support for linked official postgres image
+    DB_USER=${DB_USER:-$POSTGRESQL_ENV_POSTGRES_USER}
+    DB_PASS=${DB_PASS:-$POSTGRESQL_ENV_POSTGRES_PASSWORD}
+    DB_NAME=${DB_NAME:-$POSTGRESQL_ENV_POSTGRES_DB}
+    DB_NAME=${DB_NAME:-$DB_USER}
+
+    # support for linked sameersbn/postgresql image
+    DB_USER=${DB_USER:-$POSTGRESQL_ENV_DB_USER}
+    DB_PASS=${DB_PASS:-$POSTGRESQL_ENV_DB_PASS}
+    DB_NAME=${DB_NAME:-$POSTGRESQL_ENV_DB_NAME}
+
+    # support for linked orchardup/postgresql image
+    DB_USER=${DB_USER:-$POSTGRESQL_ENV_POSTGRESQL_USER}
+    DB_PASS=${DB_PASS:-$POSTGRESQL_ENV_POSTGRESQL_PASS}
+    DB_NAME=${DB_NAME:-$POSTGRESQL_ENV_POSTGRESQL_DB}
+
+    # support for linked paintedfox/postgresql image
+    DB_USER=${DB_USER:-$POSTGRESQL_ENV_USER}
+    DB_PASS=${DB_PASS:-$POSTGRESQL_ENV_PASS}
+    DB_NAME=${DB_NAME:-$POSTGRESQL_ENV_DB}
+  fi
+
+  if [[ -z ${DB_HOST} ]]; then
+    echo
+    echo "ERROR: "
+    echo "  Please configure the database connection."
+    echo "  Cannot continue without a database. Aborting..."
+    echo
+    return 1
+  fi
+
+  # use default port number if it is still not set
+  case ${DB_TYPE} in
+    mysql) DB_PORT=${DB_PORT:-3306} ;;
+    pgsql) DB_PORT=${DB_PORT:-5432} ;;
+    *)
+      echo
+      echo "ERROR: "
+      echo "  Please specify the database type in use via the DB_TYPE configuration option."
+      echo "  Accepted values are \"pgsql\" or \"mysql\". Aborting..."
+      echo
+      return 1
+      ;;
+  esac
+
+  # set default user and database
+  DB_USER=${DB_USER:-root}
+  DB_NAME=${DB_NAME:-nextclouddb}
+}
+
+nextcloud_finalize_php_fpm_parameters() {
+  # is a nextcloud-php-fpm container linked?
+  if [[ -n ${PHP_FPM_PORT_9000_TCP_ADDR} ]]; then
+    NEXTCLOUD_PHP_FPM_HOST=${NEXTCLOUD_PHP_FPM_HOST:-$PHP_FPM_PORT_9000_TCP_ADDR}
+    NEXTCLOUD_PHP_FPM_PORT=${NEXTCLOUD_PHP_FPM_PORT:-$PHP_FPM_PORT_9000_TCP_PORT}
+  fi
+
+  if [[ -z ${NEXTCLOUD_PHP_FPM_HOST} ]]; then
+    echo
+    echo "ERROR: "
+    echo "  Please configure the php-fpm connection. Aborting..."
+    echo
+    return 1
+  fi
+
+  # use default php-fpm port number if it is still not set
+  NEXTCLOUD_PHP_FPM_PORT=${NEXTCLOUD_PHP_FPM_PORT:-9000}
+}
+
+nextcloud_check_database_connection() {
+  case ${DB_TYPE} in
+    mysql)
+      prog="mysqladmin -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} status"
+      ;;
+    pgsql)
+      prog=$(find /usr/lib/postgresql/ -name pg_isready)
+      prog="${prog} -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -t 1"
+      ;;
+  esac
+  timeout=60
+  while ! ${prog} >/dev/null 2>&1
+  do
+    timeout=$(expr $timeout - 1)
+    if [[ $timeout -eq 0 ]]; then
+      echo
+      echo "Could not connect to database server. Aborting..."
+      return 1
+    fi
+    echo -n "."
+    sleep 1
+  done
+  echo
+}
+
+nextcloud_configure_database() {
+  echo -n "Configuring Nextcloud::database"
+
+  nextcloud_finalize_database_parameters
+  nextcloud_check_database_connection
+
+  if [[ -f ${NEXTCLOUD_APP_CONFIG} ]]; then
+    occ_cli config:system:set dbtype --value ${DB_TYPE}
+    occ_cli config:system:set dbhost --value ${DB_HOST}:${DB_PORT}
+    occ_cli config:system:set dbname --value ${DB_NAME}
+    occ_cli config:system:set dbuser --value ${DB_USER}
+    occ_cli config:system:set dbpassword --value ${DB_PASS}
+  fi
+}
+
+nextcloud_upgrade() {
+  # perform installation on firstrun
+  case ${DB_TYPE} in
+    mysql)
+      QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = '${DB_NAME}';"
+      COUNT=$(mysql -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} -ss -e "${QUERY}")
+      ;;
+    pgsql)
+      QUERY="SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public';"
+      COUNT=$(PGPASSWORD="${DB_PASS}" psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -Atw -c "${QUERY}")
+      ;;
+  esac
+
+  local update_version=false
+  if [[ -z ${COUNT} || ${COUNT} -eq 0 ]]; then
+    echo "Setting up Nextcloud for firstrun..."
+    mkdir -p ${NEXTCLOUD_INSTALL_DIR}/data
+    chown -R ${NEXTCLOUD_USER}: ${NEXTCLOUD_INSTALL_DIR}/data
+
+    occ_cli maintenance:install \
+      --database=${DB_TYPE} --database-host=${DB_HOST}:${DB_PORT} \
+      --database-name=${DB_NAME} --database-user=${DB_USER} --database-pass=${DB_PASS} \
+      --admin-user=${NEXTCLOUD_ADMIN_USER} --admin-pass=${NEXTCLOUD_ADMIN_PASSWORD} \
+      --data-dir=${NEXTCLOUD_OCDATA_DIR}
+
+    update_version=true
+  else
+    CACHE_VERSION=
+    [[ -f ${NEXTCLOUD_CONFIG_DIR}/VERSION ]] && CACHE_VERSION=$(cat ${NEXTCLOUD_CONFIG_DIR}/VERSION)
+    if [[ ${NEXTCLOUD_VERSION} != ${CACHE_VERSION} ]]; then
+      ## version check, only upgrades are allowed
+      if [[ -n ${CACHE_VERSION} && $(vercmp ${NEXTCLOUD_VERSION} ${CACHE_VERSION}) -lt 0 ]]; then
+        echo
+        echo "ERROR: "
+        echo "  Cannot downgrade from Nextcloud version ${CACHE_VERSION} to ${NEXTCLOUD_VERSION}."
+        echo "  Only upgrades are allowed. Please use sameersbn/nextcloud:${CACHE_VERSION} or higher."
+        echo "  Cannot continue. Aborting!"
+        echo
+        return 1
+      fi
+
+      echo "Upgrading Nextcloud..."
+      occ_cli maintenance:mode --on
+      occ_cli upgrade
+      occ_cli maintenance:mode --off
+
+      update_version=true
+    fi
+  fi
+
+  if [[ ${update_version} == true ]]; then
+    echo -n "${NEXTCLOUD_VERSION}" | exec_as_nextcloud tee ${NEXTCLOUD_CONFIG_DIR}/VERSION >/dev/null
+  fi
+}
+
+nextcloud_configure_domain() {
+  echo "Configuring Nextcloud::trusted_domain..."
+  occ_cli config:system:set trusted_domains 0 --value ${NEXTCLOUD_FQDN}
+}
+
+nextcloud_configure_max_upload_size() {
+  echo "Configuring Nextcloud::max_upload_size..."
+  set_php_param upload_max_filesize ${NEXTCLOUD_UPLOAD_MAX_FILESIZE}
+  set_php_param post_max_size ${NEXTCLOUD_UPLOAD_MAX_FILESIZE}
+}
+
+nextcloud_configure_max_file_uploads() {
+  echo "Configuring Nextcloud::max_file_uploads..."
+  set_php_param max_file_uploads ${NEXTCLOUD_MAX_FILE_UPLOADS}
+}
+
+nginx_configure_virtualhost() {
+  echo "Configuring Nextcloud virtualhost..."
+  nextcloud_finalize_php_fpm_parameters
+  update_template ${NEXTCLOUD_NGINX_CONFIG} \
+    NEXTCLOUD_FQDN \
+    NEXTCLOUD_HTTPS \
+    NEXTCLOUD_PHP_FPM_HOST \
+    NEXTCLOUD_PHP_FPM_PORT
+}
+
+backup_dump_database() {
+  case ${DB_TYPE} in
+    pgsql)
+      echo "Dumping PostgreSQL database ${DB_NAME}..."
+      PGPASSWORD=${DB_PASS} pg_dump --clean \
+        --host ${DB_HOST} --port ${DB_PORT} \
+        --username ${DB_USER} ${DB_NAME} > ${NEXTCLOUD_BACKUPS_DIR}/database.sql
+      ;;
+    mysql)
+      echo "Dumping MySQL database ${DB_NAME}..."
+      MYSQL_PWD=${DB_PASS} mysqldump --lock-tables --add-drop-table \
+        --host ${DB_HOST} --port ${DB_PORT} \
+        --user ${DB_USER} ${DB_NAME} > ${NEXTCLOUD_BACKUPS_DIR}/database.sql
+      ;;
+  esac
+  chown ${NEXTCLOUD_USER}: ${NEXTCLOUD_BACKUPS_DIR}/database.sql
+  exec_as_nextcloud gzip -f ${NEXTCLOUD_BACKUPS_DIR}/database.sql
+}
+
+backup_dump_directory() {
+  local directory=${1}
+  local dirname=$(basename ${directory})
+  local extension=${2}
+
+  echo "Dumping ${dirname}..."
+  exec_as_nextcloud tar -cf ${NEXTCLOUD_BACKUPS_DIR}/${dirname}${extension} -C ${directory} .
+}
+
+backup_dump_information() {
+  (
+    echo "info:"
+    echo "  nextcloud_version: ${NEXTCLOUD_VERSION}"
+    echo "  database_adapter: $(occ_cli config:system:get dbtype)"
+    echo "  created_at: $(date)"
+  ) > ${NEXTCLOUD_BACKUPS_DIR}/backup_information.yml
+  chown ${NEXTCLOUD_USER}: ${NEXTCLOUD_BACKUPS_DIR}/backup_information.yml
+}
+
+backup_create_archive() {
+  local tar_file="$(date +%s)_nextcloud_backup.tar"
+
+  echo "Creating backup archive: ${tar_file}..."
+  exec_as_nextcloud tar -cf ${NEXTCLOUD_BACKUPS_DIR}/${tar_file} -C ${NEXTCLOUD_BACKUPS_DIR} $@
+  exec_as_nextcloud chmod 0755 ${NEXTCLOUD_BACKUPS_DIR}/${tar_file}
+
+  for f in $@
+  do
+    exec_as_nextcloud rm -rf ${NEXTCLOUD_BACKUPS_DIR}/${f}
+  done
+}
+
+backup_purge_expired() {
+  if [[ ${NEXTCLOUD_BACKUPS_EXPIRY} -gt 0 ]]; then
+    echo -n "Deleting old backups... "
+    local removed=0
+    local now=$(date +%s)
+    local cutoff=$(expr ${now} - ${NEXTCLOUD_BACKUPS_EXPIRY})
+    for backup in $(ls ${NEXTCLOUD_BACKUPS_DIR}/*_nextcloud_backup.tar)
+    do
+      local timestamp=$(stat -c %Y ${backup})
+      if [[ ${timestamp} -lt ${cutoff} ]]; then
+        rm ${backup}
+        removed=$(expr ${removed} + 1)
+      fi
+    done
+    echo "(${removed} removed)"
+  fi
+}
+
+backup_restore_unpack() {
+  local backup=${1}
+  echo "Unpacking ${backup}..."
+  tar xf ${NEXTCLOUD_BACKUPS_DIR}/${backup} -C ${NEXTCLOUD_BACKUPS_DIR}
+}
+
+backup_restore_validate() {
+  eval $(parse_yaml ${NEXTCLOUD_BACKUPS_DIR}/backup_information.yml backup_)
+
+  ## version check
+  if [[ $(vercmp ${NEXTCLOUD_VERSION} ${backup_info_nextcloud_version}) -lt 0 ]]; then
+    echo
+    echo "ERROR: "
+    echo "  Cannot restore backup for version ${backup_info_nextcloud_version} on a ${NEXTCLOUD_VERSION} instance."
+    echo "  You can only restore backups generated for versions <= ${NEXTCLOUD_VERSION}."
+    echo "  Please use sameersbn/nextcloud:${backup_info_nextcloud_version} to restore this backup."
+    echo "  Cannot continue. Aborting!"
+    echo
+    return 1
+  fi
+
+  ## database adapter check
+  if [[ ${DB_TYPE} != ${backup_info_database_adapter} ]]; then
+    echo
+    echo "ERROR:"
+    echo "  Your current setup uses the ${DB_TYPE} adapter, while the database"
+    echo "  backup was generated with the ${backup_info_database_adapter} adapter."
+    echo "  Cannot continue. Aborting!"
+    echo
+    return 1
+  fi
+  exec_as_nextcloud rm -rf ${NEXTCLOUD_BACKUPS_DIR}/backup_information.yml
+}
+
+backup_restore_database() {
+  case ${DB_TYPE} in
+    pgsql)
+      echo "Restoring PostgreSQL database..."
+      gzip -dc ${NEXTCLOUD_BACKUPS_DIR}/database.sql.gz | \
+        PGPASSWORD=${DB_PASS} psql \
+          --host ${DB_HOST} --port ${DB_PORT} \
+          --username ${DB_USER} ${DB_NAME}
+      ;;
+    mysql)
+      echo "Restoring MySQL database..."
+      gzip -dc ${NEXTCLOUD_BACKUPS_DIR}/database.sql.gz | \
+        MYSQL_PWD=${DB_PASS} mysql \
+          --host ${DB_HOST} --port ${DB_PORT} \
+          --user ${DB_USER} ${DB_NAME}
+      ;;
+    *)
+      echo "Database type ${DB_TYPE} not supported."
+      return 1
+      ;;
+  esac
+  exec_as_nextcloud rm -rf ${NEXTCLOUD_BACKUPS_DIR}/database.sql.gz
+}
+
+backup_restore_directory() {
+  local directory=${1}
+  local dirname=$(basename ${directory})
+  local extension=${2}
+
+  echo "Restoring ${dirname}..."
+  files=($(shopt -s nullglob;shopt -s dotglob;echo ${directory}/*))
+  if [[ ${#files[@]} -gt 0 ]]; then
+    exec_as_nextcloud mv ${directory} ${directory}.$(date +%s)
+  else
+    exec_as_nextcloud rm -rf ${directory}
+  fi
+  exec_as_nextcloud mkdir -p ${directory}
+  exec_as_nextcloud tar -xf ${NEXTCLOUD_BACKUPS_DIR}/${dirname}${extension} -C ${directory}
+  exec_as_nextcloud rm -rf ${NEXTCLOUD_BACKUPS_DIR}/${dirname}${extension}
+}
+
+install_configuration_templates() {
+  echo "Installing configuration templates..."
+  if [[ -d /etc/nginx/sites-enabled && ! -f ${NEXTCLOUD_NGINX_CONFIG} ]]; then
+    install_template root: nginx/Nextcloud.conf ${NEXTCLOUD_NGINX_CONFIG} 0644
+    update_template ${NEXTCLOUD_NGINX_CONFIG} NEXTCLOUD_INSTALL_DIR
+  fi
+}
+
+initialize_datadir() {
+  echo "Initializing datadir..."
+  chmod 0755 ${NEXTCLOUD_DATA_DIR}
+  chown ${NEXTCLOUD_USER}: ${NEXTCLOUD_DATA_DIR}
+
+  # create ocdata directory
+  mkdir -p ${NEXTCLOUD_OCDATA_DIR}
+  chown -R ${NEXTCLOUD_USER}: ${NEXTCLOUD_OCDATA_DIR}
+  chmod -R 0750 ${NEXTCLOUD_OCDATA_DIR}
+
+  # create config directory
+  mkdir -p ${NEXTCLOUD_CONFIG_DIR}
+  chown -R ${NEXTCLOUD_USER}: ${NEXTCLOUD_CONFIG_DIR}
+  chmod -R 0750 ${NEXTCLOUD_CONFIG_DIR}
+
+  # create backups directory
+  mkdir -p ${NEXTCLOUD_BACKUPS_DIR}
+  chmod -R 0755 ${NEXTCLOUD_BACKUPS_DIR}
+  chown -R ${NEXTCLOUD_USER}: ${NEXTCLOUD_BACKUPS_DIR}
+
+  # symlink to config/config.php -> ${NEXTCLOUD_APP_CONFIG}
+  ln -sf ${NEXTCLOUD_APP_CONFIG} ${NEXTCLOUD_INSTALL_DIR}/config/config.php
+}
+
+initialize_system() {
+  initialize_datadir
+  install_configuration_templates
+}
+
+configure_nextcloud() {
+  echo "Configuring Nextcloud..."
+  nextcloud_configure_database
+  nextcloud_upgrade
+  nextcloud_configure_domain
+  nextcloud_configure_max_upload_size
+  nextcloud_configure_max_file_uploads
+
+  if [[ -f ${NEXTCLOUD_APP_CONFIG} ]]; then
+    occ_cli maintenance:mode --quiet --off
+  fi
+}
+
+configure_nginx() {
+  echo "Configuring nginx..."
+  nginx_configure_virtualhost
+}
+
+backup_create() {
+  echo -n "Checking database connection"
+  nextcloud_finalize_database_parameters
+  nextcloud_check_database_connection
+
+  occ_cli maintenance:mode --on
+  backup_dump_database
+  backup_dump_directory ${NEXTCLOUD_CONFIG_DIR} .tar.gz
+  backup_dump_directory ${NEXTCLOUD_OCDATA_DIR} .tar
+  backup_dump_information
+  backup_create_archive backup_information.yml database.sql.gz config.tar.gz ocdata.tar
+  backup_purge_expired
+  occ_cli maintenance:mode --off
+}
+
+backup_restore() {
+  local tar_file=
+  local interactive=true
+  for arg in $@
+  do
+    if [[ $arg == BACKUP=* ]]; then
+      tar_file=${arg##BACKUP=}
+      interactive=false
+      break
+    fi
+  done
+
+  # user needs to select the backup to restore
+  if [[ $interactive == true ]]; then
+    num_backups=$(ls ${NEXTCLOUD_BACKUPS_DIR}/*_nextcloud_backup.tar | wc -l)
+    if [[ $num_backups -eq 0 ]]; then
+      echo "No backups exist at ${NEXTCLOUD_BACKUPS_DIR}. Cannot continue."
+      return 1
+    fi
+
+    echo
+    for b in $(ls ${NEXTCLOUD_BACKUPS_DIR} | grep _nextcloud_backup.tar | sort -r)
+    do
+      echo "‣ $b (created at $(date --date="@${b%%_nextcloud_backup.tar}" +'%d %b, %G - %H:%M:%S %Z'))"
+    done
+    echo
+
+    read -p "Select a backup to restore: " tar_file
+
+    if [[ -z ${tar_file} ]]; then
+      echo "Backup not specified. Exiting..."
+      return 1
+    fi
+  fi
+
+  if [[ ! -f ${NEXTCLOUD_BACKUPS_DIR}/${tar_file} ]]; then
+    echo "Specified backup does not exist. Aborting..."
+    return 1
+  fi
+
+  echo -n "Checking database connection"
+  nextcloud_finalize_database_parameters
+  nextcloud_check_database_connection
+
+  backup_restore_unpack ${tar_file}
+  backup_restore_validate
+  backup_restore_database
+  backup_restore_directory ${NEXTCLOUD_CONFIG_DIR} .tar.gz
+  backup_restore_directory ${NEXTCLOUD_OCDATA_DIR} .tar
+}

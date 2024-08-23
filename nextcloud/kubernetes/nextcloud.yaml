@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nextcloud
+  labels:
+    name: nextcloud
+spec:
+  containers:
+    - name: nextcloud
+      image: sameersbn/nextcloud:9.0.55
+      args: ["app:nextcloud"]
+      env:
+        - name: TZ
+          value: Asia/Kolkata
+        - name: DEBUG
+          value: "false"
+
+        - name: NEXTCLOUD_URL
+          value: http://cloud.example.com
+
+        - name: NEXTCLOUD_ADMIN_USER
+          value: admin
+        - name: NEXTCLOUD_ADMIN_PASSWORD
+          value: password
+
+        - name: NEXTCLOUD_UPLOAD_MAX_FILESIZE
+          value: 4G
+        - name: NEXTCLOUD_MAX_FILE_UPLOADS
+          value: "20"
+
+        - name: DB_TYPE
+          value: pgsql
+        - name: DB_HOST
+          value: postgresql
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: nextcloud
+        - name: DB_PASS
+          value: password
+        - name: DB_NAME
+          value: nextcloud_db
+
+      ports:
+        - name: php-fpm
+          containerPort: 9000
+          protocol: TCP
+      volumeMounts:
+        - mountPath: /var/lib/nextcloud
+          name: data
+      livenessProbe:
+        tcpSocket:
+          port: 9000
+        initialDelaySeconds: 5
+        timeoutSeconds: 1
+  volumes:
+    - name: data
+      emptyDir: {}
