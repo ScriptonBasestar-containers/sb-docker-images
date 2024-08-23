@@ -1,0 +1,17 @@
+.vagrant
+config.php
+vendor
+server
+core
+studio.json
+composer.lock
+
+# os
+.DS_Store
+Thumbs.db
+
+# ide
+.idea
+
+# dev
+app/
