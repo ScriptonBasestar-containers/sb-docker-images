@@ -10,3 +10,9 @@ prepare:
 	
 setup:
 	@echo "No setup required"
+
+build-base:
+	docker build -f image/base/slim.Dockerfile image/base -t discourse/base
+
+build-app:
+	docker build . -t discourse-app

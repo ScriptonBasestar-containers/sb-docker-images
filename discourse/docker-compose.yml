@@ -1,0 +1,108 @@
+services:
+  discourse:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: discourse_dev
+    ports:
+      - "3000:3000"
+      - "8080:80"
+    command: ["bash", "-c", "while true; do sleep 1000; done"]
+    entrypoint: []
+    # env_file:
+    #   # - discourse.env
+    #   - discourse.dev.env
+    environment:
+      LC_ALL: en_US.UTF-8
+      LANG: en_US.UTF-8
+      LANGUAGE: en_US.UTF-8
+      RAILS_ENV: production
+
+#      ALLOW_EMPTY_PASSWORD: yes
+#      DISCOURSE_EXTERNAL_HTTP_PORT_NUMBER: 3000
+      DISCOURSE_HOSTNAME: 'test1.polypia.net'
+      DISCOURSE_DEVELOPER_EMAILS:
+      DISCOURSE_DB_PORT: 5432
+      DISCOURSE_DB_HOST: postgres
+      DISCOURSE_DEV_DB: db01
+      DISCOURSE_DB_NAME: db01
+      DISCOURSE_DB_USERNAME: user01
+      DISCOURSE_DB_PASSWORD: passw0rd
+
+      DISCOURSE_REDIS_DB: 0
+      DISCOURSE_REDIS_HOST: redis
+      DISCOURSE_REDIS_PASSWORD: passw0rd
+      DISCOURSE_REDIS_PORT: 6379
+      # DISCOURSE_REDIS_PORT_NUMBER: 6379
+      DISCOURSE_REDIS_USE_SSL: false
+
+      # DISCOURSE_DATABASE_HOST: postgres
+      # DISCOURSE_DATABASE_PORT_NUMBER: 5432
+      # DISCOURSE_DATABASE_USER: user01
+      # DISCOURSE_DATABASE_NAME: dev_discourse_db
+
+      # POSTGRESQL_CLIENT_POSTGRES_USER: dev_discourse_user
+      # POSTGRESQL_CLIENT_CREATE_DATABASE_NAME: dev_discourse_db
+      # POSTGRESQL_CLIENT_CREATE_DATABASE_EXTENSIONS: hstore,pg_trgm
+    depends_on:
+      - redis
+      - postgres
+    links:
+      - redis
+      - postgres
+    profiles:
+      - app
+      - all
+
+  # sidekiq:
+  #   image: local_discourse/guri
+  #   container_name: sidekiq_dev
+  #   depends_on:
+  #     - discourse
+  #   volumes:
+  #     - 'sidekiq_data:/bitnami/discourse'
+  #   command: /opt/bitnami/scripts/discourse-sidekiq/run.sh
+  #   environment:
+  #     # ALLOW_EMPTY_PASSWORD is recommended only for development.
+  #     - ALLOW_EMPTY_PASSWORD=yes
+  #     - DISCOURSE_HOST=www.example.com
+  #     - DISCOURSE_DATABASE_HOST=postgresql
+  #     - DISCOURSE_DATABASE_PORT_NUMBER=5432
+  #     - DISCOURSE_DATABASE_USER=bn_discourse
+  #     - DISCOURSE_DATABASE_NAME=bitnami_discourse
+  #     - DISCOURSE_REDIS_HOST=redis
+  #     - DISCOURSE_REDIS_PORT_NUMBER=6379
+
+  redis:
+    image: bitnami/redis:7.2
+    container_name: redis_dev
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./config/redis/redis-official.conf:/usr/local/etc/redis/redis.conf
+      - ./tmp:/opt/redis/tmp/
+    environment:
+    - REDIS_PASSWORD=passw0rd
+    profiles:
+      - backends
+      - all
+      - ''
+
+  postgres:
+    image: bitnami/postgresql:15
+    container_name: postgres_dev
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRESQL_USERNAME=user01
+      - POSTGRESQL_PASSWORD=passw0rd
+      - POSTGRESQL_DATABASE=db01
+    profiles:
+      - backends
+      - all
+      - ''
+    # networks:
+    #   - discourse_network

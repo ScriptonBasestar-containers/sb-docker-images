@@ -1,12 +1,14 @@
 # NAME:     discourse/base
 # VERSION:  release
 
+ARG RUBY_VERSION=3.3.4
 ARG DEBIAN_RELEASE=bookworm
-FROM debian:${DEBIAN_RELEASE}-slim
+# FROM debian:${DEBIAN_RELEASE}-slim
+FROM ruby:${RUBY_VERSION}-${DEBIAN_RELEASE}
 
 ARG DEBIAN_RELEASE
-ARG RUBY_VERSION=3.3.4
-ENV PG_MAJOR=13 \
+ARG RUBY_VERSION
+ENV PG_MAJOR=15 \
     RUBY_ALLOCATOR=/usr/lib/libjemalloc.so \
     RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
@@ -19,11 +21,7 @@ ENV PG_MAJOR=13 \
 
 # Ensures that the gid and uid of the following users are consistent to avoid permission issues on directories in the
 # mounted volumes.
-RUN groupadd --gid 104 postgres &&\
-    useradd --uid 101 --gid 104 --home /var/lib/postgresql --shell /bin/bash -c "PostgreSQL administrator,,," postgres &&\
-    groupadd --gid 106 redis &&\
-    useradd --uid 103 --gid 106 --home /var/lib/redis --shell /usr/sbin/nologin redis &&\
-    groupadd --gid 1000 discourse &&\
+RUN groupadd --gid 1000 discourse &&\
     useradd --uid 1000 --gid 1000 -m --shell /bin/bash discourse
 
 RUN echo 2.0.`date +%Y%m%d` > /VERSION
@@ -39,11 +37,7 @@ ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
-RUN install -d /usr/share/postgresql-common/pgdg &&\
-    curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc &&\
-    echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${DEBIAN_RELEASE}-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-
-RUN curl --silent --location https://deb.nodesource.com/setup_18.x | sudo bash -
+RUN curl --silent --location https://deb.nodesource.com/setup_20.x | sudo bash -
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
 RUN apt-get -y update
@@ -55,12 +49,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install autoconf build-essential c
     libssl-dev libyaml-dev libtool \
     libpcre3 libpcre3-dev zlib1g zlib1g-dev \
     libxml2-dev gawk parallel \
-    postgresql-${PG_MAJOR} postgresql-client \
-    postgresql-contrib-${PG_MAJOR} libpq-dev postgresql-${PG_MAJOR}-pgvector \
+    libpq-dev \
     libreadline-dev anacron wget \
     psmisc whois brotli libunwind-dev \
     libtcmalloc-minimal4 cmake \
     pngcrush pngquant ripgrep poppler-utils
+
 RUN sed -i -e 's/start -q anacron/anacron -s/' /etc/cron.d/anacron
 RUN sed -i.bak 's/$ModLoad imklog/#$ModLoad imklog/' /etc/rsyslog.conf
 RUN sed -i.bak 's/module(load="imklog")/#module(load="imklog")/' /etc/rsyslog.conf
@@ -81,21 +75,10 @@ RUN /tmp/install-imagemagick
 ADD install-jemalloc /tmp/install-jemalloc
 RUN /tmp/install-jemalloc
 
-# From https://nginx.org/en/pgp_keys.html
-ADD nginx_public_keys.key /tmp/nginx_public_keys.key
-ADD install-nginx /tmp/install-nginx
-
-RUN gpg --import /tmp/nginx_public_keys.key &&\
-    rm /tmp/nginx_public_keys.key &&\
-    /tmp/install-nginx
-
-ADD install-redis /tmp/install-redis
-RUN /tmp/install-redis
-
 ADD install-rust /tmp/install-rust
-ADD install-ruby /tmp/install-ruby
+# ADD install-ruby /tmp/install-ruby
 ADD install-oxipng /tmp/install-oxipng
-RUN /tmp/install-rust && /tmp/install-ruby $RUBY_VERSION && /tmp/install-oxipng && rustup self uninstall -y
+# RUN /tmp/install-rust && /tmp/install-ruby $RUBY_VERSION && /tmp/install-oxipng && rustup self uninstall -y
 
 RUN echo 'gem: --no-document' >> /usr/local/etc/gemrc &&\
     gem update --system

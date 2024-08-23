@@ -1,0 +1,4 @@
+{
+    "editor.renderWhitespace": "all",
+    "terminal.integrated.scrollback": 5000
+}
