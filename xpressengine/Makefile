@@ -1,6 +1,9 @@
 REPO=scriptonbasestar/sb-docker-xpressengine3
 VERSION=3.0.11
 
+prepare:
+	git clone https://github.com/xpressengine/xpressengine.git --depth 1
+
 alpine:
 	docker build . -f alpine-3.11/Dockerfile -t ${REPO}:${VERSION}
 
