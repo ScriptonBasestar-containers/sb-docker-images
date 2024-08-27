@@ -1,6 +1,6 @@
 FROM php:8-fpm-alpine
 
-#ARG WORKPATH=/var/www
+# ARG WORKPATH=/var/www
 
 RUN apk add libjpeg-turbo-dev libpng-dev freetype-dev libwebp-dev
 
@@ -10,4 +10,4 @@ RUN docker-php-ext-configure gd \
 
 RUN docker-php-ext-install -j$(nproc) gd pdo_mysql
 
-#COPY app/. $WORKPATH
+# COPY app/. $WORKPATH
