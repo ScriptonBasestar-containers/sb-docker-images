@@ -1,6 +1,18 @@
 Docker Xpressengine 3
 =====================
 
+업데이트 부진함.. 네이버에서 버린듯 폐기.
+대체재:
+- wordpress
+- drupal
+- joomla
+
+다른것들도 있는데 커뮤니티 규모가 작거나 거의 레거시.. 업데이트 중지
+상위3개를 사용
+- octobercms https://github.com/octobercms/october
+- grav https://github.com/getgrav/grav
+
+
 도커용
 
 # REF
