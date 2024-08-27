@@ -5,7 +5,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get update -y
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential git
 
 WORKDIR /app
-COPY g6/. /app/
+COPY app/. /app/
 
 RUN python -m pip install --no-cache-dir --upgrade pip
 RUN python -m pip install --no-cache-dir -r requirements.txt
