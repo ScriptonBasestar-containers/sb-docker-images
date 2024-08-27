@@ -1,19 +1,24 @@
 services:
 
-  wordpress:
-    # image: wordpress:php8.3-apache
-    image: wordpress:6-php8.3-apache
-    # image: wordpress:6-php8-fpm
+  joomla:
+    # image: joomla:php8.3-apache
+    image: joomla:5-php8.3-apache
+    # image: joomla:6-php8-fpm
     restart: always
     ports:
       - 8080:80
     environment:
-      WORDPRESS_DB_HOST: mariadb
-      WORDPRESS_DB_USER: user01
-      WORDPRESS_DB_PASSWORD: passw0rd
-      WORDPRESS_DB_NAME: db01
+      JOOMLA_DB_HOST: mariadb
+      JOOMLA_DB_USER: user01
+      JOOMLA_DB_PASSWORD: passw0rd
+      JOOMLA_DB_NAME: db01
+      JOOMLA_SITE_NAME: Joomla
+      JOOMLA_ADMIN_USER: Joomla Hero
+      JOOMLA_ADMIN_USERNAME: joomla
+      JOOMLA_ADMIN_PASSWORD: joomla@secured
+      JOOMLA_ADMIN_EMAIL: joomla@example.com
     volumes:
-      - wordpress:/var/www/html
+      - joomla:/var/www/html
     depends_on:
       - mariadb
       - redis
@@ -51,5 +56,5 @@ networks:
     driver: bridge
 
 volumes:
-  wordpress:
+  joomla:
   db:

@@ -1,19 +1,27 @@
 services:
 
-  wordpress:
-    # image: wordpress:php8.3-apache
-    image: wordpress:6-php8.3-apache
-    # image: wordpress:6-php8-fpm
+  # https://hub.docker.com/_/drupal
+  drupal:
+    # image: drupal:php8.3-apache
+    image: drupal:10-php8.3-apache
+    # image: drupal:10-php8-fpm
+    container_name: drupal
     restart: always
     ports:
       - 8080:80
     environment:
-      WORDPRESS_DB_HOST: mariadb
-      WORDPRESS_DB_USER: user01
-      WORDPRESS_DB_PASSWORD: passw0rd
-      WORDPRESS_DB_NAME: db01
+      DB_NAME: "db01"
+      DB_USER: "user01"
+      DB_PASS: "passw0rd"
+      DB_HOST: "mariadb"
+      S3_BUCKET: ""
+      S3_ROOT_FOLDER: "local"
+      # S3FS_ACCESS_KEY: ""
+      # S3FS_SECRET_KEY: ""
+      SITE_NAME: "Drupal Core - LOCAL"
+      # API_KEY: ""
     volumes:
-      - wordpress:/var/www/html
+      - drupal:/var/www/html
     depends_on:
       - mariadb
       - redis
@@ -23,6 +31,7 @@ services:
 
   mariadb:
     image: mariadb:10.4
+    container_name: mariadb
     environment:
       - MYSQL_ROOT_PASSWORD=rootpass
       - MYSQL_DATABASE=db01
@@ -34,7 +43,7 @@ services:
       - db-network
   
   redis:
-    image: bitnami/redis
+    image: bitnami/redis:5.0
     container_name: redis
     restart: always
     ports:
@@ -51,5 +60,5 @@ networks:
     driver: bridge
 
 volumes:
-  wordpress:
+  drupal:
   db:

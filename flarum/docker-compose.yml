@@ -58,10 +58,10 @@ services:
       - 1025
 
 networks:
-    code-network:
-        driver: bridge
-    db-network:
+  code-network:
       driver: bridge
+  db-network:
+    driver: bridge
 
 volumes:
   db:
