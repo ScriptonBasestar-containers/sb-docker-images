@@ -25,6 +25,14 @@ ENV SITE_URL http://localhost \
 
 RUN apt-get update && apt-get upgrade -y
 
+# RUN apt-get update \
+# RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
+#     php8.0-pgsql php8.0-mysql php8.0-gd \
+#     php8.0-curl php8.0-intl php8.0-mcrypt php8.0-ldap \
+#     php8.0-gmp php8.0-apcu php8.0-imagick \
+#     mysql-client postgresql-client nginx gettext-base \
+#  && rm -rf /var/lib/apt/lists/*
+
 RUN apt-get install -y \
     sudo \
     wget \
