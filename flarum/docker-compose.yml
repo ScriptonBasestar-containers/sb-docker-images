@@ -17,6 +17,7 @@ services:
       context: .
       dockerfile: flarum-fpm.dockerfile
     image: flarum-fpm:1
+    container_name: flarum
     volumes:
       - ./app:/var/www
     networks:
