@@ -17,6 +17,27 @@ services:
     depends_on:
       - mariadb
       - redis
+      - wp-cli
+    networks:
+      - code-network
+      - db-network
+
+  wp-install:
+    image: wordpress:cli
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: user01
+      WORDPRESS_DB_PASSWORD: passw0rd
+      WORDPRESS_DB_NAME: db01
+    # command: ["core", "install", "--url=http://localhost:8080", "--title=My WordPress Site", "--admin_user=admin", "--admin_password=password", "--]
+    command: ["/run-wp-cli.sh"]
+    volumes:
+      # - entrypoint.sh:/entrypoint.sh
+      - run-wp-cli.sh:/run-wp-cli.sh
+      - wordpress:/var/www/html
+    depends_on:
+      - mariadb
+      - redis
     networks:
       - code-network
       - db-network
