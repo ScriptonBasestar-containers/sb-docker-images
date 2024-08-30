@@ -8,15 +8,15 @@ services:
     ports:
       - 8080:80
     environment:
-      MYSQL_USER: flarum
-      MYSQL_PASSWORD: flarum
-      MYSQL_DATABASE: flarum
-      MYSQL_HOST: flarumitedb
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+      MYSQL_DATABASE: db01
+      MYSQL_HOST: mariadb
       MYSQL_PORT: 3306
       DB_DRIVER: mysql
       # Update this to match the URL you use to connect to the forum
       # This might be an IP (http://192.168.0.25) or a hostname (http://localhost)
-      BASE_URL: "http://localhost"
+      # BASE_URL: "http://localhost:8080"
       DEBUG: "true"
       LOCAL: "true"
     # volumes:

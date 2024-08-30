@@ -11,3 +11,9 @@ services:
   postgres:
     
 ```
+
+## REF
+- https://github.com/nextcloud/docker/issues/2226
+```
+Though I'm thinking maybe we should nudge people towards simply using the Auto configuration via hooks support (#2231) since all config.php values can be set via occ config:system:set whereas NC_* doesn't support any parameters with . in them nor any array values (which are both big limitations). It's also not documented and thus not well supported upstream.
+```

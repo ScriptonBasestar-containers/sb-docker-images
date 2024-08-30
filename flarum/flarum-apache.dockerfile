@@ -9,10 +9,12 @@ FROM php:8-apache
 ARG WORKPATH=/var/www
 
 RUN apt-get update && apt-get install -y \
-    libjpeg-dev \
+    # libjpeg-dev \
+    libjpeg62-turbo-dev \
     libpng-dev \
     libfreetype6-dev \
     libwebp-dev \
+    libzip-dev \
     nodejs \
     npm
 # RUN npm install -g @flarum/cli
@@ -21,7 +23,16 @@ RUN docker-php-ext-configure gd \
     --with-freetype=/usr/include/ \
     --with-jpeg=/usr/include/
 
-RUN docker-php-ext-install -j$(nproc) gd pdo_mysql
+RUN docker-php-ext-install -j$(nproc) gd pdo pdo_mysql zip
+
+RUN a2enmod rewrite
+
+
+WORKDIR /var/www
+
+COPY --from=base-image /app /var/www
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+
 
 COPY ./config/apache/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf
 COPY ./config/apache/status.conf /etc/apache2/mods-enabled/status.conf
@@ -31,25 +42,18 @@ COPY ./config/apache/000-default.conf /etc/apache2/sites-available/000-default.c
 # COPY ./config/php/sessions.ini /usr/local/etc/php/conf.d/sessions.ini
 # COPY ./config/cronjobs/crontab /etc/cron.d/crontab
 
+# RUN a2ensite 000-default
 
-COPY --from=base-image /app /var/www
-COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
-
-WORKDIR /var/www
-
+RUN rm -rf /var/www/html
 RUN composer install \
   && chown -R www-data:www-data /var/www \
   && chmod -R g+w /var/www \
+  && chown -R www-data:www-data /var/www \
+  && chown -R www-data:www-data /var/www/storage \
+  && chown -R www-data:www-data /var/www/public/assets \
   && chmod 755 /usr/local/bin/startup
-
-RUN a2enmod rewrite
-
-RUN rm -rf /var/www/html
-
-RUN chmod 775 -R /var/www
-RUN chown -R www-data:www-data /var/www
-
-RUN usermod -u 1000 www-data
+# RUN chmod 775 -R /var/www
+# RUN usermod -u 1000 www-data
 
 # RUN cd /var/www
 # RUN php flarum install
