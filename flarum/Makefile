@@ -1,8 +1,10 @@
 REPO=scriptonbasestar/sb-flarum
 VERSION=3.0.11
+FILES_APACHE=-f compose.yml -f compose.apache.yml
+FILES_NGINX=-f compose.yml -f compose.nginx.yml
+DOCKER_BASE_IMAGE=local_dev/flarum-base
 
 setup:
-<<<<<<< HEAD
 	# git clone https://github.com/flarum/flarum --depth 1 app
 	# docker run --rm -it -v ./app:/app composer composer install
 
@@ -10,24 +12,20 @@ teardown:
 	rm -rf app
 	docker compose down -v
 
-build:
-	docker compose build --no-cache
-	# docker compose run php flrum migrate
-	# docker compose run php flarum cache:clear
-	# flarum vendor:install
-	# flarum admin:generate
-=======
-	git clone https://github.com/flarum/flarum --depth 1 flarum-app
-	git clone https://github.com/flarumite/flarum-docker --depth 1 flarum-docker
-	# docker run --rm -it -v ./flarum-app:/var/www composer composer install
+build-base:
+	docker build -f flarum-composer.dockerfile -t ${DOCKER_BASE_IMAGE} --no-cache .
 
-build:
-	# docker compose -f dc-nginx.yml build --no-cache
-	docker compose -f dc-apache.yml build --no-cache
->>>>>>> dd1a21c (nextcloud)
+build-apache:
+	docker compose ${FILES_APACHE} build --no-cache
 
-run:
-	docker compose -f dc-apache.yml
+build-nginx:
+	docker compose ${FILES_NGINX} build --no-cache
+
+run-apache:
+	docker compose ${FILES_APACHE} up
+
+run-nginx:
+	docker compose ${FILES_NGINX} up
 
 clean:
 	docker rm -f $(docker ps -qa)

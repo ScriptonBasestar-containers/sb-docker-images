@@ -1,18 +1,18 @@
 services:
   mariadb:
-    image: mariadb:10.4
+    image: mariadb:11
     environment:
       - MYSQL_ROOT_PASSWORD=rootpass
       - MYSQL_DATABASE=db01
       - MYSQL_USER=user01
       - MYSQL_PASSWORD=passw0rd
     volumes:
-      - db:/var/lib/mysql
+      - mariadb:/var/lib/mysql
     networks:
       - db-network
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
     depends_on:
       - mariadb
     links:
@@ -38,4 +38,4 @@ networks:
     driver: bridge
 
 volumes:
-  db:
+  mariadb:

@@ -4,8 +4,23 @@ services:
       context: .
       dockerfile: flarum-apache.dockerfile
     image: flarum-apache
-    volumes:
-      - ./app:/var/www
+    container_name: flarum
+    ports:
+      - 8080:80
+    environment:
+      MYSQL_USER: flarum
+      MYSQL_PASSWORD: flarum
+      MYSQL_DATABASE: flarum
+      MYSQL_HOST: flarumitedb
+      MYSQL_PORT: 3306
+      DB_DRIVER: mysql
+      # Update this to match the URL you use to connect to the forum
+      # This might be an IP (http://192.168.0.25) or a hostname (http://localhost)
+      BASE_URL: "http://localhost"
+      DEBUG: "true"
+      LOCAL: "true"
+    # volumes:
+    #   - ./flarum-app:/var/www
     networks:
       - code-network
       - db-network
