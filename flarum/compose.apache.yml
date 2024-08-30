@@ -1,0 +1,13 @@
+services:
+  flarum:
+    build:
+      context: .
+      dockerfile: flarum-apache.dockerfile
+    image: flarum-apache
+    volumes:
+      - ./app:/var/www
+    networks:
+      - code-network
+      - db-network
+    depends_on:
+      - mariadb

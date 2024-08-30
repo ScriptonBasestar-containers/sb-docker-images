@@ -15,3 +15,5 @@ Thumbs.db
 
 # dev
 app/
+flarum-app/
+flarum-docker/

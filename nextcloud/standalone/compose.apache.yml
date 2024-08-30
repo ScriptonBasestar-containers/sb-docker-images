@@ -1,14 +1,16 @@
 services:
-  postgres:
-    image: bitnami/postgresql:15
-    restart: unless-stopped
+  mariadb:
+    image: mariadb:11
+    container_name: mariadb
+    ports:
+      - 3306:3306
     environment:
-      - POSTGRES_DB=db01
-      - POSTGRES_USER=user01
-      - POSTGRES_PASSWORD=passw0rd
-      - ENABLE_IPV6=true
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=db01
+      - MYSQL_USER=user01
+      - MYSQL_PASSWORD=passw0rd
     volumes:
-      - postgres:/var/lib/postgresql
+      - mariadb:/var/lib/mysql
     networks:
       - db-network
 
@@ -19,46 +21,58 @@ services:
     ports:
       - 6379:6379
     environment:
-      - REDIS_PASSWORD=password
+      - REDIS_PASSWORD=passwrd
     networks:
       - db-network
 
   # https://hub.docker.com/_/nextcloud
   nextcloud:
-    image: nextcloud:29
+    # image: nextcloud:29
+    image: test1
     ports:
       - 8080:80
-    depends_on:
-      - postgres
-      - redis
     environment:
+      # DEBUG: true
       NEXTCLOUD_DEBUG_MODE: true
 
       NEXTCLOUD_ADMIN_USER: admin
       NEXTCLOUD_ADMIN_PASSWORD: passw0rd
 
-      # NEXTCLOUD_TRUSTED_DOMAINS: test2.polypia.net
-
       REDIS_HOST: redis
       REDIS_HOST_PORT: 6379
       REDIS_HOST_PASSWORD: passw0rd
 
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: db01
-      POSTGRES_USER: user01
-      POSTGRES_PASSWORD: passw0rd
+      MYSQL_HOST: mariadb
+      MYSQL_DATABASE: db01
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+
+      # NEXTCLOUD_TRUSTED_DOMAINS: test2.polypia.net
+      # NEXTCLOUD_URL=http://test2.polypia.net: 10080
+
+      # NEXTCLOUD_UPLOAD_MAX_FILESIZE: 4G
+      # NEXTCLOUD_MAX_FILE_UPLOADS: 2
+
+      # NEXTCLOUD_BACKUPS_EXPIRY: 0
     volumes:
       - nxc_root:/var/www/html
       - nxc_apps:/var/www/html/custom_apps
-      - nxc_config:/var/www/html/config
-      - ./config/log.config.php:/var/www/html/config/log.config.php
+      # - nxc_config:/var/www/html/config
       - nxc_data:/var/www/html/data
       - nxc_themes:/var/www/html/themes
+      # - ./config/log.config.php:/customfiles/config/log.config.php
       # - ./app-hooks/pre-installation:/docker-entrypoint-hooks.d/pre-installation
       # - ./app-hooks/post-installation:/docker-entrypoint-hooks.d/post-installation
       # - ./app-hooks/pre-upgrade:/docker-entrypoint-hooks.d/pre-upgrade
       # - ./app-hooks/post-upgrade:/docker-entrypoint-hooks.d/post-upgrade
       # - ./app-hooks/before-starting:/docker-entrypoint-hooks.d/before-starting
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - db-network
+      - code-network
+
 
 # pre-installation Executed before the Nextcloud is installed/initiated
 # post-installation Executed after the Nextcloud is installed/initiated
@@ -66,10 +80,16 @@ services:
 # post-upgrade Executed after the Nextcloud is upgraded
 # before-starting Executed before the Nextcloud starts
 
+networks:
+  code-network:
+      driver: bridge
+  db-network:
+    driver: bridge
+
 volumes:
-  postgres:
+  mariadb:
   nxc_root:
   nxc_apps:
-  nxc_config:
+  # nxc_config:
   nxc_data:
   nxc_themes:
