@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: bitnami/postgresql:15
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=db01
+      - POSTGRES_USER=user01
+      - POSTGRES_PASSWORD=passw0rd
+      - ENABLE_IPV6=true
+    volumes:
+      - postgres:/var/lib/postgresql
+    networks:
+      - db-network
+
+  redis:
+    image: bitnami/redis
+    container_name: redis
+    restart: always
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=password
+    networks:
+      - db-network
+
+  # https://hub.docker.com/_/nextcloud
+  nextcloud:
+    image: nextcloud:29
+    ports:
+      - 8080:80
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      NEXTCLOUD_DEBUG_MODE: true
+
+      NEXTCLOUD_ADMIN_USER: admin
+      NEXTCLOUD_ADMIN_PASSWORD: passw0rd
+
+      # NEXTCLOUD_TRUSTED_DOMAINS: test2.polypia.net
+
+      REDIS_HOST: redis
+      REDIS_HOST_PORT: 6379
+      REDIS_HOST_PASSWORD: passw0rd
+
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: db01
+      POSTGRES_USER: user01
+      POSTGRES_PASSWORD: passw0rd
+    volumes:
+      - nxc_root:/var/www/html
+      - nxc_apps:/var/www/html/custom_apps
+      - nxc_config:/var/www/html/config
+      - ./config/log.config.php:/var/www/html/config/log.config.php
+      - nxc_data:/var/www/html/data
+      - nxc_themes:/var/www/html/themes
+      # - ./app-hooks/pre-installation:/docker-entrypoint-hooks.d/pre-installation
+      # - ./app-hooks/post-installation:/docker-entrypoint-hooks.d/post-installation
+      # - ./app-hooks/pre-upgrade:/docker-entrypoint-hooks.d/pre-upgrade
+      # - ./app-hooks/post-upgrade:/docker-entrypoint-hooks.d/post-upgrade
+      # - ./app-hooks/before-starting:/docker-entrypoint-hooks.d/before-starting
+
+# pre-installation Executed before the Nextcloud is installed/initiated
+# post-installation Executed after the Nextcloud is installed/initiated
+# pre-upgrade Executed before the Nextcloud is upgraded
+# post-upgrade Executed after the Nextcloud is upgraded
+# before-starting Executed before the Nextcloud starts
+
+volumes:
+  postgres:
+  nxc_root:
+  nxc_apps:
+  nxc_config:
+  nxc_data:
+  nxc_themes:
