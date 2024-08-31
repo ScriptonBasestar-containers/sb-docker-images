@@ -1,0 +1,25 @@
+debug: false
+baseUrl: http://localhost:8080
+databaseConfiguration:
+  driver: mysql
+  host: mariadb
+  port: 3306
+  database: db01
+  username: user01
+  password: passw0rd
+  prefix: fl_
+adminUser:
+  username: a01
+  password: passw0rd
+  email: a01@a.com
+settings:
+  extensions_enabled:
+    - flarum-tags
+    - flarum-sticky
+    - flarum-pwa
+    - flarum-approval
+    - flarum-suspend
+    - flarum-lock
+    - flarum-mentions
+    - flarum-statistics
+  key: value

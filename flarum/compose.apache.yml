@@ -19,8 +19,20 @@ services:
       # BASE_URL: "http://localhost:8080"
       DEBUG: "true"
       LOCAL: "true"
-    # volumes:
-    #   - ./flarum-app:/var/www
+
+      FLARUM_TITLE: "Flarum Ttitle"
+      FLARUM_URL: "http://localhost:8080"
+      FLARUM_ADMIN_USER: "a01"
+      FLARUM_ADMIN_PASSWORD: "passw0rd"
+      FLARUM_ADMIN_EMAIL: "a01@a.com"
+      FLARUM_DB_HOST: "mariadb"
+      FLARUM_DB_NAME: "db01"
+      FLARUM_DB_USER: "user01"
+      FLARUM_DB_PASSWORD: "passw0rd"
+    volumes:
+      - ./flarum-config.json:/flarum-config.json
+      - ./docker-entrypoint.sh:/entrypoint.sh
+      # - ./flarum-app:/var/www
     networks:
       - code-network
       - db-network

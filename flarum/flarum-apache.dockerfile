@@ -62,7 +62,8 @@ RUN composer install \
 
 # RUN service cron start
 
-# COPY docker-entrypoint.sh /entrypoint.sh
+COPY docker-entrypoint.sh /entrypoint.sh
 
-# ENTRYPOINT ['/entrypoint.sh']
-# COMMAND ['apache2-foreground']
+# ENTRYPOINT ["/entrypoint.sh"]
+# CMD ["apache2-foreground"]
+ 

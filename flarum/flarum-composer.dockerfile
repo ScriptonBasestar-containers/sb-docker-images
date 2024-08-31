@@ -6,7 +6,9 @@ RUN composer require flarum/extension-manager:*
 # fof
 RUN composer require \
     fof/upload \
+    fof/default-group \
     fof/doorman \
+    fof/links \
     fof/user-directory \
     fof/discussion-thumbnail \
     fof/impersonate \
@@ -32,7 +34,15 @@ RUN composer require \
     michaelbelgium/flarum-discussion-views \
     davwheat/custom-sidenav-links \
     v17development/flarum-blog \
-    kk14569/flarum-hubui-x \
+    flamarkt/taxonomies \
     dalez/fluent-flarum
+
+RUN composer require \
+    yannisme/confixtheme \
+    kk14569/flarum-hubui-x \
+    madeyedeer/flarum-pallet-theme \
+    betterflarum/nextadmintheme
+    # zerosonesfun/flarum-theme-nes
+
 
 RUN composer install
