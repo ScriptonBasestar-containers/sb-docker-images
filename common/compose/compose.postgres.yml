@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${MISAGO_POSTGRES_DB:-db01}
+      - POSTGRES_USER=${MISAGO_POSTGRES_USER:-user01}
+      - POSTGRES_PASSWORD=${MISAGO_POSTGRES_PASSWORD:-passw0rd}
+      - ENABLE_IPV6=true
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - data-network
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  postgres:

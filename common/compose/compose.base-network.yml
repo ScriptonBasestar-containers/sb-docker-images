@@ -1,0 +1,5 @@
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge

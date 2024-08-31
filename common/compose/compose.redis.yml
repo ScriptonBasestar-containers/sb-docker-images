@@ -1,0 +1,19 @@
+services:
+  redis:
+    image: bitnami/redis:7.4
+    restart: unless-stopped
+    environment:
+      - REDIS_PASSWORD=passw0rd
+    volumes:
+      - redis:/data
+    networks:
+      - data-network
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  redis:

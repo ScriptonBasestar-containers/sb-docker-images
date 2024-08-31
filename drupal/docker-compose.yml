@@ -1,8 +1,8 @@
 services:
 
   # https://hub.docker.com/_/drupal
+  # admin // *V3FYY8fdK2rBYT
   drupal:
-    # image: drupal:php8.3-apache
     image: drupal:10-php8.3-apache
     # image: drupal:10-php8-fpm
     container_name: drupal
@@ -26,39 +26,15 @@ services:
       - mariadb
       - redis
     networks:
-      - code-network
-      - db-network
-
-  mariadb:
-    image: mariadb:10.4
-    container_name: mariadb
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootpass
-      - MYSQL_DATABASE=db01
-      - MYSQL_USER=user01
-      - MYSQL_PASSWORD=passw0rd
-    volumes:
-      - db:/var/lib/mysql
-    networks:
-      - db-network
-  
-  redis:
-    image: bitnami/redis:5.0
-    container_name: redis
-    restart: always
-    ports:
-      - 6379:6379
-    environment:
-      - REDIS_PASSWORD=password
-    networks:
-      - db-network
+      - app-network
+      - data-network
 
 networks:
-  code-network:
-      driver: bridge
-  db-network:
+  app-network:
+    driver: bridge
+  data-network:
     driver: bridge
 
 volumes:
   drupal:
-  db:
+  # db:

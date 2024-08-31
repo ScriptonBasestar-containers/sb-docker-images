@@ -1,0 +1,35 @@
+services:
+  mariadb:
+    image: mariadb:11
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=db01
+      - MYSQL_USER=user01
+      - MYSQL_PASSWORD=passw0rd
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - data-network
+
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin:latest
+  #   depends_on:
+  #     - mariadb
+  #   links:
+  #     - mariadb:db
+  #   ports:
+  #     - 8081:80
+  #   environment:
+  #     PMA_USER: root
+  #     PMA_PASSWORD: dockerPWDroot
+  #   networks:
+  #     - data-network
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  mariadb:
