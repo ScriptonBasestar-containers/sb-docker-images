@@ -4,8 +4,8 @@ services:
     restart: unless-stopped
     environment:
       - REDIS_PASSWORD=passw0rd
-    volumes:
-      - redis:/data
+    # volumes:
+    #   - redis:/data
     networks:
       - data-network
 
@@ -15,5 +15,5 @@ networks:
   data-network:
     driver: bridge
 
-volumes:
-  redis:
+# volumes:
+#   redis:

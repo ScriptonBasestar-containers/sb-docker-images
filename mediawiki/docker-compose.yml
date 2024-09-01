@@ -6,7 +6,7 @@ services:
       - 8080:80
     links:
       - database
-    volumes:Uji&mN@cdYi^s5a
+    volumes:
       - images:/var/www/html/images
       # After initial setup, download LocalSettings.php to the same directory as
       # this yaml and uncomment the following line and use compose to restart
