@@ -1,6 +1,7 @@
 services:
   mariadb:
     image: mariadb:11
+    container_name: mariadb_dev
     environment:
       - MYSQL_ROOT_PASSWORD=rootpass
       - MYSQL_DATABASE=db01

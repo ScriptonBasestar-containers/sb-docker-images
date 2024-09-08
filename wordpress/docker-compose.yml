@@ -2,6 +2,7 @@ services:
   wordpress:
     # image: wordpress:php8.3-apache
     image: wordpress:6-php8.3-apache
+    container_name: wordpress_dev
     # image: wordpress:6-php8-fpm
     restart: always
     ports:
