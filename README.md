@@ -3,31 +3,52 @@
 도커 이미지 및 도커 컴포즈 테스트용
 개발/테스트 이미지 생성용
 
-여기저기서 모아놓은것들 고쳐놓음
-
 ## List
-- discourse
-- wordpress
+
 - nextcloud
-- misago
-- nodebb
-- xe3
-- gnuboard
-- gollum
 - squid
 - jenkins-agent
-- drupal
-- joomla
+- auth,security
+  - https://github.com/freeipa/freeipa
+  - keycloak
+  - authelia
+  - ory kratos
+  - cas
+- wiki
+  - gollum
+  - mediawiki
+  - wikijs
+- forum
+  - discourse
+  - misago
+  - flaskbb
+  - nodebb
+- cms
+  - https://github.com/pyrocms/pyrocms
+  - joomla
+  - drupal
+  - wordpress
+  - gnuboard
+  - djangocms
+- static, blog
+  - ghost
+  - jekyll
+  - hugo
+  - https://github.com/hexojs/hexo
+  - gatsby
+- sns, timeline
+  - mastodon
+
+## Deprecated, Archived 이거나 마찬가지
+- xe3
+- 
 
 ## REF
 https://github.com/docker/build-push-action/issues/561
+https://products.containerize.com
+https://axbom.com/fediverse/
 
 ## Legacy
-### 옛날 stream
-- https://github.com/wurstmeister/storm-docker
-- https://github.com/wurstmeister/kafka-docker
-- https://github.com/wurstmeister/zookeeper-docker
-
 ### docker에서 letsencrypt 적용할 때 쓰던것들
 - https://github.com/nginx-proxy/docker-gen
 - https://github.com/nginx-proxy/nginx-proxy
