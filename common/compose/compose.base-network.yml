@@ -1,5 +1,7 @@
 networks:
   app-network:
     driver: bridge
+  intra-network:
+    driver: bridge
   data-network:
     driver: bridge
