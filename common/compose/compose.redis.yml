@@ -4,7 +4,7 @@ services:
     container_name: redis_dev
     restart: unless-stopped
     environment:
-      - REDIS_PASSWORD=passw0rd
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-passw0rd}
     # volumes:
     #   - redis:/data
     networks:

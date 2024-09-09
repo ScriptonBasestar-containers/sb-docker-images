@@ -4,9 +4,10 @@ services:
     container_name: postgres_dev
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=${MISAGO_POSTGRES_DB:-db01}
-      - POSTGRES_USER=${MISAGO_POSTGRES_USER:-user01}
-      - POSTGRES_PASSWORD=${MISAGO_POSTGRES_PASSWORD:-passw0rd}
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_DB=${POSTGRES_DB:-db01}
+      - POSTGRES_USER=${POSTGRES_USER:-user01}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-passw0rd}
       - ENABLE_IPV6=true
     volumes:
       - postgres:/var/lib/postgresql/data

@@ -48,8 +48,8 @@ services:
       MYSQL_USER: user01
       MYSQL_PASSWORD: passw0rd
 
-      # NEXTCLOUD_TRUSTED_DOMAINS: test2.polypia.net
-      # NEXTCLOUD_URL=http://test2.polypia.net: 10080
+      # NEXTCLOUD_TRUSTED_DOMAINS: test2.scripton.net
+      # NEXTCLOUD_URL=http://test2.scripton.net: 10080
 
       # NEXTCLOUD_UPLOAD_MAX_FILESIZE: 4G
       # NEXTCLOUD_MAX_FILE_UPLOADS: 2
