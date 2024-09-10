@@ -23,7 +23,7 @@ services:
 
 #      ALLOW_EMPTY_PASSWORD: yes
 #      DISCOURSE_EXTERNAL_HTTP_PORT_NUMBER: 3000
-      DISCOURSE_HOSTNAME: 'test1.scripton.net'
+      DISCOURSE_HOSTNAME: 'test1.polypia.net'
       DISCOURSE_DEVELOPER_EMAILS:
       DISCOURSE_DB_PORT: 5432
       DISCOURSE_DB_HOST: postgres
@@ -53,9 +53,6 @@ services:
     links:
       - redis
       - postgres
-    profiles:
-      - app
-      - all
 
   # sidekiq:
   #   image: local_discourse/guri

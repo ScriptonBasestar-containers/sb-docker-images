@@ -19,3 +19,27 @@ build-base:
 
 build-app:
 	docker build . -f image/discourse_app/Dockerfile -t discourse/app
+
+server_up:
+	docker compose \
+	-f compose.yml \
+	-f ../common/compose/compose.base-network.yml \
+	-f ../common/compose/compose.redis.yml \
+	-f ../common/compose/compose.postgres.yml \
+	up -d
+
+server_down:
+	docker compose \
+	-f compose.yml \
+	-f ../common/compose/compose.base-network.yml \
+	-f ../common/compose/compose.redis.yml \
+	-f ../common/compose/compose.postgres.yml \
+	down -v
+
+server_enter_cli:
+	docker compose \
+	-f compose.yml \
+	-f ../common/compose/compose.base-network.yml \
+	-f ../common/compose/compose.redis.yml \
+	-f ../common/compose/compose.postgres.yml \
+	run wp-install bash
