@@ -6,4 +6,5 @@
 
 # tmp
 tmp-*/
+tmp/
 logs/

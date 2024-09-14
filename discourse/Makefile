@@ -1,5 +1,4 @@
-
-
+COMPOSE_DATA=-f ../devbox/compose.bn-pg15.yml -f ../devbox/compose.bn-redis.yml -f ../devbox/compose.mariadb.yml
 
 prepare:
 	@echo "Preparing Discourse"
