@@ -1,0 +1,25 @@
+services:
+ authelia:
+   image: authelia/authelia
+   container_name: authelia_dev
+   restart: unless-stopped
+   user: "${UID}:${GID}"
+   volumes:
+     - ./tmp/authelia:/config
+     # - ./config/authelia/:/config/
+     - ./config/authelia/configuration.yml:/config/configuration.yml:ro
+     # - ./config/authelia/notification.txt:/config/notification.txt
+     - ./config/authelia/users_database.yml:/config/users_database.yml:ro
+   ports:
+     - "9091:9091"
+   expose:
+     - "9091"
+   environment:
+     TZ: Asia/Seoul
+#      AUTHLIA_JWT_SECRET: 'secret'
+#      AUTHLIA_SESSION_SECRET: 'secret'
+#      AUTHLIA_STORAGE_SQLITE_PATH: '/config/db.sqlite'
+#      AUTHLIA_NOTIFIER_SMTP_USERNAME: ''
+   profiles:
+     - ''
+     - auth

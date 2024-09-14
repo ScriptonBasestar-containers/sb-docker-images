@@ -1,0 +1,23 @@
+services:
+  kratos-migrate:
+    environment:
+      - DSN=postgres://kratos_user:passw0rd@postgres:5432/kratos_db?sslmode=disable&max_conns=20&max_idle_conns=4
+    networks:
+      - data-network
+
+  kratos:
+    environment:
+      - DSN=postgres://kratos_user:passw0rd@postgres:5432/kratos_db?sslmode=disable&max_conns=20&max_idle_conns=4
+    networks:
+      - data-network
+
+#  postgres:
+#    image: postgres:15
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      - POSTGRES_USER=kratos
+#      - POSTGRES_PASSWORD=secret
+#      - POSTGRES_DB=kratos
+#    networks:
+#      - intra-network

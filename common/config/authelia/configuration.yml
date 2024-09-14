@@ -1,0 +1,245 @@
+---
+###############################################################
+#                   Authelia configuration                    #
+###############################################################
+
+server:
+  address: 'tcp://:9091'
+
+log:
+  level: 'debug'
+
+totp:
+  issuer: 'authelia.com'
+
+identity_validation:
+  reset_password:
+    jwt_secret: '%@mbd8YYQYETYX&4$hL#PFRZ&cqdhsQkcqK%Vd8u74znW'
+
+# duo_api:
+#  hostname: api-123456789.example.com
+#  integration_key: ABCDEF
+#  # This secret can also be set using the env variables AUTHELIA_DUO_API_SECRET_KEY_FILE
+#  secret_key: 1234567890abcdefghifjkl
+
+ntp:
+  address: 'udp://time.cloudflare.com:123'
+  version: 4
+  max_desync: '3 seconds'
+  disable_startup_check: true
+  disable_failure: false
+
+authentication_backend:
+  file:
+    path: '/config/users_database.yml'
+
+access_control:
+  default_policy: 'deny'
+  networks:
+  - name: internal
+    networks:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+  rules:
+    - domain: 'auth.gorisa.kr'
+      policy: 'bypass'
+    - domain: 'public.gorisa.kr'
+      policy: 'bypass'
+    - domain: 'traefik.gorisa.kr'
+      policy: 'one_factor'
+    - domain: 'secure.gorisa.kr'
+      policy: 'two_factor'
+
+session:
+  secret: 'insecure_session_secret'
+  cookies:
+    - name: 'authelia_session'
+      domain: 'gorisa.kr'  # Should match whatever your root protected domain is
+      authelia_url: 'https://auth.gorisa.kr'
+      expiration: '1 hour'  # 1 hour
+      inactivity: '5 minutes'  # 5 minutes
+      default_redirection_url: 'https://public.gorisa.kr:9091/welcome'
+
+#session:
+#  name: authelia_session
+#  domain: exampledomain.tech
+#  same_site: lax
+#  secret: "$#vR9@3X6A7wP5DqY8Zb0"
+#  expiration: 1h
+#  inactivity: 5m
+#  remember_me_duration: 2M
+#  redis:
+#    host: redis
+#    port: 6379
+#    password: "ciaadmin"
+#    database_index: 0
+#    maximum_active_connections: 10
+#    minimum_idle_connections: 0
+
+regulation:
+  max_retries: 3
+  find_time: '2 minutes'
+  ban_time: '5 minutes'
+
+storage:
+  encryption_key: 'lw5wYd4mCMpZ8CN!iah#X9c5yT5$DuRpPxtcS7iR&T8k4uU#6!zD4B9G!yLHcbktYNstNT6LKF%TJEen7%'
+  local:
+    path: '/config/db.sqlite3'
+
+notifier:
+  filesystem:
+    filename: '/config/notification.txt'
+#notifier:
+#  disable_startup_check: true
+#  smtp:
+#    username: <your_email_username>
+#    password: "<your_email_password>"
+#    host: smtp.gmail.com
+#    port: 465
+#    sender: "Ark Authentication <ark@exampledomain.tech>"
+#    subject: "{title}"
+#    startup_check_address: ark@exampledomain.tech
+#    disable_require_tls: false
+#    disable_html_emails: false
+#    tls:
+#      skip_verify: false
+#      minimum_version: TLS1.2
+
+identity_providers:
+  oidc:
+    hmac_secret: 4edf8517efb5d1ba20f68e715cf9b9c54920d98abb93a649cce73691f05a833b2b5b3eb027ff1d792c2f39563e48f7dfa82a760e35398b6dc1d1f101c7d07048
+    issuer_private_key: |
+      -----BEGIN OPENSSH PRIVATE KEY-----
+      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
+      -----END OPENSSH PRIVATE KEY-----
+    access_token_lifespan: 1h
+    authorize_code_lifespan: 1m
+    id_token_lifespan: 1h
+    refresh_token_lifespan: 90m
+    enable_client_debug_messages: false
+    cors:
+      endpoints:
+        - authorization
+        - token
+        - revocation
+        - introspection
+        - userinfo
+      allowed_origins:
+        - "*"
+      allowed_origins_from_client_redirect_uris: false
+    clients:
+      - id: discourse-client
+        description: Client for Discourse
+        secret: 'JeyHsu@%O^85^JuFR8e^T'
+        sector_identifier: ''
+        public: false
+        authorization_policy: one_factor
+        consent_mode: explicit
+        pre_configured_consent_duration: 1w
+        audience: []
+        scopes:
+          - openid
+          - groups
+          - email
+          - profile
+        redirect_uris:
+          - https://forum.gorisa.kr/login/callback
+        grant_types:
+          - refresh_token
+          - authorization_code
+        response_types:
+          - code
+        response_modes:
+          - form_post
+          - query
+          - fragment
+        userinfo_signing_algorithm: none
+      - id: wordpress-client
+        description: Client for Wordpress
+        secret: 'd79vU@i5ohG&d!Birszxd'
+        sector_identifier: ''
+        public: false
+        authorization_policy: one_factor
+        consent_mode: explicit
+        pre_configured_consent_duration: 1w
+        audience: []
+        scopes:
+          - openid
+          - groups
+          - email
+          - profile
+        redirect_uris:
+          - https://blog.gorisa.kr/login/callback
+        grant_types:
+          - refresh_token
+          - authorization_code
+        response_types:
+          - code
+        response_modes:
+          - form_post
+          - query
+          - fragment
+        userinfo_signing_algorithm: none
+      - id: mediawiki-client
+        description: Client for Wiki
+        secret: 'u!s%Au!52Lpp6cS8KTNM1'
+        sector_identifier: ''
+        public: false
+        authorization_policy: one_factor
+        consent_mode: explicit
+        pre_configured_consent_duration: 1w
+        audience: []
+        scopes:
+          - openid
+          - groups
+          - email
+          - profile
+        redirect_uris:
+          - https://wiki.gorisa.kr/login/callback
+        grant_types:
+          - refresh_token
+          - authorization_code
+        response_types:
+          - code
+        response_modes:
+          - form_post
+          - query
+          - fragment
+        userinfo_signing_algorithm: none
+...
