@@ -13,12 +13,14 @@ init:
 server_up:
 	@docker compose -f compose.yml \
 	${COMPOSE_BASE} \
+	${COMPOSE_KRATOS} \
 	${COMPOSE_DATA} \
 	up -d
 
 server_down:
 	@docker compose -f compose.yml \
 	${COMPOSE_BASE} \
+	${COMPOSE_KRATOS} \
 	${COMPOSE_DATA} \
 	down -v
 

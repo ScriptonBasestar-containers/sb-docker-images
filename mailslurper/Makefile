@@ -1,9 +1,12 @@
 
 
 init:
-	git clone https://github.com/mailslurper/mailslurper
-	git clone https://github.com/ory/mailslurper.git ory-mailslurper
+	@echo "Initializing MailSlurper..."
+	git clone https://github.com/mailslurper/mailslurper.git
 
 build:
-	docker build -t mailslurper mailslurper
-	docker build -t ory-mailslurper ory-mailslurper -f ory-mailslurper/Dockerfile-smtps
+	@echo "Building MailSlurper..."
+	docker build mailslurper -t scriptonbasestar/mailslurper --platform linux/arm64 --platform linux/amd64
+
+
+	docker tag archmagece/mailslurper scriptonbasestar/mailslurper:go16-alpine16 

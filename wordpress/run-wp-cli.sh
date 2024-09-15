@@ -38,8 +38,8 @@ wp core multisite-install --title="My Network" --admin_user="admin" --admin_pass
 wp theme install twentysixteen --activate
 
 ## users
-wp user create a01 a01@a.com --role=administrator --user_pass="passw0rd"
-wp user create a02 a02@a.com --role=administrator --user_pass="passw0rd"
-wp user create u01 u01@a.com --role=administrator --user_pass="passw0rd"
-wp user create u02 u02@a.com --role=administrator --user_pass="passw0rd"
-wp user create u03 u03@a.com --role=administrator --user_pass="passw0rd"
+wp user create admin1 a01@a.com --role=administrator --user_pass="passw0rd"
+wp user create admin2 a02@a.com --role=administrator --user_pass="passw0rd"
+wp user create user1 u01@a.com --role=user --user_pass="passw0rd"
+wp user create user2 u02@a.com --role=user --user_pass="passw0rd"
+wp user create user3 u03@a.com --role=user --user_pass="passw0rd"

@@ -18,7 +18,8 @@ services:
     networks:
       - intra-network
   kratos-selfservice-ui-node:
-    image: oryd/kratos-selfservice-ui-node:v1.2.0
+#    image: oryd/kratos-selfservice-ui-node:v1.2.0
+    image: archmagece/ory-kratos-selfservice-ui-node
     container_name: kratos-ui
     environment:
       - KRATOS_PUBLIC_URL=http://kratos:4433/
@@ -54,7 +55,9 @@ services:
     networks:
       - intra-network
   mailslurper:
-    image: oryd/mailslurper:latest-smtps
+#    image: oryd/mailslurper:latest-smtps
+#    image: tsle/mail-mailslurper-arm64:latest
+    image: bluesinc/mailslurper
     container_name: mailslurper
     ports:
       - '4436:4436'
