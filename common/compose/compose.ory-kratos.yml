@@ -49,7 +49,8 @@ services:
     networks:
       - intranet
   mailslurper:
-    image: oryd/mailslurper:latest-smtps
+    # image: oryd/mailslurper:latest-smtps
+    image: scriptonbasestar/mailslurper
     ports:
       - '4436:4436'
       - '4437:4437'

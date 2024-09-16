@@ -1,0 +1,19 @@
+services:
+  mailslurper:
+    image: scriptonbasestar/mailslurper
+    ports:
+      - '4436:4436'
+      - '4437:4437'
+    networks:
+      - intranet
+
+networks:
+  app-network:
+    driver: bridge
+  intra-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  kratos-sqlite:
