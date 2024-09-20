@@ -1,3 +1,5 @@
+docker-build:
+	docker build . -f Dockerfile-apache -t sb-drupal-apache
 
 server_up:
 	docker compose \

@@ -2,6 +2,7 @@
 
 ## REF
 https://github.com/geerlingguy/drupal-container/blob/master/docker-compose.yml
+https://www.drupal.org/docs/develop/using-composer/manage-dependencies
 
 ## Errors
 https://www.drupal.org/docs/develop/development-tools/enable-verbose-error-logging-for-better-backtracing-and-debugging
