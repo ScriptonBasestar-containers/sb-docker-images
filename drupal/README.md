@@ -1,5 +1,11 @@
 # Drupal
 
+Tag: CMS
+MadeOf: PHP
+
+오픈소스CMS
+
+
 ## REF
 https://github.com/geerlingguy/drupal-container/blob/master/docker-compose.yml
 https://www.drupal.org/docs/develop/using-composer/manage-dependencies
