@@ -1,4 +1,4 @@
-debug: false
+debug: true
 baseUrl: http://localhost:8080
 databaseConfiguration:
   driver: mysql
@@ -17,9 +17,15 @@ settings:
     - flarum-tags
     - flarum-sticky
     - flarum-pwa
+    - flarum-flags
     - flarum-approval
     - flarum-suspend
     - flarum-lock
     - flarum-mentions
     - flarum-statistics
+    - flarum-bbcode
+    - flarum-emoji
+    - fof-best-answer
+    - fof-default-group
+    - fof-doorman
   key: value

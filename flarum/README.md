@@ -9,3 +9,6 @@ https://github.com/realodix/awesome-flarum
 https://github.com/FreeFlarum/flarum-multitenant.git
 
 https://discuss.flarum.org/d/1534-extension-list
+
+테마설정
+https://www.knthost.com/flarum/install-flarum-themes

@@ -30,7 +30,7 @@ services:
       FLARUM_DB_USER: "user01"
       FLARUM_DB_PASSWORD: "passw0rd"
     volumes:
-      - ./flarum-config.json:/flarum-config.json
+      - ./flarum-config.yaml:/flarum-config.yaml
       - ./docker-entrypoint.sh:/entrypoint.sh
       # - ./flarum-app:/var/www
     networks:

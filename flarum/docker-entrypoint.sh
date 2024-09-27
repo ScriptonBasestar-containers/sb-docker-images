@@ -23,8 +23,8 @@ php flarum install -f /flarum-config.yaml
 
 php flarum extension:enable flarum-tags
 php flarum extension:enable flarum-sticky
-php flarum extension:enable flarum-pwa
-php flarum extension:enable flarum-approval
+# no extension for id 'flarum-pwa'
+# php flarum extension:enable flarum-pwa
 php flarum extension:enable flarum-suspend
 php flarum extension:enable flarum-lock
 php flarum extension:enable flarum-mentions
@@ -32,16 +32,9 @@ php flarum extension:enable flarum-statistics
 php flarum extension:enable flarum-bbcode
 php flarum extension:enable flarum-emoji
 php flarum extension:enable fof-best-answer
+# approval depends on flags
+php flarum extension:enable flarum-flags
+php flarum extension:enable flarum-approval
 
-php flarum extension:enable \
-    flarum-tags \
-    flarum-sticky \
-    flarum-pwa \
-    flarum-approval \
-    flarum-suspend \
-    flarum-lock \
-    flarum-mentions \
-    flarum-statistics \
-    flarum-bbcode \
-    flarum-emoji 
+
 echo 'entry <<<<<<<<<< success'

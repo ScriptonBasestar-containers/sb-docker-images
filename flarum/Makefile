@@ -5,8 +5,8 @@ FILES_NGINX=-f compose.yml -f compose.nginx.yml
 DOCKER_BASE_IMAGE=local_dev/flarum-base
 
 setup:
-	# git clone https://github.com/flarum/flarum --depth 1 app
-	# docker run --rm -it -v ./app:/app composer composer install
+	git clone https://github.com/flarum/flarum --depth 1 app
+	docker run --rm -it -v ./app:/app composer composer install
 
 teardown:
 	rm -rf app
