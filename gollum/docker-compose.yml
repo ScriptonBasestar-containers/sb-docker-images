@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: gollum_dev
     # image: gollumwiki/gollum
     restart: always
     ports:
@@ -15,7 +16,14 @@ services:
     entrypoint: ["/docker-entrypoint.sh"]
     command: ["gollum", "/wiki"]
     # command: ["gollum", "/home/www-data"]
-
+    depends_on:
+      - dollum
+  dollum:
+    image: busybox
+    volumes:
+      - ./dollum-entrypoint.sh:/entrypoint.sh
+      - gollum:/wiki
+    entrypoint: ["sh", "-C", "/entrypoint.sh"]
 
 volumes:
   gollum:
