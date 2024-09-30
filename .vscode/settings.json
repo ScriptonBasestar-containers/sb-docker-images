@@ -1,4 +1,5 @@
 {
     "editor.renderWhitespace": "all",
-    "terminal.integrated.scrollback": 5000
+    "terminal.integrated.scrollback": 5000,
+    "makefile.configureOnOpen": false
 }

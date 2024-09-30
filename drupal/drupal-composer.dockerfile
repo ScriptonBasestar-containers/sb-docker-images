@@ -1,4 +1,5 @@
 FROM composer:2
+# https://www.drupal.org/docs/getting-started/installing-drupal/drupal-quick-start-command
 
 # RUN apt-get update && apt-get install -y \
 #     libzip-dev \
@@ -25,6 +26,8 @@ RUN composer create-project drupal/recommended-project .
 RUN composer global require drush/drush
 
 RUN composer require drupal/token drupal/ctools
+
+RUN composer require 'drupal/bootstrap:^5.0'
 
 # RUN composer require 'drupal/token:^1.5'
 # RUN composer require 'drupal/simple_fb_connect:~3.0'

@@ -24,6 +24,10 @@ build-nginx:
 run-apache:
 	docker compose ${FILES_APACHE} up
 
+enter-apache:
+	@echo "Entering Flarum container..."
+	@docker compose ${FILES_APACHE} exec flarum bash
+
 run-nginx:
 	docker compose ${FILES_NGINX} up
 

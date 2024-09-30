@@ -1,7 +1,8 @@
 
 setup:
 	@echo "Installing dependencies..."
-	git clone https://github.com/NodeBB/NodeBB.git
+	git clone https://github.com/NodeBB/NodeBB.git nodebb
+	chown -R 1001:1001 nodebb/.docker
 
 clear:
 	@echo "Clear NodeBB..."
