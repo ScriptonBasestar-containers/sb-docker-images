@@ -1,0 +1,100 @@
+Key Principles
+- Write concise, technical responses with accurate Python examples.
+- Use functional, declarative programming; avoid classes where possible.
+- Prefer iteration and modularization over code duplication.
+- Use descriptive variable names with auxiliary verbs (e.g., is_active, has_permission).
+- Use lowercase with underscores for directories and files (e.g., routers/user_routes.py).
+- Favor named exports for routes and utility functions.
+- Use the Receive an Object, Return an Object (RORO) pattern.
+
+Language
+- 한국어로 대답하되 용어는 원어를 사용하도록 한다.
+- 영어로 질문을 하더라도 한국어로 답변한다.
+
+Docker
+# - Dockerfile을 사용하여 애플리케이션 환경을 정의한다.
+# - 멀티 스테이지 빌드를 활용하여 최종 이미지 크기를 최소화한다.
+# - 베이스 이미지로 공식 Python 이미지를 사용한다.
+# - 애플리케이션 코드를 /app 디렉토리에 복사한다.
+# - 필요한 시스템 패키지와 Python 패키지를 설치한다.
+# - 보안을 위해 root가 아닌 사용자로 애플리케이션을 실행한다.
+# - 환경 변수를 사용하여 구성을 관리한다.
+# - .dockerignore 파일을 사용하여 불필요한 파일이 이미지에 포함되지 않도록 한다.
+# - 컨테이너 내부의 로그를 stdout과 stderr로 리디렉션한다.
+# - 헬스 체크를 구현하여 애플리케이션 상태를 모니터링한다.
+- Define application environment using Dockerfile.
+- Utilize multi-stage builds to minimize final image size.
+- Use official Python image as base image.
+- Copy application code to /app directory.
+- Install necessary system packages and Python packages.
+- Run application as non-root user for security.
+- Use environment variables for configuration management.
+- Use .dockerignore to exclude unnecessary files from image.
+- Redirect container logs to stdout and stderr.
+- Implement health checks to monitor application status.
+
+
+Helm
+# - Helm 차트를 사용하여 Kubernetes에 애플리케이션을 배포한다.
+- Deploy applications to Kubernetes using Helm charts.
+# - values.yaml 파일을 사용하여 환경별 구성을 관리한다.
+- Manage environment-specific configurations using values.yaml files.
+# - 템플릿 함수를 활용하여 동적으로 리소스를 생성한다.
+- Utilize template functions to dynamically create resources.
+# - 차트의 버전 관리를 위해 semantic versioning을 사용한다.
+- Use semantic versioning for chart version management.
+# - 의존성 차트를 사용하여 복잡한 애플리케이션 스택을 관리한다.
+- Manage complex application stacks using dependency charts.
+# - 헬름 훅을 사용하여 배포 전후 작업을 자동화한다.
+- Automate pre- and post-deployment tasks using Helm hooks.
+# - 차트 테스트를 구현하여 배포의 정확성을 검증한다.
+- Implement chart tests to verify deployment accuracy.
+# - 보안을 위해 민감한 정보는 Kubernetes Secrets로 관리한다.
+- Manage sensitive information using Kubernetes Secrets for security.
+# - 차트 문서화를 위해 README.md와 NOTES.txt를 작성한다.
+- Write README.md and NOTES.txt for chart documentation.
+# - 차트 저장소를 사용하여 차트를 공유하고 버전을 관리한다.
+- Use chart repositories to share and manage chart versions.
+
+Error Handling and Validation
+- Prioritize error handling and edge cases:
+- Handle errors and edge cases at the beginning of functions.
+- Use early returns for error conditions to avoid deeply nested if statements.
+- Place the happy path last in the function for improved readability.
+- Avoid unnecessary else statements; use the if-return pattern instead.
+- Use guard clauses to handle preconditions and invalid states early.
+- Implement proper error logging and user-friendly error messages.
+- Use custom error types or error factories for consistent error handling.
+
+Dependencies
+- FastAPI
+- Pydantic v2
+- Async database libraries like asyncpg or aiomysql
+- SQLAlchemy 2.0 (if using ORM features)
+
+FastAPI-Specific Guidelines
+- Use functional components (plain functions) and Pydantic models for input validation and response schemas.
+- Use declarative route definitions with clear return type annotations.
+- Use def for synchronous operations and async def for asynchronous ones.
+- Minimize @app.on_event("startup") and @app.on_event("shutdown"); prefer lifespan context managers for managing startup and shutdown events.
+- Use middleware for logging, error monitoring, and performance optimization.
+- Optimize for performance using async functions for I/O-bound tasks, caching strategies, and lazy loading.
+- Use HTTPException for expected errors and model them as specific HTTP responses.
+- Use middleware for handling unexpected errors, logging, and error monitoring.
+- Use Pydantic's BaseModel for consistent input/output validation and response schemas.
+
+Performance Optimization
+- Minimize blocking I/O operations; use asynchronous operations for all database calls and external API requests.
+- Implement caching for static and frequently accessed data using tools like Redis or in-memory stores.
+- Optimize data serialization and deserialization with Pydantic.
+- Use lazy loading techniques for large datasets and substantial API responses.
+
+Key Conventions
+1. Rely on FastAPI's dependency injection system for managing state and shared resources.
+2. Prioritize API performance metrics (response time, latency, throughput).
+3. Limit blocking operations in routes:
+    - Favor asynchronous and non-blocking flows.
+    - Use dedicated async functions for database and external API operations.
+    - Structure routes and dependencies clearly to optimize readability and maintainability.
+
+Refer to FastAPI documentation for Data Models, Path Operations, and Middleware for best practices.
