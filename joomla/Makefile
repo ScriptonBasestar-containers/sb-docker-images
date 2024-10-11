@@ -1,23 +1,23 @@
 
-server_up:
+server-up:
 	docker compose \
-	-f docker-compose.yml \
+	-f compose.yml \
 	-f ../composebox/compose/compose.base-network.yml \
 	-f ../composebox/compose/compose.redis.yml \
 	-f ../composebox/compose/compose.mariadb.yml \
 	up -d
 
-server_down:
+server-down:
 	docker compose \
-	-f docker-compose.yml \
+	-f compose.yml \
 	-f ../composebox/compose/compose.base-network.yml \
 	-f ../composebox/compose/compose.redis.yml \
 	-f ../composebox/compose/compose.mariadb.yml \
 	down -v
 
-server_enter_cli:
+server-enter:
 	docker compose \
-	-f docker-compose.yml \
+	-f compose.yml \
 	-f ../composebox/compose/compose.base-network.yml \
 	-f ../composebox/compose/compose.redis.yml \
 	-f ../composebox/compose/compose.mariadb.yml \

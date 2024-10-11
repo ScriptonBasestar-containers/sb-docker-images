@@ -7,6 +7,8 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE:-db01}
       - MYSQL_USER=${MYSQL_USER:-user01}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD:-passw0rd}
+    ports:
+      - "3306:3306"
     volumes:
       - mariadb:/var/lib/mysql
     networks:

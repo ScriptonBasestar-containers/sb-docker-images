@@ -9,6 +9,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-user01}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-passw0rd}
       - ENABLE_IPV6=true
+    ports:
+      - "5432:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:

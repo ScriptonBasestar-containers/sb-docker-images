@@ -19,7 +19,7 @@ build-base:
 build-app:
 	docker build . -f image/discourse_app/Dockerfile -t discourse/app
 
-server_up:
+server-up:
 	docker compose \
 	-f compose.yml \
 	-f ../composebox/compose/compose.base-network.yml \
@@ -27,7 +27,7 @@ server_up:
 	-f ../composebox/compose/compose.postgres.yml \
 	up -d
 
-server_down:
+server-down:
 	docker compose \
 	-f compose.yml \
 	-f ../composebox/compose/compose.base-network.yml \
@@ -35,7 +35,7 @@ server_down:
 	-f ../composebox/compose/compose.postgres.yml \
 	down -v
 
-server_enter_cli:
+server-enter:
 	docker compose \
 	-f compose.yml \
 	-f ../composebox/compose/compose.base-network.yml \

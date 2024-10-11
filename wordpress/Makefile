@@ -6,25 +6,25 @@ COMPOSE_KRATOS=-f ../composebox/compose/compose.kratos.yml \
 
 COMPOSE_DATA=-f ../composebox/compose/compose.bn-pg15.yml -f ../composebox/compose/compose.bn-redis.yml -f ../composebox/compose/compose.mariadb.yml
 
-init:
+prepare:
 	@echo "No setup required"
 	#git clone https://github.com/nextcloud/server.git --depth 1
 
-server_up:
+server-up:
 	@docker compose -f compose.yml \
 	${COMPOSE_BASE} \
 	${COMPOSE_KRATOS} \
 	${COMPOSE_DATA} \
 	up -d
 
-server_down:
+server-down:
 	@docker compose -f compose.yml \
 	${COMPOSE_BASE} \
 	${COMPOSE_KRATOS} \
 	${COMPOSE_DATA} \
 	down -v
 
-server_enter_cli:
+server-enter:
 	@docker compose -f compose.yml \
 	${COMPOSE_BASE} \
 	${COMPOSE_KRATOS} \

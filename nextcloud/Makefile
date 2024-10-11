@@ -17,7 +17,7 @@ build-app:
 	@docker build -t nextcloud-app .
 
 
-server_up:
+server-up:
 	docker compose -f compose.yml \
 	${COMPOSE_KRATOS} \
 	${COMPOSE_DATA} \
@@ -33,12 +33,12 @@ server_migrate:
 	${COMPOSE_KRATOS} ${COMPOSE_DATA} \
 	run discourse /var/www/discourse/bin/rake db:migrate
 
-server_down:
+server-down:
 	docker compose -f compose.yml \
 	${COMPOSE_KRATOS} ${COMPOSE_DATA} \
 	down -v
 
-server_enter_cli:
+server-enter:
 	docker compose -f compose.yml \
 	${COMPOSE_KRATOS} ${COMPOSE_DATA} \
 	run wp-install bash
