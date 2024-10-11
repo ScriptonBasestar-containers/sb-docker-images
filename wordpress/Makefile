@@ -1,10 +1,10 @@
-COMPOSE_BASE=-f ../common/compose/compose.base-network.yml
+COMPOSE_BASE=-f ../composebox/compose/compose.base-network.yml
 
-COMPOSE_KRATOS=-f ../common/compose/compose.kratos.yml \
-	-f ../common/compose/compose.kratos-pg.yml \
-	-f ../common/compose/compose.kratos-standalone.yml
+COMPOSE_KRATOS=-f ../composebox/compose/compose.kratos.yml \
+	-f ../composebox/compose/compose.kratos-pg.yml \
+	-f ../composebox/compose/compose.kratos-standalone.yml
 
-COMPOSE_DATA=-f ../common/compose/compose.bn-pg15.yml -f ../common/compose/compose.bn-redis.yml -f ../common/compose/compose.mariadb.yml
+COMPOSE_DATA=-f ../composebox/compose/compose.bn-pg15.yml -f ../composebox/compose/compose.bn-redis.yml -f ../composebox/compose/compose.mariadb.yml
 
 init:
 	@echo "No setup required"
