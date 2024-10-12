@@ -22,23 +22,23 @@ build-app:
 server-up:
 	docker compose \
 	-f compose.yml \
-	-f ../composebox/compose/compose.base-network.yml \
-	-f ../composebox/compose/compose.redis.yml \
-	-f ../composebox/compose/compose.postgres.yml \
+	-f ../buildbox/compose/compose.base-network.yml \
+	-f ../buildbox/compose/compose.redis.yml \
+	-f ../buildbox/compose/compose.postgres.yml \
 	up -d
 
 server-down:
 	docker compose \
 	-f compose.yml \
-	-f ../composebox/compose/compose.base-network.yml \
-	-f ../composebox/compose/compose.redis.yml \
-	-f ../composebox/compose/compose.postgres.yml \
+	-f ../buildbox/compose/compose.base-network.yml \
+	-f ../buildbox/compose/compose.redis.yml \
+	-f ../buildbox/compose/compose.postgres.yml \
 	down -v
 
 server-enter:
 	docker compose \
 	-f compose.yml \
-	-f ../composebox/compose/compose.base-network.yml \
-	-f ../composebox/compose/compose.redis.yml \
-	-f ../composebox/compose/compose.postgres.yml \
+	-f ../buildbox/compose/compose.base-network.yml \
+	-f ../buildbox/compose/compose.redis.yml \
+	-f ../buildbox/compose/compose.postgres.yml \
 	run wp-install bash

@@ -3,24 +3,24 @@ docker-build:
 
 docker_up:
 	docker compose \
-	-f ../composebox/compose/compose.base-network.yml \
-	-f ../composebox/compose/compose.redis.yml \
-	-f ../composebox/compose/compose.mariadb.yml \
+	-f ../buildbox/compose/compose.base-network.yml \
+	-f ../buildbox/compose/compose.redis.yml \
+	-f ../buildbox/compose/compose.mariadb.yml \
 	-f ./standalone/compose.yml \
 	up -d
 
 docker_enter:
 	docker compose \
-	-f ../composebox/compose/compose.base-network.yml \
-	-f ../composebox/compose/compose.redis.yml \
-	-f ../composebox/compose/compose.mariadb.yml \
+	-f ../buildbox/compose/compose.base-network.yml \
+	-f ../buildbox/compose/compose.redis.yml \
+	-f ../buildbox/compose/compose.mariadb.yml \
 	-f ./standalone/compose.yml \
 	exec drupal bash
 
 docker_down:
 	docker compose \
-	-f ../composebox/compose/compose.base-network.yml \
-	-f ../composebox/compose/compose.redis.yml \
-	-f ../composebox/compose/compose.mariadb.yml \
+	-f ../buildbox/compose/compose.base-network.yml \
+	-f ../buildbox/compose/compose.redis.yml \
+	-f ../buildbox/compose/compose.mariadb.yml \
 	-f ./standalone/compose.yml \
 	down -v
