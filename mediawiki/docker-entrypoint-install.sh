@@ -49,7 +49,7 @@ APPENDS="$APPENDS --pass=\"$ADMIN_PASS\""
 
 # for ext in $EXTENSION_LIST; do
 #     APPENDS="$APPENDS --with-extensions=$ext"
-# done
+# don
 APPENDS="$APPENDS --with-extensions=\"$EXTENSION_LIST\""
 
 APPENDS="$APPENDS \"$WIKI_NAME\""
@@ -57,7 +57,7 @@ APPENDS="$APPENDS \"$ADMIN_USER\""
 
 echo 'install mediawiki'
 echo $APPENDS
-php maintenance/install.php $APPENDS
+#php maintenance/install.php $APPENDS
 # --dbname=db01 --dbserver=mariadb --installdbuser=user01 --installdbpass=passw0rd --dbuser=user01 --dbpass=passw0rd --server=http://localhost:8080 --scriptpath=/ --lang=en --pass=qwer1234!@ --skins=MinervaNeue,MonoBook,Timeless,Vector --with-extensions=AbuseFilter,CategoryTree,Cite,CiteThisPage,CodeEditor,ConfirmEdit,DiscussionTools,Echo,Gadgets,ImageMap,InputBox,Interwiki,Linter,LoginNotify,Math,MultimediaViewer,Nuke,OATHAuth,PageImages,ParserFunctions,PdfHandler,Poem,ReplaceText,Scribunto,SecureLinkFixer,SpamBlacklist,SyntaxHighlight_GeSHi,TemplateData,TextExtracts,Thanks,TitleBlacklist,VisualEditor,WikiEditor MyWiki admin1
 # php maintenance/install.php --dbname=db01 --dbserver=mariadb --installdbuser=user01 --installdbpass=passw0rd --dbuser=user01 --dbpass=passw0rd --server=http://localhost:8080 --scriptpath=/ --lang=en --pass=qwer1234!@ --skins=MinervaNeue,MonoBook,Timeless,Vector --with-extensions=AbuseFilter,CategoryTree,Cite,CiteThisPage,CodeEditor,ConfirmEdit,DiscussionTools,Echo,Gadgets,ImageMap,InputBox,Interwiki,Linter,LoginNotify,Math,MultimediaViewer,Nuke,OATHAuth,PageImages,ParserFunctions,PdfHandler,Poem,ReplaceText,Scribunto,SecureLinkFixer,SpamBlacklist,SyntaxHighlight_GeSHi,TemplateData,TextExtracts,Thanks,TitleBlacklist,VisualEditor,WikiEditor MyWiki admin1
 # php maintenance/install.php --dbname=db01 --dbserver=mariadb --installdbuser=user01 --installdbpass=passw0rd --dbuser=user01 --dbpass=passw0rd --server=http://localhost:8080 --scriptpath=/ --lang=en --pass="qwer1234!@" MyWiki admin1
