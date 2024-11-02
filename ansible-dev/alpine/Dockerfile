@@ -1,25 +1,11 @@
-FROM alpine:3.11
+FROM alpine:3.20
 
-ENV ANSIBLE_VERSION=2.9.2
+ENV ANSIBLE_VERSION=2.18
 
-ENV BUILD_PACKAGES \
-        bash \
-        curl \
-        tar \
-        nano \
-        openssh-client \
-        sshpass \
-        git \
-        python3 \
-        py3-boto \
-        py3-dateutil \
-        py3-httplib2 \
-        py3-jinja2 \
-        py3-paramiko \
-        py3-pip \
-        py3-setuptools \
-        py3-yaml \
-        ca-certificates
+ENV BUILD_PACKAGES="bash curl tar nano openssh-client sshpass git openssl ansible \
+python3 py3-dateutil py3-httplib2 py3-jinja2 \
+py3-paramiko py3-boto3 py3-pip py3-setuptools py3-yaml ca-certificates"
+# py3-boto
 
 RUN apk --update add --virtual build-dependencies \
         gcc \
@@ -30,16 +16,7 @@ RUN apk --update add --virtual build-dependencies \
     set -x && \
     apk update && apk upgrade && \
     apk add --no-cache ${BUILD_PACKAGES} && \
-    pip3 install --upgrade pip && \
-    pip3 install python3-keyczar docker-py boto3 botocore && \
-    apk del build-dependencies && \
-    rm -rf /var/cache/apk/* && \
-    mkdir -p /etc/ansible/ /ansible && \
-    echo "[local]" >> /etc/ansible/hosts && \
-    echo "localhost" >> /etc/ansible/hosts && \
-    curl -fsSL https://releases.ansible.com/ansible/ansible-${ANSIBLE_VERSION}.tar.gz -o ansible.tar.gz && \
-    tar -xzf ansible.tar.gz -C /ansible --strip-components 1 && \
-    rm -fr ansible.tar.gz /ansible/docs /ansible/examples /ansible/packaging
+    rm -rf /var/cache/apk/*
 
 ENV ANSIBLE_GATHERING=smart \
     ANSIBLE_HOST_KEY_CHECKING=false \
@@ -51,9 +28,6 @@ ENV ANSIBLE_GATHERING=smart \
     ANSIBLE_LIBRARY=/ansible/library \
     EDITOR=nano
 
-# RUN ln -s /usr/bin/python3 /usr/bin/python && \
-#     ln -s /usr/bin/pip3 /usr/bin/pip
-RUN ln -s /usr/bin/python3 /usr/bin/python
 
 RUN mkdir -p /playbooks
 WORKDIR /playbooks
