@@ -9,8 +9,9 @@ docker compose up
 ```
 
 ## 플러그인 목록 가져오기
-https://stackoverflow.com/questions/9815273/how-to-get-a-list-of-installed-jenkins-plugins-with-name-and-version-pair
-http://localhost:8080/manage/script
+
+- https://stackoverflow.com/questions/9815273/how-to-get-a-list-of-installed-jenkins-plugins-with-name-and-version-pair
+- http://localhost:8080/manage/script
 
 ```groovy
 Jenkins.instance.pluginManager.plugins.each{
@@ -34,4 +35,5 @@ Jenkins.instance.pluginManager.plugins.each {
 - make jenkins-push
 
 ## Ref
-https://github.com/jenkinsci/docker
+
+- https://github.com/jenkinsci/docker
