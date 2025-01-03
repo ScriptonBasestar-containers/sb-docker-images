@@ -9,9 +9,9 @@ setup:
 
 build:
 	@echo "Building tsboard"
-	docker build . \
-	-t tsboard \
-	-f dockerfiles/frontend-tsboard.dockerfile
+#	docker build . \
+#	-t tsboard \
+#	-f dockerfiles/frontend-tsboard.dockerfile
 	docker build . \
 	-t goapi \
 	-f dockerfiles/backend-goapi.dockerfile

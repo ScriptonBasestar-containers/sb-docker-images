@@ -1,15 +1,16 @@
 # 1단계: 빌드 환경
-FROM golang:1.20-alpine AS build
+FROM golang:1.23-alpine AS build
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
 # Go 모듈 초기화 및 종속성 설치
-COPY go.mod go.sum ./
+COPY repos/goapi/go.mod .
+COPY repos/goapi/go.sum .
 RUN go mod download
 
 # 소스 코드 복사
-COPY . .
+COPY repos/goapi .
 
 # GOAPI 빌드
 RUN go build -o tsboard-goapi ./cmd/main.go
