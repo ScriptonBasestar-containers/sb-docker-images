@@ -2,3 +2,5 @@ examples/
 kratos/
 ory-kratos-selfservice-ui-node/
 ory-kratos-selfservice-ui-react-nextjs/
+kratos-selfservice-ui-node/
+kratos-selfservice-ui-react-nextjs/
