@@ -1,0 +1,96 @@
+services:
+  postgres:
+    image: bitnami/postgresql:16
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=kratos
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=kratos
+    networks:
+      - intra-network
+
+  kratos-migrate:
+    image: oryd/kratos:v1.3.1
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      - type: volume
+        source: kratos-sqlite
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./kratos/contrib/quickstart/kratos/email-password
+        target: /etc/config/kratos
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    restart: on-failure
+    networks:
+      - intra-network
+  kratos:
+    depends_on:
+      - kratos-migrate
+    image: oryd/kratos:v1.3.1
+    ports:
+      - '4433:4433' # public
+      - '4434:4434' # admin
+    restart: unless-stopped
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - LOG_LEVEL=trace
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    volumes:
+      - type: volume
+        source: kratos-sqlite
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./kratos/contrib/quickstart/kratos/email-password
+        target: /etc/config/kratos
+    networks:
+      - intra-network
+
+  kratos-ui-node:
+    image: kratos-ui-node
+    build:
+      context: ./ory-kratos-selfservice-ui-node
+      dockerfile: Dockerfile
+    container_name: kratos-ui-node
+    ports:
+      - "4455:4455"
+    environment:
+      - PORT=4455
+      - SECURITY_MODE=
+      - KRATOS_BROWSER_URL=http://127.0.0.1:4433/
+      - KRATOS_PUBLIC_URL=http://kratos:4433/
+      - COOKIE_SECRET=changeme
+      - CSRF_COOKIE_NAME=ory_csrf_ui
+      - CSRF_COOKIE_SECRET=changeme
+    networks:
+      - intra-network
+    restart: on-failure
+#  kratos-ui-nextjs:
+#    image: kratos-ui-nextjs
+#    build:
+#      context: ./ory-kratos-selfservice-ui-react-nextjs
+#      dockerfile: Dockerfile
+#    container_name: kratos-ui-nextjs
+#    ports:
+#      - "4456:4456"
+#    environment:
+#      - PORT=4456
+#      - KRATOS_PUBLIC_URL=http://kratos:4433/
+#      - KRATOS_BROWSER_URL=http://
+
+  mailslurper:
+    #    image: oryd/mailslurper:latest-smtps
+    image: scriptonbasestar/mailslurper
+    ports:
+      - '4436:4436'
+      - '4437:4437'
+    networks:
+      - intra-network
+
+networks:
+  intra-network:
+volumes:
+  kratos-sqlite:
