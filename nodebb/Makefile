@@ -2,7 +2,19 @@
 setup:
 	@echo "Installing dependencies..."
 	git clone https://github.com/NodeBB/NodeBB.git nodebb
-	#chown -R 1001:1001 nodebb/.docker
+	chown -R 1001:1001 nodebb/.docker
+	sudo rm -r nodebb/.docker/database/postgresql/data/.gitkeep
+
+reset:
+	@echo "Reset NodeBB..."
+	cd nodebb && docker compose down -v
+	rm -rf nodebb/.docker/
+	git clean -fd nodebb
+	git reset --hard HEAD -C nodebb
+
+teardown:
+	@echo "Removing dependencies..."
+	rm -rf nodebb
 
 clear:
 	@echo "Clear NodeBB..."
