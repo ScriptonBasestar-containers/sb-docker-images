@@ -9,8 +9,8 @@ reset:
 	@echo "Reset NodeBB..."
 	cd nodebb && docker compose down -v
 	rm -rf nodebb/.docker/
-	git clean -fd nodebb
-	git reset --hard HEAD -C nodebb
+	git -C nodebb clean -fd nodebb
+	git -C nodebb reset --hard HEAD
 
 teardown:
 	@echo "Removing dependencies..."
