@@ -8,3 +8,6 @@ tag:
 
 push:
 	docker push ghcr.io/scriptonbasestar/bitnami-pg-vector:16.4.0-debian-12-r2
+
+buildx:
+	docker buildx build . --platform linux/amd64,linux/arm64 -t ghcr.io/scriptonbasestar/bitnami-pg-vector:16.6-bookworm --push -f bitnami-vector.dockerfile
