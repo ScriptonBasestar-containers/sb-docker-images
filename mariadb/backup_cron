@@ -1,0 +1,4 @@
+# backup/backup_cron
+
+# 매일 새벽 2시에 백업 스크립트 실행
+0 2 * * * /scripts/backup.sh >> /var/log/backup.log 2>&1
