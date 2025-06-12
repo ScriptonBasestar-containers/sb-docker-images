@@ -13,11 +13,15 @@ COPY devpi /build/devpi
 
 # Install devpi packages
 WORKDIR /build/devpi
-RUN install --no-cache-dir \
+RUN pip install --no-cache-dir \
     ./common \
     ./server \
     ./web \
     ./client
+
+# Install additional devpi plugins
+RUN pip install --no-cache-dir \
+    devpi-web
 
 # Production stage
 FROM python:3.12-slim as monolith
@@ -63,5 +67,5 @@ VOLUME ["/app/data"]
 # Set entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-# Default command
-CMD ["devpi-server", "--host=0.0.0.0", "--port=3141", "--serverdir=/app/data"] 
+# Default command with web interface
+CMD ["devpi-server", "--host=0.0.0.0", "--port=3141", "--serverdir=/app/data", "--theme=semantic-ui"] 

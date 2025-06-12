@@ -7,6 +7,6 @@ if [ ! -d "/app/data/.nodeinfo" ]; then
     devpi-init --serverdir=/app/data
 fi
 
-# Start devpi server
-echo "Starting devpi server..."
+# Start devpi server with web interface
+echo "Starting devpi server with web interface..."
 exec "$@" 
