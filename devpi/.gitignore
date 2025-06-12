@@ -1,0 +1,27 @@
+# target repositories
+devpi_data/
+logs/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so 
+
+# sources
+devpi/
+devpi-constrained/
+devpi-findlinks/
+devpi-jenkins/
+devpi-lockdown/

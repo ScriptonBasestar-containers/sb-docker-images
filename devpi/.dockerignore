@@ -1,0 +1,20 @@
+# .dockerignore
+.git
+.gitignore
+.DS_Store
+README.md
+Makefile
+/env.*
+/logs
+/devpi
+/devpi_data
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so 
