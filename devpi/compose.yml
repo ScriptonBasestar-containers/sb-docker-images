@@ -2,7 +2,14 @@ version: '3.8'
 
 services:
   devpi:
-    build: .
+    build:
+      context: .
+      args:
+        - INSTALL_WEB=${INSTALL_WEB:-true}
+        - INSTALL_CONSTRAINED=${INSTALL_CONSTRAINED:-false}
+        - INSTALL_FINDLINKS=${INSTALL_FINDLINKS:-false}
+        - INSTALL_JENKINS=${INSTALL_JENKINS:-false}
+        - INSTALL_LOCKDOWN=${INSTALL_LOCKDOWN:-false}
     image: devpi/server:latest
     container_name: devpi-server
     ports:

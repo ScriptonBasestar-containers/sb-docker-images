@@ -27,8 +27,17 @@ make setup
 ### 2. Docker 이미지 빌드
 
 ```bash
-# 이미지 빌드
+# 기본 빌드 (웹 인터페이스 포함)
 make build
+
+# 모든 플러그인 포함 빌드
+make build-full
+
+# 최소 빌드 (웹 인터페이스 없음)
+make build-minimal
+
+# 커스텀 빌드 (특정 플러그인 선택)
+make build-custom web=true constrained=true jenkins=false
 
 # 캐시 없이 빌드
 make build-no-cache
@@ -40,8 +49,11 @@ make build-no-cache
 # devpi 서버 시작
 make server-up
 
-# Docker Compose 사용
+# Docker Compose 사용 (기본 설정)
 docker-compose up -d
+
+# Docker Compose로 특정 플러그인 활성화
+INSTALL_CONSTRAINED=true INSTALL_JENKINS=true docker-compose up --build -d
 ```
 
 ### 4. 서버 관리
@@ -85,10 +97,55 @@ make dev-clean
 - 📋 인덱스 관리
 - 🎨 Semantic UI 테마로 현대적인 디자인
 
+## 사용 가능한 플러그인
+
+### 🌐 devpi-web (기본 포함)
+- 웹 인터페이스 제공
+- 패키지 검색 및 브라우징
+
+### 🔒 devpi-constrained
+- 의존성 제약 조건 관리
+- 버전 제한 및 호환성 검사
+
+### 🔗 devpi-findlinks
+- findlinks 지원으로 외부 패키지 링크 관리
+- 커스텀 패키지 저장소 연동
+
+### 🏗️ devpi-jenkins
+- Jenkins CI/CD 시스템과의 통합
+- 자동화된 빌드 및 배포 지원
+
+### 🛡️ devpi-lockdown
+- 보안 강화 기능
+- 액세스 제어 및 권한 관리
+
 ## 환경 변수
 
+### 서버 설정
 - `DEVPI_HOST`: 서버 호스트 (기본값: 0.0.0.0)
 - `DEVPI_PORT`: 서버 포트 (기본값: 3141)
+- `DEVPI_WEB_THEME`: 웹 테마 (기본값: semantic-ui)
+
+### 플러그인 제어 (빌드 시)
+- `INSTALL_WEB`: devpi-web 설치 (기본값: true)
+- `INSTALL_CONSTRAINED`: devpi-constrained 설치 (기본값: false)
+- `INSTALL_FINDLINKS`: devpi-findlinks 설치 (기본값: false)
+- `INSTALL_JENKINS`: devpi-jenkins 설치 (기본값: false)
+- `INSTALL_LOCKDOWN`: devpi-lockdown 설치 (기본값: false)
+
+### 환경변수 사용 예시
+```bash
+# .env 파일 생성
+cat > .env << EOF
+INSTALL_WEB=true
+INSTALL_CONSTRAINED=true
+INSTALL_JENKINS=true
+DEVPI_WEB_THEME=semantic-ui
+EOF
+
+# Docker Compose 실행
+docker-compose up --build -d
+```
 
 ## 볼륨
 

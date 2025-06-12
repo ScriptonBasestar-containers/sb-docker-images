@@ -1,6 +1,13 @@
 # Build stage
 FROM python:3.12-slim as builder
 
+# Build arguments for optional plugins
+ARG INSTALL_WEB=true
+ARG INSTALL_CONSTRAINED=false
+ARG INSTALL_FINDLINKS=false
+ARG INSTALL_JENKINS=false
+ARG INSTALL_LOCKDOWN=false
+
 # Install system dependencies for building
 RUN apt-get update && apt-get install -y \
     gcc \
@@ -8,10 +15,14 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Clone devpi repository
+# Clone devpi repository and plugins
 COPY devpi /build/devpi
+COPY devpi-constrained /build/devpi-constrained
+COPY devpi-findlinks /build/devpi-findlinks
+COPY devpi-jenkins /build/devpi-jenkins
+COPY devpi-lockdown /build/devpi-lockdown
 
-# Install devpi packages
+# Install devpi core packages
 WORKDIR /build/devpi
 RUN pip install --no-cache-dir \
     ./common \
@@ -19,9 +30,26 @@ RUN pip install --no-cache-dir \
     ./web \
     ./client
 
-# Install additional devpi plugins
-RUN pip install --no-cache-dir \
-    devpi-web
+# Install optional plugins based on build arguments
+RUN if [ "$INSTALL_WEB" = "true" ]; then \
+        pip install --no-cache-dir devpi-web; \
+    fi
+
+RUN if [ "$INSTALL_CONSTRAINED" = "true" ]; then \
+        pip install --no-cache-dir /build/devpi-constrained; \
+    fi
+
+RUN if [ "$INSTALL_FINDLINKS" = "true" ]; then \
+        pip install --no-cache-dir /build/devpi-findlinks; \
+    fi
+
+RUN if [ "$INSTALL_JENKINS" = "true" ]; then \
+        pip install --no-cache-dir /build/devpi-jenkins; \
+    fi
+
+RUN if [ "$INSTALL_LOCKDOWN" = "true" ]; then \
+        pip install --no-cache-dir /build/devpi-lockdown; \
+    fi
 
 # Production stage
 FROM python:3.12-slim as monolith

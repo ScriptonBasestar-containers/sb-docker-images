@@ -12,15 +12,19 @@ LOGS_DIR = ./logs
 
 help:
 	@echo "Available commands:"
-	@echo "  prepare     - Clone devpi repository and prepare environment"
-	@echo "  setup       - Setup directories and permissions"
-	@echo "  build       - Build Docker image"
-	@echo "  push        - Push image to registry"
-	@echo "  clean       - Clean up cloned repository and Docker resources"
-	@echo "  server-up   - Start devpi server"
-	@echo "  server-down - Stop devpi server"
-	@echo "  server-logs - View server logs"
-	@echo "  server-enter- Enter running container"
+	@echo "  prepare      - Clone devpi repository and plugins"
+	@echo "  setup        - Setup directories and permissions"
+	@echo "  build        - Build Docker image (with web interface)"
+	@echo "  build-full   - Build image with all plugins enabled"
+	@echo "  build-minimal- Build minimal image (no web interface)"
+	@echo "  build-custom - Build custom image with specific plugins"
+	@echo "               Usage: make build-custom web=true constrained=true"
+	@echo "  push         - Push image to registry"
+	@echo "  clean        - Clean up cloned repositories and Docker resources"
+	@echo "  server-up    - Start devpi server"
+	@echo "  server-down  - Stop devpi server"
+	@echo "  server-logs  - View server logs"
+	@echo "  server-enter - Enter running container"
 
 prepare:
 	@echo "Preparing devpi environment..."
@@ -38,7 +42,7 @@ setup:
 	@echo "Directories created"
 
 build: setup
-	@echo "Building devpi Docker image..."
+	@echo "Building devpi Docker image (with web interface)..."
 	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
 	@echo "Docker image built successfully"
 
@@ -46,6 +50,36 @@ build-no-cache: setup
 	@echo "Building devpi Docker image without cache..."
 	docker build --no-cache -t $(IMAGE_NAME):$(IMAGE_TAG) .
 	@echo "Docker image built successfully"
+
+build-full: setup
+	@echo "Building devpi Docker image with all plugins..."
+	docker build \
+		--build-arg INSTALL_WEB=true \
+		--build-arg INSTALL_CONSTRAINED=true \
+		--build-arg INSTALL_FINDLINKS=true \
+		--build-arg INSTALL_JENKINS=true \
+		--build-arg INSTALL_LOCKDOWN=true \
+		-t $(IMAGE_NAME):full .
+	@echo "Full Docker image built successfully"
+
+build-minimal: setup
+	@echo "Building minimal devpi Docker image (no web interface)..."
+	docker build \
+		--build-arg INSTALL_WEB=false \
+		-t $(IMAGE_NAME):minimal .
+	@echo "Minimal Docker image built successfully"
+
+build-custom: setup
+	@echo "Building custom devpi Docker image..."
+	@echo "Usage: make build-custom PLUGINS='web=true constrained=true jenkins=false'"
+	docker build \
+		--build-arg INSTALL_WEB=$(or $(web),false) \
+		--build-arg INSTALL_CONSTRAINED=$(or $(constrained),false) \
+		--build-arg INSTALL_FINDLINKS=$(or $(findlinks),false) \
+		--build-arg INSTALL_JENKINS=$(or $(jenkins),false) \
+		--build-arg INSTALL_LOCKDOWN=$(or $(lockdown),false) \
+		-t $(IMAGE_NAME):custom .
+	@echo "Custom Docker image built successfully"
 
 push:
 	@echo "Pushing image to registry..."
@@ -55,8 +89,9 @@ push:
 
 clean:
 	@echo "Cleaning up..."
-	rm -rf devpi
-	docker rmi -f $(IMAGE_NAME):$(IMAGE_TAG) $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG) 2>/dev/null || true
+	rm -rf devpi devpi-constrained devpi-findlinks devpi-jenkins devpi-lockdown
+	docker rmi -f $(IMAGE_NAME):$(IMAGE_TAG) $(IMAGE_NAME):full $(IMAGE_NAME):minimal $(IMAGE_NAME):custom 2>/dev/null || true
+	docker rmi -f $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG) 2>/dev/null || true
 	@echo "Cleanup completed"
 
 server-up:
