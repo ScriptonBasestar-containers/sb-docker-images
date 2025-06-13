@@ -1,5 +1,5 @@
 # Build stage
-FROM python:3.12-slim as builder
+FROM python:3.12-slim AS builder
 
 # Build arguments for optional plugins
 ARG INSTALL_WEB=true
@@ -15,12 +15,22 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
+# RUN mkdir -p /build
+WORKDIR /build
 # Clone devpi repository and plugins
-COPY devpi /build/devpi
-COPY devpi-constrained /build/devpi-constrained
-COPY devpi-findlinks /build/devpi-findlinks
-COPY devpi-jenkins /build/devpi-jenkins
-COPY devpi-lockdown /build/devpi-lockdown
+COPY devpi ./devpi
+COPY devpi-constrained ./devpi-constrained
+COPY devpi-findlinks ./devpi-findlinks
+COPY devpi-jenkins ./devpi-jenkins
+COPY devpi-lockdown ./devpi-lockdown
+
+RUN ls -al /build
+
+# COPY devpi /build/devpi
+# COPY devpi-constrained /build/devpi-constrained
+# COPY devpi-findlinks /build/devpi-findlinks
+# COPY devpi-jenkins /build/devpi-jenkins
+# COPY devpi-lockdown /build/devpi-lockdown
 
 # Install devpi core packages
 WORKDIR /build/devpi
@@ -52,7 +62,7 @@ RUN if [ "$INSTALL_LOCKDOWN" = "true" ]; then \
     fi
 
 # Production stage
-FROM python:3.12-slim as monolith
+FROM python:3.12-slim AS monolith
 
 ARG PORT=3141
 
@@ -76,7 +86,7 @@ COPY --from=builder /usr/local/bin/devpi* /usr/local/bin/
 WORKDIR /app
 
 # Copy entrypoint script
-COPY entrypoint.sh /app/entrypoint.sh
+COPY files/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 # Switch to non-root user

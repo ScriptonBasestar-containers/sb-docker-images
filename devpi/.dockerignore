@@ -6,7 +6,6 @@ README.md
 Makefile
 /env.*
 /logs
-/devpi
 /devpi_data
 .vscode/
 .idea/
