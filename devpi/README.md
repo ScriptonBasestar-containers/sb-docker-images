@@ -1,85 +1,49 @@
 # Devpi Docker Container
 
-devpi PyPI staging server and packaging/testing/release tool을 위한 Docker 컨테이너입니다.
+- by Source
+- by Pypi
 
 ## 특징
 
 - Python 3.12 기반
-- 멀티 스테이지 빌드로 최적화된 이미지 크기
-- 비 root 사용자로 실행하여 보안 강화
-- 헬스 체크 기능 포함
-- 데이터 영속성을 위한 볼륨 마운트
-- **devpi-web 포함**: 웹 인터페이스와 패키지 검색 기능 제공
-- Semantic UI 테마 적용
+- 옵셔널 설치기능(ui, constrained, findlinks, jenkins, lockdown)
 
-## 사용법
+## Dev
 
-### 1. 환경 준비
+### 1. Prepare & Clean
+
+소스코드 받기 등 전체적으로 한번하는 작업
 
 ```bash
 # devpi 저장소 clone 및 환경 준비
 make prepare
-
-# 디렉토리 설정
-make setup
+make clean
 ```
 
-### 2. Docker 이미지 빌드
+### 2. Build & Push
 
+두개 명령어 패턴이 다른것은 실수 아님
 ```bash
-# 기본 빌드 (웹 인터페이스 포함)
-make build
-
-# 모든 플러그인 포함 빌드
-make build-full
-
-# 최소 빌드 (웹 인터페이스 없음)
-make build-minimal
-
-# 커스텀 빌드 (특정 플러그인 선택)
-make build-custom web=true constrained=true jenkins=false
-
-# 캐시 없이 빌드
-make build-no-cache
+make pypi-build
+make source build
 ```
 
-### 3. 서버 실행
+### 3. Server
 
 ```bash
 # devpi 서버 시작
+make setup
 make server-up
+make server-logs
+make server-enter
+make server-down
+make teardown
 
 # Docker Compose 사용 (기본 설정)
 docker-compose up -d
 
 # Docker Compose로 특정 플러그인 활성화
 INSTALL_CONSTRAINED=true INSTALL_JENKINS=true docker-compose up --build -d
-```
-
-### 4. 서버 관리
-
-```bash
-# 서버 중지
-make server-down
-
-# 로그 확인
-make server-logs
-
-# 컨테이너 접속
-make server-enter
-
-# 서버 재시작
-make server-restart
-```
-
-### 5. 개발용 명령
-
-```bash
-# 개발 환경 빌드 및 실행
-make dev-run
-
-# 모든 리소스 정리
-make dev-clean
 ```
 
 ## 접속 정보
@@ -132,28 +96,3 @@ make dev-clean
 - `INSTALL_FINDLINKS`: devpi-findlinks 설치 (기본값: false)
 - `INSTALL_JENKINS`: devpi-jenkins 설치 (기본값: false)
 - `INSTALL_LOCKDOWN`: devpi-lockdown 설치 (기본값: false)
-
-### 환경변수 사용 예시
-```bash
-# .env 파일 생성
-cat > .env << EOF
-INSTALL_WEB=true
-INSTALL_CONSTRAINED=true
-INSTALL_JENKINS=true
-DEVPI_WEB_THEME=semantic-ui
-EOF
-
-# Docker Compose 실행
-docker-compose up --build -d
-```
-
-## 볼륨
-
-- `/app/data`: devpi 서버 데이터
-- `/app/logs`: 로그 파일
-
-## 도움말
-
-```bash
-make help
-``` 

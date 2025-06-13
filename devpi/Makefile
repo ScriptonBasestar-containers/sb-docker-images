@@ -19,6 +19,7 @@ help:
 prepare:
 	@echo "Preparing devpi environment..."
 	rm -rf devpi
+	touch .env
 	git clone https://github.com/devpi/devpi.git --depth 1
 	git clone https://github.com/devpi/devpi-constrained.git --depth 1
 	git clone https://github.com/devpi/devpi-findlinks.git --depth 1
