@@ -1,5 +1,5 @@
 # Variables
-IMAGE_NAME ?= devpi/pypi
+IMAGE_NAME ?= devpi/source
 IMAGE_TAG ?= latest
 PORT ?= 3141
 
