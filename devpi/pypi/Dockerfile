@@ -20,6 +20,11 @@ RUN pip install --no-cache-dir devpi-server devpi-client && \
     if [ "$INSTALL_JENKINS" = "true" ]; then pip install --no-cache-dir devpi-jenkins; fi && \
     if [ "$INSTALL_LOCKDOWN" = "true" ]; then pip install --no-cache-dir devpi-lockdown; fi
 
+# devpi-semantic-ui 설치 후 테마 파일 복사
+# RUN pip install --no-cache-dir devpi-semantic-ui && \
+#     mkdir -p /app/semantic-ui && \
+#     python -c "import devpi_semantic_ui, shutil, os; shutil.copytree(os.path.join(os.path.dirname(devpi_semantic_ui.__file__), 'semantic-ui'), '/app/semantic-ui', dirs_exist_ok=True)"
+
 # Create non-root user
 RUN groupadd -r devpi && useradd -r -g devpi devpi
 
@@ -43,4 +48,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 VOLUME ["/app/data"]
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["devpi-server", "--host=0.0.0.0", "--port=3141", "--serverdir=/app/data", "--theme=semantic-ui"]
+CMD ["devpi-server", "--host=0.0.0.0", "--port=3141", "--serverdir=/app/data"]
+# CMD ["devpi-server", "--host=0.0.0.0", "--port=3141", "--serverdir=/app/data", "--theme=semantic-ui"]

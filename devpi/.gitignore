@@ -1,7 +1,8 @@
-# target repositories
+# Run env
 devpi_data/
-logs/
 .env
+data/
+logs/
 
 # IDE
 .vscode/

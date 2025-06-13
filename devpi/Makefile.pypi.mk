@@ -1,10 +1,10 @@
 # Variables
-IMAGE_NAME ?= devpi/source
+IMAGE_NAME ?= devpi/pypi
 IMAGE_TAG ?= latest
 PORT ?= 3141
 
 REGISTRY = ghcr.io
-NAMESPACE = ScriptonBasestar-containers
+NAMESPACE = scriptonbasestar-containers
 
 CONTAINER_NAME = devpi-server
 DATA_DIR = ./devpi_data
@@ -24,24 +24,29 @@ BUILD_ARGS = \
 
 build: 
 	@echo "Building Docker image..."
-	docker build $(BUILD_ARGS) -t $(IMAGE_NAME):$(IMAGE_TAG) -f pypi/Dockerfile .
+	docker build $(BUILD_ARGS) -t $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG) -f pypi/Dockerfile .
 	@echo "Docker image built successfully"
 
 push:
 	@echo "Pushing Docker image..."
 	# docker push $(IMAGE_NAME):$(IMAGE_TAG)
-	docker push $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):latest
+	docker push $(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
 
-setup: build
+setup:
+	@echo "Setting up devpi server..."
+	mkdir -p $(DATA_DIR) $(LOGS_DIR)
+	chmod 777 $(DATA_DIR) $(LOGS_DIR)
+
+run:
 	@echo "Setting up devpi server..."
 	docker run -d \
 		--name devpi-server \
 		-p $(PORT):$(PORT) \
 		-v $(PWD)/data:/app/data \
 		-v $(PWD)/logs:/app/logs \
-		$(IMAGE_NAME):$(IMAGE_TAG)
+		$(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
 
-run: setup
+enter:
 	@echo "Running devpi server..."
 	docker exec -it devpi-server /bin/bash
 
