@@ -42,8 +42,8 @@ run:
 	docker run -d \
 		--name devpi-server \
 		-p $(PORT):$(PORT) \
-		-v $(PWD)/data:/app/data \
-		-v $(PWD)/logs:/app/logs \
+		-v $(DATA_DIR):/app/data \
+		-v $(LOGS_DIR):/app/logs \
 		$(REGISTRY)/$(NAMESPACE)/$(IMAGE_NAME):$(IMAGE_TAG)
 
 enter:
@@ -54,3 +54,6 @@ teardown:
 	@echo "Tearing down devpi server..."
 	-docker stop devpi-server
 	-docker rm devpi-server
+	-rm -rf $(DATA_DIR) $(LOGS_DIR)
+	# rm -rf data/*
+	# rm -rf logs/*
