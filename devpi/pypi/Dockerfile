@@ -12,6 +12,11 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Install setuptools with fixed version to avoid pkg_resources deprecation warning
+# /usr/local/lib/python3.12/site-packages/pyramid/path.py:3: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+# FIXME: 위 문제가 해결되면 제거
+RUN pip install --no-cache-dir "setuptools<81.0.0"
+
 # Install core and optional plugins from PyPI
 RUN pip install --no-cache-dir devpi-server devpi-client && \
     if [ "$INSTALL_WEB" = "true" ]; then pip install --no-cache-dir devpi-web; fi && \
@@ -48,5 +53,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 VOLUME ["/app/data"]
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["devpi-server", "--host=0.0.0.0", "--port=3141", "--serverdir=/app/data"]
+CMD ["devpi-server", "--host=0.0.0.0", "--port=3141", "--serverdir=/app/data", "--secretfile=/app/data/.secret"]
+# CMD ["devpi-server", "--host=0.0.0.0", "--port=3141", "--serverdir=/app/data"]
 # CMD ["devpi-server", "--host=0.0.0.0", "--port=3141", "--serverdir=/app/data", "--theme=semantic-ui"]
