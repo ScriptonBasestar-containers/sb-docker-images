@@ -17,10 +17,11 @@ services:
     volumes:
       - ./devpi_data:/app/data
       - ./logs:/app/logs
+      - ./files/entrypoint.sh:/app/entrypoint.sh
     environment:
       - DEVPI_HOST=0.0.0.0
       - DEVPI_PORT=3141
-      - DEVPI_WEB_THEME=semantic-ui
+      # - DEVPI_WEB_THEME=semantic-ui
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3141/"]
