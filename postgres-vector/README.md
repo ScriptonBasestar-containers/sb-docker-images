@@ -18,7 +18,7 @@ CloudNativePG-compatible PostgreSQL 16 image with pgvector extension and extensi
 
 ## Why CloudNativePG?
 
-Migrated from Bitnami PostgreSQL Helm Chart to CloudNativePG for:
+CloudNativePG provides enterprise-grade PostgreSQL on Kubernetes:
 
 -  Native Kubernetes operator with CRD-based management
 -  Built-in backup/restore with Barman
@@ -183,13 +183,13 @@ bootstrap:
       - CREATE EXTENSION IF NOT EXISTS timescaledb;
 ```
 
-## Migration from Bitnami
+## Data Migration
 
-### Data Migration
+### From Existing PostgreSQL
 
 ```bash
-# Export from Bitnami PostgreSQL
-kubectl exec -it bitnami-postgresql-0 -- \
+# Export from source PostgreSQL
+kubectl exec -it source-postgresql-0 -- \
   pg_dump -U postgres -d mydb > backup.sql
 
 # Import to CloudNativePG
@@ -197,15 +197,15 @@ kubectl exec -it postgres-vector-1 -- \
   psql -U app -d app < backup.sql
 ```
 
-### Values Comparison
+### Configuration Reference
 
-| Bitnami Feature | CloudNativePG Equivalent |
-|----------------|--------------------------|
-| `metrics.enabled` | `monitoring.enablePodMonitor` |
-| `backup.cronjob` | `backup.barmanObjectStore` |
-| `volumePermissions` | Handled by operator |
-| `initdb.scripts` | `bootstrap.initdb.postInitSQL` |
-| `primary.persistence` | `storage.size` |
+| Feature | CloudNativePG Configuration |
+|---------|----------------------------|
+| Monitoring | `monitoring.enablePodMonitor` |
+| Backup | `backup.barmanObjectStore` |
+| Volume Permissions | Handled automatically by operator |
+| Init Scripts | `bootstrap.initdb.postInitSQL` |
+| Storage | `storage.size` and `storage.storageClass` |
 
 ## Troubleshooting
 
@@ -246,8 +246,8 @@ To enable commented extensions, edit [`cnpg-vector.dockerfile`](cnpg-vector.dock
 ## Related Files
 
 - [`cnpg-vector.dockerfile`](cnpg-vector.dockerfile) - Main Dockerfile for CloudNativePG
-- [`bitnami-vector.dockerfile`](bitnami-vector.dockerfile) - Legacy Bitnami-based image
 - [`cluster-example.yaml`](cluster-example.yaml) - CloudNativePG cluster example
+- [`Makefile`](Makefile) - Build and deployment automation
 
 ## References
 
