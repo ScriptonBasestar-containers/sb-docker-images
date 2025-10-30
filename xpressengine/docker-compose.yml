@@ -122,13 +122,19 @@ services:
       - redis
 
   redis:
-    image: bitnami/redis:5.0
+    image: redis:7-alpine
     container_name: redis
     restart: always
     ports:
       - 6379:6379
-    environment:
-      - REDIS_PASSWORD=password
+    command: redis-server --requirepass password
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
   mariadb:
     image: mariadb
@@ -152,3 +158,5 @@ services:
 
   # minio:
   #   image: minio/minio
+volumes:
+  redis:
