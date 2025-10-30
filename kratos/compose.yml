@@ -1,14 +1,21 @@
 services:
   postgres:
-    image: bitnami/postgresql:16
+    image: postgres:16-alpine
     container_name: postgres
     restart: unless-stopped
     environment:
       - POSTGRES_USER=kratos
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=kratos
+    volumes:
+      - postgres:/var/lib/postgresql/data
     networks:
       - intra-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kratos -d kratos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kratos-migrate:
     image: oryd/kratos:v1.3.1
@@ -93,4 +100,5 @@ services:
 networks:
   intra-network:
 volumes:
+  postgres:
   kratos-sqlite:
