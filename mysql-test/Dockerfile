@@ -1,4 +1,4 @@
-FROM mysql:8.0
+FROM mysql:8.4
 
 ENV HOSTNAME local-mysql
 ENV MYSQL_ROOT_PASSWORD qwer1234!@#$

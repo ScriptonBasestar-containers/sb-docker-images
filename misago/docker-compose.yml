@@ -30,7 +30,7 @@ services:
       - misago-postgres-15:/var/lib/postgresql/data
 
   redis:
-    image: redis:7
+    image: redis:8.2-alpine
     restart: unless-stopped
     volumes:
       - misago-redis-6:/data
