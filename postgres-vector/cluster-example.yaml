@@ -1,5 +1,5 @@
 # CloudNativePG Cluster Example with pgvector
-# This replaces the Bitnami PostgreSQL Helm Chart deployment
+# Production-ready PostgreSQL cluster with vector extension support
 ---
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
@@ -52,7 +52,7 @@ spec:
     # For production, use:
     # storageClass: fast-ssd
 
-  # Resource limits (matching Bitnami values)
+  # Resource limits
   resources:
     requests:
       cpu: 200m
@@ -61,7 +61,7 @@ spec:
       cpu: 1000m
       memory: 4Gi
 
-  # Node affinity (matching Bitnami values)
+  # Node affinity (optional)
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -72,14 +72,14 @@ spec:
             values:
             - polypia-sheepdog1
 
-  # Monitoring (replaces Bitnami metrics)
+  # Monitoring with Prometheus
   monitoring:
     enablePodMonitor: true
     customQueriesConfigMap:
       - name: postgresql-monitoring
         key: custom-queries.yaml
 
-  # Backup configuration (replaces Bitnami backup cronjob)
+  # Backup configuration with Barman
   backup:
     # Barman configuration
     barmanObjectStore:
@@ -109,7 +109,7 @@ spec:
       immediate: true
 
 ---
-# Alternative: Local filesystem backup (similar to Bitnami hostPath)
+# Alternative: Local filesystem backup
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
@@ -134,7 +134,7 @@ spec:
     size: 10Gi
     storageClass: local-path
 
-  # Volume mounts for data (similar to Bitnami extraVolumes)
+  # Additional volumes for custom paths
   # Note: CloudNativePG manages data directory automatically
   # For custom volumes, use additionalVolumes
   additionalVolumes:

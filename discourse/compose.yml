@@ -55,7 +55,7 @@ services:
       - postgres
 
   # sidekiq:
-  #   DEPRECATED: Bitnami-based configuration removed
+  #   DEPRECATED: Legacy configuration removed
   #   Use official discourse/app image with standard paths
   #   image: discourse/app
   #   container_name: sidekiq_dev
