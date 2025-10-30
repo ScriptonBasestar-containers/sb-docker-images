@@ -55,20 +55,19 @@ services:
       - postgres
 
   # sidekiq:
+  #   DEPRECATED: Bitnami-based configuration removed
+  #   Use official discourse/app image with standard paths
   #   image: discourse/app
   #   container_name: sidekiq_dev
   #   depends_on:
   #     - discourse
   #   volumes:
-  #     - 'sidekiq_data:/bitnami/discourse'
-  #   command: /opt/bitnami/scripts/discourse-sidekiq/run.sh
+  #     - 'sidekiq_data:/var/www/discourse'
   #   environment:
-  #     # ALLOW_EMPTY_PASSWORD is recommended only for development.
-  #     - ALLOW_EMPTY_PASSWORD=yes
   #     - DISCOURSE_HOST=www.example.com
   #     - DISCOURSE_DATABASE_HOST=postgresql
   #     - DISCOURSE_DATABASE_PORT_NUMBER=5432
-  #     - DISCOURSE_DATABASE_USER=bn_discourse
-  #     - DISCOURSE_DATABASE_NAME=bitnami_discourse
+  #     - DISCOURSE_DATABASE_USER=discourse_user
+  #     - DISCOURSE_DATABASE_NAME=discourse_db
   #     - DISCOURSE_REDIS_HOST=redis
   #     - DISCOURSE_REDIS_PORT_NUMBER=6379

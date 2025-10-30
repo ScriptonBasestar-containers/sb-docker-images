@@ -44,6 +44,15 @@ This document tracks the migration from Bitnami images to official Docker images
   - Added healthcheck
   - Enabled volume persistence
 
+#### compose.redis.yml
+- **Before**: `bitnami/redis:7.4`
+- **After**: `redis:7-alpine`
+- **Changes**:
+  - Environment: `REDIS_PASSWORD` → command-line flag `--requirepass`
+  - Added data volume `/data`
+  - Added healthcheck
+  - Enabled volume persistence
+
 ### 3. nextcloud/standalone/compose.fpm.yml
 #### PostgreSQL
 - **Before**: `bitnami/postgresql:15`
@@ -80,6 +89,13 @@ This document tracks the migration from Bitnami images to official Docker images
   - Added data persistence
   - Added healthcheck
   - Added volumes section
+
+### 6. discourse/compose.yml
+- **Status**: Comments cleaned up
+- **Changes**:
+  - Removed deprecated Bitnami sidekiq configuration
+  - Added deprecation notice for legacy Bitnami paths
+  - Updated to standard discourse paths
 
 ## Breaking Changes
 
