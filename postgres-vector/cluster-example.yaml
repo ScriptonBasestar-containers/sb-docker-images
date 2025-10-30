@@ -1,0 +1,211 @@
+# CloudNativePG Cluster Example with pgvector
+# This replaces the Bitnami PostgreSQL Helm Chart deployment
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-vector
+  namespace: default
+spec:
+  instances: 1
+
+  # Custom image with pgvector extension
+  imageName: docker.io/scriptonbasestar/postgres-vector:16
+  imagePullPolicy: IfNotPresent
+
+  # PostgreSQL configuration
+  postgresql:
+    parameters:
+      # pgvector extension
+      shared_preload_libraries: "vector"
+
+      # Performance tuning
+      max_connections: "200"
+      shared_buffers: "256MB"
+      effective_cache_size: "1GB"
+      maintenance_work_mem: "64MB"
+
+      # Logging
+      log_destination: "stderr"
+      logging_collector: "on"
+      log_directory: "/var/log/postgresql"
+      log_filename: "postgresql-%Y-%m-%d_%H%M%S.log"
+      log_statement: "all"
+      log_duration: "on"
+
+  # Bootstrap configuration
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+      # Initialize extensions and databases
+      postInitSQL:
+        - CREATE EXTENSION IF NOT EXISTS vector;
+        # Add other initialization SQL here
+        # - CREATE USER keycloak_user WITH ENCRYPTED PASSWORD 'H!V8wSzT3qyQZLj9uF';
+        # - CREATE DATABASE keycloak_db OWNER keycloak_user;
+
+  # Storage configuration
+  storage:
+    size: 10Gi
+    storageClass: local-path
+    # For production, use:
+    # storageClass: fast-ssd
+
+  # Resource limits (matching Bitnami values)
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 4Gi
+
+  # Node affinity (matching Bitnami values)
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - polypia-sheepdog1
+
+  # Monitoring (replaces Bitnami metrics)
+  monitoring:
+    enablePodMonitor: true
+    customQueriesConfigMap:
+      - name: postgresql-monitoring
+        key: custom-queries.yaml
+
+  # Backup configuration (replaces Bitnami backup cronjob)
+  backup:
+    # Barman configuration
+    barmanObjectStore:
+      destinationPath: s3://postgres-backups/
+      endpointURL: https://s3.amazonaws.com
+
+      s3Credentials:
+        accessKeyId:
+          name: backup-creds
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: backup-creds
+          key: ACCESS_SECRET_KEY
+
+      wal:
+        compression: gzip
+        maxParallel: 2
+
+    # Retention policy
+    retentionPolicy: "30d"
+
+  # Scheduled backups
+  scheduledBackup:
+    - name: daily-backup
+      schedule: "0 2 * * *"  # 2 AM daily
+      backupOwnerReference: self
+      immediate: true
+
+---
+# Alternative: Local filesystem backup (similar to Bitnami hostPath)
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres-vector-local
+  namespace: default
+spec:
+  instances: 1
+  imageName: docker.io/scriptonbasestar/postgres-vector:16
+
+  postgresql:
+    parameters:
+      shared_preload_libraries: "vector"
+
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+      postInitSQL:
+        - CREATE EXTENSION IF NOT EXISTS vector;
+
+  storage:
+    size: 10Gi
+    storageClass: local-path
+
+  # Volume mounts for data (similar to Bitnami extraVolumes)
+  # Note: CloudNativePG manages data directory automatically
+  # For custom volumes, use additionalVolumes
+  additionalVolumes:
+    - name: pg-backup
+      hostPath:
+        path: /tank/backup/postgres
+        type: Directory
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 4Gi
+
+  monitoring:
+    enablePodMonitor: true
+
+---
+# Secret for backup credentials (if using S3)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backup-creds
+  namespace: default
+type: Opaque
+stringData:
+  ACCESS_KEY_ID: "your-access-key"
+  ACCESS_SECRET_KEY: "your-secret-key"
+
+---
+# Custom queries for monitoring
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-monitoring
+  namespace: default
+data:
+  custom-queries.yaml: |
+    pg_database:
+      query: "SELECT pg_database.datname, pg_database_size(pg_database.datname) as size FROM pg_database"
+      metrics:
+        - datname:
+            usage: "LABEL"
+            description: "Name of the database"
+        - size:
+            usage: "GAUGE"
+            description: "Disk space used by the database"
+
+    pg_vector_stats:
+      query: |
+        SELECT
+          schemaname,
+          tablename,
+          pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as total_size
+        FROM pg_tables
+        WHERE tablename IN (
+          SELECT tablename FROM pg_tables t
+          JOIN pg_class c ON t.tablename = c.relname
+          JOIN pg_attribute a ON c.oid = a.attrelid
+          JOIN pg_type ty ON a.atttypid = ty.oid
+          WHERE ty.typname = 'vector'
+        )
+      metrics:
+        - schemaname:
+            usage: "LABEL"
+            description: "Schema name"
+        - tablename:
+            usage: "LABEL"
+            description: "Table name"
+        - total_size:
+            usage: "GAUGE"
+            description: "Total size of tables with vector columns"
