@@ -1,15 +1,64 @@
+# Gnuboard6 - 한국형 CMS (Python 기반)
+# 참고: https://github.com/gnuboard/g6
+
 services:
-  pyweb:
+  # Gnuboard6 애플리케이션
+  gnuboard6:
     build:
       context: .
       dockerfile: gnuboard6-debian.dockerfile
-    image: pyweb:latest
-    container_name: pyweb
+    image: gnuboard6:latest
+    container_name: gnuboard6
+    restart: unless-stopped
     ports:
-      - 8080:3000
+      - "8080:8000"
+    environment:
+      - DB_ENGINE=django.db.backends.mysql
+      - DB_NAME=gnuboard6
+      - DB_USER=gnuboard
+      - DB_PASSWORD=passw0rd
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - DEBUG=true
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+    volumes:
+      - gnuboard6-media:/app/media
+      - gnuboard6-static:/app/static
     networks:
-      - code-network
+      - app-network
+      - db-network
     depends_on:
-      - pyweb-fpm
+      mariadb:
+        condition: service_healthy
 
+  # MariaDB
+  mariadb:
+    image: mariadb:11.8
+    container_name: gnuboard6-mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=gnuboard6
+      - MYSQL_USER=gnuboard
+      - MYSQL_PASSWORD=passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - db-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
+networks:
+  app-network:
+    driver: bridge
+  db-network:
+    driver: bridge
+
+volumes:
+  gnuboard6-media:
+  gnuboard6-static:
+  mariadb-data:

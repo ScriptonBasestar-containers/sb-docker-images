@@ -1,0 +1,49 @@
+# Bitcoin Core - 공식 Docker 이미지 사용
+# 참고: https://hub.docker.com/r/kylemanna/bitcoind
+#       https://github.com/bitcoin/bitcoin
+
+services:
+  bitcoind:
+    # 커뮤니티 이미지 (가장 많이 사용됨)
+    image: kylemanna/bitcoind:latest
+    container_name: bitcoind
+    restart: unless-stopped
+    ports:
+      - "8332:8332"  # RPC
+      - "8333:8333"  # P2P
+    volumes:
+      - bitcoin-data:/bitcoin/.bitcoin
+    command: |
+      bitcoind
+      -printtoconsole
+      -rpcallowip=0.0.0.0/0
+      -rpcbind=0.0.0.0
+      -rpcuser=${RPC_USER:-bitcoin}
+      -rpcpassword=${RPC_PASSWORD:-changeme}
+      -testnet=${TESTNET:-0}
+
+  # Bitcoin Explorer (선택사항)
+  btc-rpc-explorer:
+    image: saubyk/btc-rpc-explorer:latest
+    container_name: btc-explorer
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - BTCEXP_HOST=0.0.0.0
+      - BTCEXP_PORT=3002
+      - BTCEXP_BITCOIND_HOST=bitcoind
+      - BTCEXP_BITCOIND_PORT=8332
+      - BTCEXP_BITCOIND_USER=${RPC_USER:-bitcoin}
+      - BTCEXP_BITCOIND_PASS=${RPC_PASSWORD:-changeme}
+      - BTCEXP_PRIVACY_MODE=false
+      - BTCEXP_NO_RATES=false
+    depends_on:
+      - bitcoind
+
+volumes:
+  bitcoin-data:
+
+networks:
+  default:
+    name: bitcoin-network

@@ -1,0 +1,68 @@
+# Ethereum - 공식 Geth 클라이언트
+# 참고: https://hub.docker.com/r/ethereum/client-go
+#       https://geth.ethereum.org/docs
+
+services:
+  geth:
+    # 공식 Ethereum Go 클라이언트
+    image: ethereum/client-go:stable
+    container_name: geth
+    restart: unless-stopped
+    ports:
+      - "8545:8545"  # HTTP RPC
+      - "8546:8546"  # WebSocket
+      - "30303:30303"  # P2P TCP
+      - "30303:30303/udp"  # P2P UDP
+    volumes:
+      - geth-data:/root/.ethereum
+    command: |
+      --http
+      --http.addr=0.0.0.0
+      --http.port=8545
+      --http.corsdomain="*"
+      --http.vhosts="*"
+      --http.api=eth,net,web3,personal,admin
+      --ws
+      --ws.addr=0.0.0.0
+      --ws.port=8546
+      --ws.origins="*"
+      --ws.api=eth,net,web3,personal,admin
+      --syncmode=${SYNC_MODE:-snap}
+      --gcmode=archive
+      --cache=${CACHE:-2048}
+
+  # Ethereum Block Explorer (선택사항)
+  blockscout:
+    image: blockscout/blockscout:latest
+    container_name: eth-explorer
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      - ETHEREUM_JSONRPC_VARIANT=geth
+      - ETHEREUM_JSONRPC_HTTP_URL=http://geth:8545
+      - ETHEREUM_JSONRPC_WS_URL=ws://geth:8546
+      - DATABASE_URL=postgresql://postgres:changeme@postgres:5432/blockscout
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE:-56NtB48ear7+wMSf0+xIU4qQn9wEZRvEMJqvnS5wL+4cKwG8YAqlS9Y6B90Yp}
+    depends_on:
+      - geth
+      - postgres
+
+  # PostgreSQL for BlockScout
+  postgres:
+    image: postgres:16-alpine
+    container_name: eth-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=blockscout
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  geth-data:
+  postgres-data:
+
+networks:
+  default:
+    name: ethereum-network

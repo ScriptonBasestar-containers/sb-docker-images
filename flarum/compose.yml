@@ -1,4 +1,32 @@
 services:
+  # Flarum - Modern PHP Forum
+  # 커뮤니티 이미지 사용 (공식 이미지 없음)
+  flarum:
+    image: mondedie/flarum:stable
+    container_name: flarum
+    restart: unless-stopped
+    ports:
+      - "8080:8888"
+    environment:
+      - FORUM_URL=http://localhost:8080
+      - DB_HOST=mariadb
+      - DB_NAME=db01
+      - DB_USER=user01
+      - DB_PASS=passw0rd
+      - DB_PREF=flarum_
+      - DB_PORT=3306
+      - FLARUM_ADMIN_USER=admin
+      - FLARUM_ADMIN_PASS=password
+      - FLARUM_ADMIN_MAIL=admin@example.com
+      - FLARUM_TITLE=Flarum Forum
+    volumes:
+      - flarum-data:/flarum/app
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - db-network
+
   mariadb:
     image: mariadb:11.8
     environment:
@@ -10,6 +38,11 @@ services:
       - mariadb:/var/lib/mysql
     networks:
       - db-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
@@ -38,4 +71,5 @@ networks:
     driver: bridge
 
 volumes:
+  flarum-data:
   mariadb:
