@@ -29,6 +29,8 @@ make 명령 사용
 - nextcloud
 - squid
 - jenkins-agent
+- git, vcs
+  - gitea
 - auth,security
   - https://github.com/freeipa/freeipa
   - keycloak
@@ -75,7 +77,7 @@ make 명령 사용
 - discourse, flarum, nextcloud, wordpress
 - gnuboard5, gnuboard6, mediawiki, gollum
 - postgres-exts, mariadb, devpi
-- jenkins, squid, kratos
+- jenkins, squid, kratos, gitea
 
 ### 실험적/테스트용
 - docker-bitcoin, docker-ethereum

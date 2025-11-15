@@ -8,3 +8,7 @@
 tmp-*/
 tmp/
 logs/
+
+# Gitea data
+gitea/data/
+gitea/postgres/

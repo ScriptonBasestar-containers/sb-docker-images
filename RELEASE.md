@@ -13,6 +13,12 @@
   - Full: PostGIS, TimescaleDB, pg_cron 등 포함
   - 상태: 빌드/문서 완료, 프로덕션 준비됨
 
+### DevOps/VCS
+- **gitea** - 자체 호스팅 Git 서비스
+  - GitHub Actions 호환 CI/CD (Gitea Actions)
+  - 경량 (256MB RAM), PostgreSQL 백엔드
+  - 상태: 구성 완료, 테스트 준비됨
+
 ### 커뮤니티/포럼
 - **flarum** - 현대적인 포럼 소프트웨어
 - **discourse** - 오픈소스 토론 플랫폼
