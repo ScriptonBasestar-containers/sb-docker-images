@@ -1,3 +1,19 @@
+# 🔒 PRODUCTION CONFIGURATION
+#
+# Security features enabled:
+# - Strong password policy (min 8 chars)
+# - Identifier similarity check enabled
+# - HaveIBeenPwned breach check enabled
+# - HTTPS URLs for all endpoints
+# - OIDC provider integration
+#
+# ⚠️ SECURITY WARNINGS:
+# - Update secrets in lines 120-123 with: openssl rand -base64 32
+# - Configure proper SMTP connection (line 141)
+# - Review log settings (leak_sensitive_values should be false)
+#
+# For development/testing, see: kratos.dev.yml
+
 version: v0.13.0
 
 dsn: memory
@@ -102,9 +118,12 @@ selfservice:
 log:
   level: debug
   format: text
+  # ⚠️ SECURITY RISK: Set to false in production to prevent credential leaks
   leak_sensitive_values: true
 
 secrets:
+  # ⚠️ CRITICAL: Replace with secure secrets before production deployment
+  # Generate with: openssl rand -base64 32
   cookie:
     - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
   cipher:
@@ -125,6 +144,7 @@ identity:
       url: file:///etc/config/kratos/identity.schema.json
 
 courier:
+  # ⚠️ CRITICAL: Replace with production SMTP server before deployment
   smtp:
     connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
 
