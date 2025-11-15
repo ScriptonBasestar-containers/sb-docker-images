@@ -57,9 +57,35 @@ make 명령 사용
 - sns, timeline
   - mastodon
 
-## Deprecated, Archived 이거나 마찬가지
-- xe3
-- 
+## 프로젝트 분류
+
+### 프로덕션 준비 완료
+상세 내용은 [RELEASE.md](./RELEASE.md) 참조
+
+### 개발/테스트 도구
+- **buildbox** - 통합 테스트 환경 (Kratos, Redis, PostgreSQL 등)
+- **ansible-dev** - Ansible 개발 환경
+- **chef-dev** - Chef 개발 환경
+- **ruby-dev** - Ruby 개발 환경
+
+### 활발히 유지보수 중
+- discourse, flarum, nextcloud, wordpress
+- gnuboard5, gnuboard6, mediawiki, gollum
+- postgres-exts, mariadb, devpi
+- jenkins, squid, kratos
+
+### 실험적/테스트용
+- docker-bitcoin, docker-ethereum
+- mastodon, forem
+- jupyter, jupyter2
+
+### Deprecated / 아카이브 예정
+- **xe3** (현재: xpressengine) - 레거시 XE3, 공식 지원 종료
+- **flaskbb** - Flask 기반 포럼, 개발 중단됨
+- **openNamu** - 개발 중단 위키
+- **spree/solidus** - Ruby 이커머스, 테스트만 진행
+
+> 아카이브 예정 프로젝트는 필요 시 `archive/` 디렉토리로 이동
 
 ## REF
 https://github.com/docker/build-push-action/issues/561
