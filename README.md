@@ -31,6 +31,8 @@ make 명령 사용
 - jenkins-agent
 - git, vcs
   - gitea
+- storage
+  - minio
 - auth,security
   - https://github.com/freeipa/freeipa
   - keycloak
@@ -76,7 +78,7 @@ make 명령 사용
 ### 활발히 유지보수 중
 - discourse, flarum, nextcloud, wordpress
 - gnuboard5, gnuboard6, mediawiki, gollum
-- postgres-exts, mariadb, devpi
+- postgres-exts, mariadb, devpi, minio
 - jenkins, squid, kratos, gitea
 
 ### 실험적/테스트용

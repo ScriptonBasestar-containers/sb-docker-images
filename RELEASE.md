@@ -13,6 +13,13 @@
   - Full: PostGIS, TimescaleDB, pg_cron 등 포함
   - 상태: 빌드/문서 완료, 프로덕션 준비됨
 
+### 스토리지
+- **minio** - S3 호환 오브젝트 스토리지
+  - AWS S3 API 완전 호환
+  - 경량 (256MB RAM), 고성능
+  - 백업, 미디어, 정적 자산 저장
+  - 상태: 구성 완료, 테스트 준비됨
+
 ### DevOps/VCS
 - **gitea** - 자체 호스팅 Git 서비스
   - GitHub Actions 호환 CI/CD (Gitea Actions)

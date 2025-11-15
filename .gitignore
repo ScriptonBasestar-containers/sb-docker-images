@@ -21,3 +21,8 @@ home-assistant/nodered/
 home-assistant/zigbee2mqtt/
 home-assistant/influxdb/
 home-assistant/grafana/
+
+# Minio data
+minio/data/
+minio/certs/
+minio/cache/
