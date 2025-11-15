@@ -152,10 +152,10 @@ services:
       - minio
     networks:
       - db-network
-      - minio_minio  # Minio 네트워크 추가
+      - minio-network  # Minio 네트워크 추가
 
 networks:
-  minio_minio:
+  minio-network:
     external: true
 ```
 

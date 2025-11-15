@@ -17,8 +17,6 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
-    networks:
-      - minio
 
   # 선택: 자동 버킷 생성 (초기 설정용)
   minio-setup:
@@ -38,9 +36,8 @@ services:
       echo 'Buckets created successfully';
       exit 0;
       "
-    networks:
-      - minio
 
 networks:
-  minio:
+  default:
+    name: minio-network
     driver: bridge
