@@ -1,5 +1,8 @@
 # sb-docker-images
 
+[![CI](https://github.com/scriptonbasestar/sb-docker-images/actions/workflows/ci.yml/badge.svg)](https://github.com/scriptonbasestar/sb-docker-images/actions/workflows/ci.yml)
+[![CD](https://github.com/scriptonbasestar/sb-docker-images/actions/workflows/cd.yml/badge.svg)](https://github.com/scriptonbasestar/sb-docker-images/actions/workflows/cd.yml)
+
 도커 이미지 및 도커 컴포즈 테스트용
 개발/테스트 이미지 생성용
 
@@ -97,6 +100,31 @@ https://axbom.com/fediverse/
 - https://github.com/nginx-proxy/docker-gen
 - https://github.com/nginx-proxy/nginx-proxy
 - https://github.com/jwilder/docker-letsencrypt-nginx-proxy-companion
+
+## CI/CD
+
+### Automated Workflows
+
+**Continuous Integration (CI)**:
+- ✅ Compose 파일 자동 검증
+- ✅ Makefile 타겟 테스트
+- ✅ PostgreSQL 확장 이미지 빌드/테스트
+- ✅ 보안 스캔 (Trivy)
+
+**Continuous Deployment (CD)**:
+- 🚀 Tag 기반 자동 배포 (`v*.*.*`, `postgres-exts-v*`)
+- 🚀 Manual workflow dispatch 지원
+- 🚀 Multi-architecture 빌드 (amd64, arm64)
+
+**Pull Request Checks**:
+- 📋 변경된 파일 자동 분석
+- 📋 관련 테스트만 선택적 실행
+- 📋 코드 품질 자동 체크
+
+### Workflow Files
+- `.github/workflows/ci.yml` - CI 워크플로우
+- `.github/workflows/cd.yml` - CD 워크플로우
+- `.github/workflows/pr-check.yml` - PR 자동 체크
 
 ## Repository Maintenance
 

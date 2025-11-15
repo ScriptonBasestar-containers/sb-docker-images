@@ -1,0 +1,95 @@
+name: CD - Continuous Deployment
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'postgres-exts-v*'
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project to build and push'
+        required: true
+        type: choice
+        options:
+          - postgres-exts-essential
+          - postgres-exts-full
+          - all
+
+jobs:
+  # Build and push PostgreSQL Extensions
+  build-push-postgres-exts:
+    name: Build & Push PostgreSQL Extensions
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=manual-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Essential Image
+        if: github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push'
+        run: |
+          cd postgres-exts
+          make essential-build
+          docker tag postgres-exts:essential scriptonbasestar/postgres-exts:16-essential
+          docker tag postgres-exts:essential scriptonbasestar/postgres-exts:16-essential-${{ steps.version.outputs.version }}
+
+      - name: Build Full Image
+        if: github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'
+        run: |
+          cd postgres-exts
+          make full-build
+          docker tag postgres-exts:full scriptonbasestar/postgres-exts:16-full
+          docker tag postgres-exts:full scriptonbasestar/postgres-exts:16-full-${{ steps.version.outputs.version }}
+
+      - name: Test Images
+        run: |
+          cd postgres-exts
+          if docker images | grep -q "postgres-exts.*essential"; then
+            make essential-test
+          fi
+
+      - name: Push Essential Image
+        if: (github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push') && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        run: |
+          docker push scriptonbasestar/postgres-exts:16-essential
+          docker push scriptonbasestar/postgres-exts:16-essential-${{ steps.version.outputs.version }}
+
+      - name: Push Full Image
+        if: (github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all') && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        run: |
+          docker push scriptonbasestar/postgres-exts:16-full
+          docker push scriptonbasestar/postgres-exts:16-full-${{ steps.version.outputs.version }}
+
+      - name: Create Release Summary
+        if: github.event_name == 'push'
+        run: |
+          echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Images Built**:" >> $GITHUB_STEP_SUMMARY
+          docker images | grep postgres-exts >> $GITHUB_STEP_SUMMARY || true
