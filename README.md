@@ -66,6 +66,11 @@ https://axbom.com/fediverse/
 - https://github.com/nginx-proxy/nginx-proxy
 - https://github.com/jwilder/docker-letsencrypt-nginx-proxy-companion
 
-## TODO
-- 주기적으로 삭제하기
-  https://rtyley.github.io/bfg-repo-cleaner/
+## Repository Maintenance
+
+### Git History Cleanup (Completed: 2025-11-15)
+- ✅ 대용량 파일 제거 완료 (BFG Repo Cleaner 사용)
+  - `latest.zip` (75.9 MB) 제거
+  - `db-4.8.30.zip` (31.2 MB) 제거
+- ✅ 저장소 크기 최적화: 115MB → 632KB (99.5% 감소)
+- Tool used: https://rtyley.github.io/bfg-repo-cleaner/
