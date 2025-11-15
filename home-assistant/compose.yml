@@ -1,0 +1,63 @@
+# ⚠️ EXPERIMENTAL - NOT RECOMMENDED FOR PRODUCTION
+#
+# Docker Container 모드는 Home Assistant의 권장 설치 방법이 아닙니다.
+#
+# 제약사항:
+# - Add-on 지원 불가 (Home Assistant의 핵심 기능)
+# - USB 장치 패스스루 필요 (Zigbee/Z-Wave)
+# - 복잡한 네트워크 설정 필요 (mDNS 디바이스 검색)
+# - 높은 리소스 사용 (2-8GB RAM)
+#
+# 권장 설치 방법:
+# - Home Assistant OS (공식 권장)
+# - https://www.home-assistant.io/installation/
+#
+# 이 파일은 참조용 예제입니다.
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    # 네트워크 모드 옵션:
+    # - host: 디바이스 검색을 위해 권장 (mDNS, SSDP 등)
+    # - bridge: 포트 매핑 필요 (아래 주석 참조)
+    network_mode: host
+
+    # bridge 네트워크 사용 시 포트 매핑 (host 모드에서는 비활성화)
+    # ports:
+    #   - "8123:8123"
+
+    # USB 장치 예제 (Zigbee/Z-Wave 동글)
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0  # Zigbee 동글
+    #   - /dev/ttyACM0:/dev/ttyACM0  # Z-Wave 동글
+
+    # 권한 설정 (USB 장치 접근)
+    # privileged: true
+
+    environment:
+      - TZ=Asia/Seoul
+
+# PostgreSQL 사용 시 (선택, recorder 성능 향상)
+# 참고: SQLite(기본값)로도 충분하며, PostgreSQL 추가는 선택사항
+#
+#   db:
+#     image: postgres:16-alpine
+#     container_name: homeassistant-db
+#     restart: unless-stopped
+#     environment:
+#       POSTGRES_DB: homeassistant
+#       POSTGRES_USER: homeassistant
+#       POSTGRES_PASSWORD: homeassistant
+#     volumes:
+#       - ./postgres:/var/lib/postgresql/data
+#     networks:
+#       - homeassistant
+#
+# networks:
+#   homeassistant:
+#     driver: bridge

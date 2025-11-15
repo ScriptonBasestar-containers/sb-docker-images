@@ -83,6 +83,7 @@ make 명령 사용
 - docker-bitcoin, docker-ethereum
 - mastodon, forem
 - jupyter, jupyter2
+- **home-assistant** (참조용, Docker 비권장 - HA OS 사용 권장)
 
 ### Deprecated / 아카이브 예정
 - **xe3** (현재: xpressengine) - 레거시 XE3, 공식 지원 종료

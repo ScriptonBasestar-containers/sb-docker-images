@@ -12,3 +12,12 @@ logs/
 # Gitea data
 gitea/data/
 gitea/postgres/
+
+# Home Assistant data
+home-assistant/config/
+home-assistant/postgres/
+home-assistant/mosquitto/
+home-assistant/nodered/
+home-assistant/zigbee2mqtt/
+home-assistant/influxdb/
+home-assistant/grafana/
