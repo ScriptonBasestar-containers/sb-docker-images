@@ -15,6 +15,12 @@ make 명령 사용
 - docker-*: 도커 이미지를 직업 빌드해서 쓰는 경우
 - server-*: 도커 이미지 받은걸로 실행시키는 경우
 
+### Docker Compose 파일
+- **표준 네이밍**: `compose.yml` (Docker Compose V2 권장)
+- **레거시**: `docker-compose.yml` (일부 프로젝트에서 사용 중)
+- 두 네이밍 모두 정상 동작하며, 80%가 이미 최신 표준 사용 중
+- 상세 분석: `tmp/compose-naming-report.md` 참조
+
 ## List
 
 - nextcloud
