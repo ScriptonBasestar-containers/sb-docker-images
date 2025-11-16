@@ -11,13 +11,13 @@
 ## 검증 상태
 
 총 24개 프로젝트 중:
-- ✅ **완전 성공**: 12개 (50%)
+- ✅ **완전 성공**: 15개 (62.5%)
 - ⚠️ **이슈 발견**: 4개 (16.7%)
-- 🔄 **미검증**: 8개 (33.3%)
+- 🔄 **미검증**: 5개 (20.8%)
 
 상세 검증 결과: [`docs/verification/VERIFICATION-PROGRESS.md`](docs/verification/VERIFICATION-PROGRESS.md)
 
-### 성공 프로젝트 (12개)
+### 성공 프로젝트 (15개)
 
 | 프로젝트 | 포트 | 접근 URL | 비고 |
 |---------|------|----------|------|
@@ -32,6 +32,9 @@
 | XpressEngine | 8089 | http://localhost:8089 | 포트 수정 |
 | Gnuboard5 | 8090, 8091 | http://localhost:8090 | 포트 수정 |
 | Misago | 8092, 8443 | http://localhost:8092 | 포트 수정 |
+| Django CMS | 8093, 8094 | http://localhost:8093 | 포트 수정, 설정 개선 |
+| TSBoard | 8095, 3100 | http://localhost:8095 | 포트 수정, DATABASE_URL 설정 |
+| Docker Ethereum | 8545, 8546, 4000 | http://localhost:4000 | Geth + BlockScout |
 | Minio | 9000, 9001 | http://localhost:9001 | 수정 없음 |
 
 **추가 검증 통과**:

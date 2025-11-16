@@ -8,14 +8,14 @@
 
 | 상태 | 개수 | 비율 |
 |------|------|------|
-| ✅ 완전 성공 | 12개 | 50% |
+| ✅ 완전 성공 | 15개 | 62.5% |
 | ⚠️ 이슈 발견 | 4개 | 16.7% |
-| 🔄 미검증 | 8개 | 33.3% |
+| 🔄 미검증 | 5개 | 20.8% |
 | **전체** | **24개** | **100%** |
 
 ---
 
-## ✅ 완전 성공 (12개)
+## ✅ 완전 성공 (15개)
 
 ### 1. Minio ✅
 - 상태: 정상 작동
@@ -124,6 +124,32 @@
 - 검증: docker compose config 성공
 - 특징: PostgreSQL, SQLite 지원, 전용 포트 사용
 
+### 13. Django CMS ✅
+- 상태: 포트 수정 + 설정 개선 후 정상
+- 수정:
+  - web 포트 8000 → 8093
+  - frontend 포트 8090 → 8094
+  - env_file을 선택사항으로 변경
+- 포트: 8093 (web), 8094 (frontend), 5432 (PostgreSQL)
+- 검증: docker compose config 성공
+- 특징: Python Django 기반, PostgreSQL 내장
+
+### 14. TSBoard ✅
+- 상태: 포트 수정 + DATABASE_URL 설정 후 정상
+- 수정:
+  - frontend 포트 80 → 8095
+  - db 포트 3306 → 3307
+  - DATABASE_URL 기본값 설정
+- 포트: 8095 (frontend), 3100 (backend), 3307 (MySQL)
+- 검증: docker compose config 성공
+- 특징: TypeScript 기반 게시판, MySQL 사용
+
+### 15. Docker Ethereum ✅
+- 상태: 설정 검증 성공
+- 포트: 8545 (HTTP RPC), 8546 (WebSocket), 30303 (P2P), 4000 (BlockScout)
+- 검증: docker compose config 성공
+- 특징: Geth 클라이언트, BlockScout 탐색기, PostgreSQL 내장
+
 ---
 
 ## ⚠️ 이슈 발견 (4개)
@@ -146,14 +172,11 @@
 
 ---
 
-## 🔄 미검증 (8개)
+## 🔄 미검증 (5개)
 
-1. **Django CMS** - env 파일 누락 경고
-2. **Docker Ethereum** - 미테스트
-3. **Forem** - 디스크 공간 부족으로 중단
-4. **TSBoard** - DATABASE_URL 경고
-5. **Discourse** - 제거됨 (검증 대상 아님)
-6-8. 기타 - 미확인
+1. **Forem** - 디스크 공간 부족으로 중단
+2. **Discourse** - 제거됨 (검증 대상 아님)
+3-5. 기타 - 미확인
 
 ---
 
@@ -176,7 +199,10 @@
 | **XpressEngine** | **8089**, 3306, 6379 | ✅ |
 | **Gnuboard5** | **8090**, 8091 | ✅ |
 | **Misago** | **8092**, 8443 | ✅ |
+| **Django CMS** | **8093**, 8094, 5432 | ✅ |
+| **TSBoard** | **8095**, 3100, 3307 | ✅ |
 | Home Assistant | 8123 (host mode) | ✅ |
+| **Docker Ethereum** | **8545**, 8546, 30303, 4000 | ✅ |
 | Minio | 9000, 9001 | ✅ |
 | Flarum Mailhog | 8026 | ✅ |
 | Bitcoin RPC | 8332, 8333 | ⚠️ |
@@ -210,6 +236,12 @@ joomla/compose.yml
 xpressengine/compose.yml
 gnuboard5/compose.yml
 misago/compose.yml
+```
+
+### 커밋 5: Django CMS, TSBoard 설정 개선
+```
+django-cms/compose.yml
+tsboard/compose.yml
 ```
 
 ---
