@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: frontend-tsboard.dockerfile
     ports:
-      - "80:80"
+      - "8095:80"
     depends_on:
       - backend
 
@@ -15,7 +15,7 @@ services:
     ports:
       - "3100:3100"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=${DATABASE_URL:-mysql://root:example@db:3306/tsboard}
     depends_on:
       - db
 
@@ -25,4 +25,4 @@ services:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: tsboard
     ports:
-      - "3306:3306"
+      - "3307:3306"

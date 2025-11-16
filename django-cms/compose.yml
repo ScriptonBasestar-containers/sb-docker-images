@@ -7,19 +7,19 @@ services:
             context: '.'
             dockerfile: Dockerfile
         ports:
-            - '8000:80'
+            - '8093:80'
         volumes:
             - '.:/app:rw'
             - './data:/data:rw'
         command: python manage.py runserver 0.0.0.0:80
-        env_file: backend/.local-env
+        # env_file: backend/.local-env  # Optional: create if needed
 
     frontend:
         build:
             context: '.'
             dockerfile: frontend.Dockerfile
         ports:
-            - '8090:8090'
+            - '8094:8090'
         volumes:
             - './frontend:/app:rw'
             # We want to ignore an existing frontend/node_modules
