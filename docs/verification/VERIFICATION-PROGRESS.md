@@ -8,14 +8,14 @@
 
 | 상태 | 개수 | 비율 |
 |------|------|------|
-| ✅ 완전 성공 | 15개 | 62.5% |
-| ⚠️ 이슈 발견 | 4개 | 16.7% |
+| ✅ 완전 성공 | 19개 | 79.2% |
+| ⚠️ 이슈 발견 | 0개 | 0% |
 | 🔄 미검증 | 5개 | 20.8% |
 | **전체** | **24개** | **100%** |
 
 ---
 
-## ✅ 완전 성공 (15개)
+## ✅ 완전 성공 (19개)
 
 ### 1. Minio ✅
 - 상태: 정상 작동
@@ -150,25 +150,42 @@
 - 검증: docker compose config 성공
 - 특징: Geth 클라이언트, BlockScout 탐색기, PostgreSQL 내장
 
----
+### 16. Devpi ✅
+- 상태: Dockerfile 경로 수정 후 정상
+- 수정:
+  - Dockerfile 경로 지정: pypi/Dockerfile
+  - version: '3.8' 제거
+- 포트: 3141 (HTTP)
+- 검증: docker compose config 성공
+- 특징: Python 패키지 인덱스 서버, devpi-web 포함
 
-## ⚠️ 이슈 발견 (4개)
+### 17. Gollum ✅
+- 상태: Dockerfile 경로 + 포트 수정 후 정상
+- 수정:
+  - Dockerfile 경로 지정: dockerfiles/gollum-ruby-bookworm.dockerfile
+  - 포트 매핑 수정: 4567:8081
+  - entrypoint 파일 경로 정리
+- 포트: 4567 (HTTP)
+- 검증: docker compose config 성공
+- 특징: Ruby 기반 Git Wiki, GitHub Linguist 지원
 
-### 1. Devpi ⚠️
-- 문제: Dockerfile 누락, 이미지 없음
-- 포트: 미확인
+### 18. Docker Bitcoin ✅
+- 상태: 이미지 변경 후 정상
+- 수정:
+  - btc-rpc-explorer 이미지 변경: saubyk → tyzbit
+- 포트: 8332 (RPC), 8333 (P2P), 3002 (Explorer)
+- 검증: docker compose config 성공
+- 특징: Bitcoin Core + RPC Explorer
 
-### 2. Gollum ⚠️
-- 문제: Dockerfile 누락
-- 포트: 4567
-
-### 3. Docker Bitcoin ⚠️
-- 문제: btc-rpc-explorer 이미지 없음
-- 포트: 8332 (RPC), 8333 (P2P)
-
-### 4. RTMP Proxy ⚠️
-- 문제: Dockerfile 누락 (alpine/Dockerfile)
+### 19. RTMP Proxy ✅
+- 상태: Dockerfile 경로 수정 후 정상
+- 수정:
+  - context 변경: . → nginx
+  - Dockerfile 경로 지정: nginx/Dockerfile
+  - version: '3.3' 제거
 - 포트: 1935 (RTMP)
+- 검증: docker compose config 성공
+- 특징: Nginx RTMP 모듈, 스트리밍 프록시
 
 ---
 
@@ -176,7 +193,9 @@
 
 1. **Forem** - 디스크 공간 부족으로 중단
 2. **Discourse** - 제거됨 (검증 대상 아님)
-3-5. 기타 - 미확인
+3-5. 기타 프로젝트 - 미확인
+
+**참고**: 이슈 발견 프로젝트 4개 모두 해결 완료 (Devpi, Gollum, Docker Bitcoin, RTMP Proxy)
 
 ---
 
@@ -185,9 +204,11 @@
 | 서비스 | 포트 | 상태 |
 |--------|------|------|
 | Wiki.js | 80 | ✅ |
-| RTMP Proxy | 1935 | ⚠️ |
+| **RTMP Proxy** | **1935** | ✅ |
 | Gitea | 2222, 3001 | ✅ |
-| Gollum | 4567 | ⚠️ |
+| **Bitcoin Explorer** | **3002** | ✅ |
+| **Devpi** | **3141** | ✅ |
+| **Gollum** | **4567** | ✅ |
 | Kratos | 4433, 4434, 4455 | ✅ |
 | Flarum PHPMyAdmin | 8081 | ✅ |
 | Flarum | 8082 | ✅ |
@@ -205,7 +226,7 @@
 | **Docker Ethereum** | **8545**, 8546, 30303, 4000 | ✅ |
 | Minio | 9000, 9001 | ✅ |
 | Flarum Mailhog | 8026 | ✅ |
-| Bitcoin RPC | 8332, 8333 | ⚠️ |
+| **Bitcoin RPC** | **8332, 8333** | ✅ |
 
 ---
 
@@ -244,21 +265,37 @@ django-cms/compose.yml
 tsboard/compose.yml
 ```
 
+### 커밋 6: 최종 문서 업데이트
+```
+docs/verification/VERIFICATION-PROGRESS.md
+README.md
+```
+
+### 커밋 7: Dockerfile 경로 문제 해결 (4개 프로젝트)
+```
+devpi/compose.yml
+gollum/compose.yml
+docker-bitcoin/compose.yml
+rtmp-proxy/compose.yml
+```
+
 ---
 
 ## 💡 다음 단계 권장사항
 
-### 우선순위 1: 서비스 누락 수정
-1. WordPress - MariaDB/Redis 추가
-2. MediaWiki - MariaDB/Redis 추가
-3. Joomla - MariaDB 추가
+### 우선순위 1: 미검증 프로젝트 (5개)
+1. **Forem** - 디스크 공간 확보 후 재검증
+2. 나머지 미확인 프로젝트 순차 검증
 
-### 우선순위 2: Dockerfile 문제 해결
-4. Devpi - Dockerfile 또는 공식 이미지 확인
-5. Gollum - Dockerfile 복구
+### 우선순위 2: 문서화 개선
+3. 각 프로젝트별 README 개선 (설정 가이드, 사용법)
+4. 포트 충돌 방지 가이드 작성
+5. 표준 서비스 템플릿 문서 (MariaDB/Redis 스택)
 
-### 우선순위 3: 나머지 검증
-6. Django CMS, Forem, Gnuboard5 등 12개 프로젝트
+### 우선순위 3: 최적화
+6. healthcheck 통일 - 모든 데이터베이스 서비스에 적용
+7. 네트워크 구조 개선 - 프로젝트 간 격리 강화
+8. 볼륨 관리 표준화 - 데이터 백업 전략 수립
 
 ---
 

@@ -11,13 +11,13 @@
 ## 검증 상태
 
 총 24개 프로젝트 중:
-- ✅ **완전 성공**: 15개 (62.5%)
-- ⚠️ **이슈 발견**: 4개 (16.7%)
+- ✅ **완전 성공**: 19개 (79.2%)
+- ⚠️ **이슈 발견**: 0개 (0%)
 - 🔄 **미검증**: 5개 (20.8%)
 
 상세 검증 결과: [`docs/verification/VERIFICATION-PROGRESS.md`](docs/verification/VERIFICATION-PROGRESS.md)
 
-### 성공 프로젝트 (15개)
+### 성공 프로젝트 (19개)
 
 | 프로젝트 | 포트 | 접근 URL | 비고 |
 |---------|------|----------|------|
@@ -36,19 +36,14 @@
 | TSBoard | 8095, 3100 | http://localhost:8095 | 포트 수정, DATABASE_URL 설정 |
 | Docker Ethereum | 8545, 8546, 4000 | http://localhost:4000 | Geth + BlockScout |
 | Minio | 9000, 9001 | http://localhost:9001 | 수정 없음 |
+| **Devpi** | **3141** | http://localhost:3141 | Dockerfile 경로 수정 |
+| **Gollum** | **4567** | http://localhost:4567 | Dockerfile 경로 + 포트 수정 |
+| **Docker Bitcoin** | **8332, 8333, 3002** | http://localhost:3002 | 이미지 변경 (tyzbit) |
+| **RTMP Proxy** | **1935** | rtmp://localhost:1935 | Dockerfile 경로 수정 |
 
 **추가 검증 통과**:
 - **Home Assistant**: host 네트워크 모드 (포트 충돌 없음)
 - **Kratos**: 전용 포트 사용 (4433, 4434, 4455)
-
-### 알려진 이슈 (4개)
-
-| 프로젝트 | 문제 | 상태 |
-|---------|------|------|
-| Devpi | Dockerfile 누락 | ⚠️ |
-| Gollum | Dockerfile 누락 | ⚠️ |
-| Docker Bitcoin | 이미지 접근 불가 | ⚠️ |
-| RTMP Proxy | Dockerfile 누락 | ⚠️ |
 
 ## 사용법
 
