@@ -14,7 +14,7 @@ services:
     #     composer run;
     #   "
     ports:
-      - 8080:80
+      - 8089:80
     environment:
       ## install
       # - APP_ENV=production
@@ -44,7 +44,7 @@ services:
       - APP_ENV=production
       - "APP_NAME=XE Website"
       - APP_DEBUG=false
-      - APP_URL=http://localhost
+      - APP_URL=http://localhost:8089
       - APP_TIMEZONE=Asia/Seoul
       - APP_LOG=daily
       - APP_LOG_LEVEL=info
