@@ -6,9 +6,9 @@ services:
     container_name: flarum
     restart: unless-stopped
     ports:
-      - "8080:8888"
+      - "8082:8888"
     environment:
-      - FORUM_URL=http://localhost:8080
+      - FORUM_URL=http://localhost:8082
       - DB_HOST=mariadb
       - DB_NAME=db01
       - DB_USER=user01
@@ -46,6 +46,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
+    platform: linux/amd64
     depends_on:
       - mariadb
     links:
@@ -58,9 +59,10 @@ services:
 
   mailhog:
     image: mailhog/mailhog:latest
+    platform: linux/amd64
     ports:
 #        - "1025:1025"
-      - "8025:8025"
+      - "8026:8025"
     expose:
       - 1025
 

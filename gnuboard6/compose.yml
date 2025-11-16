@@ -11,7 +11,7 @@ services:
     container_name: gnuboard6
     restart: unless-stopped
     ports:
-      - "8080:8000"
+      - "8084:8000"
     environment:
       - DB_ENGINE=django.db.backends.mysql
       - DB_NAME=gnuboard6
