@@ -8,14 +8,14 @@
 
 | 상태 | 개수 | 비율 |
 |------|------|------|
-| ✅ 완전 성공 | 6개 | 25% |
-| ⚠️ 이슈 발견 | 6개 | 25% |
+| ✅ 완전 성공 | 9개 | 37.5% |
+| ⚠️ 이슈 발견 | 3개 | 12.5% |
 | 🔄 미검증 | 12개 | 50% |
 | **전체** | **24개** | **100%** |
 
 ---
 
-## ✅ 완전 성공 (6개)
+## ✅ 완전 성공 (9개)
 
 ### 1. Minio ✅
 - 상태: 정상 작동
@@ -55,33 +55,46 @@
 - 포트: 8087 (HTTP), 50000 (Agent)
 - 검증: HTTP 403 (정상, 초기 설정 필요)
 
+### 7. WordPress ✅
+- 상태: MariaDB/Redis 추가 + 포트 수정 후 정상
+- 수정:
+  - MariaDB 11.8, Redis 7-alpine 서비스 추가
+  - 포트 8080 → 8085
+  - healthcheck 기반 의존성 설정
+- 포트: 8085 (HTTP)
+- 검증: docker compose config 성공
+
+### 8. MediaWiki ✅
+- 상태: MariaDB/Redis 추가 + 포트 수정 후 정상
+- 수정:
+  - MariaDB 11.8, Redis 7-alpine 서비스 추가
+  - 포트 8080 → 8086
+  - healthcheck 기반 의존성 설정
+- 포트: 8086 (HTTP)
+- 검증: docker compose config 성공
+
+### 9. Joomla ✅
+- 상태: MariaDB/Redis 추가 + 포트 수정 후 정상
+- 수정:
+  - MariaDB 11.8, Redis 7-alpine 서비스 추가
+  - 포트 8080 → 8088
+  - healthcheck 기반 의존성 설정
+- 포트: 8088 (HTTP)
+- 검증: docker compose config 성공
+
 ---
 
-## ⚠️ 이슈 발견 (6개)
+## ⚠️ 이슈 발견 (3개)
 
-### 1. WordPress ⚠️
-- 문제: MariaDB/Redis 서비스 누락
-- 포트 충돌: 8080 (권장: 8085)
-- 이슈 파일: `tmp/issues/wordpress-missing-services.md`
-
-### 2. MediaWiki ⚠️
-- 문제: MariaDB/Redis 서비스 누락
-- 포트 충돌: 8080 (권장: 8086)
-- 이슈 파일: `tmp/issues/mediawiki-missing-services.md`
-
-### 3. Joomla ⚠️
-- 문제: MariaDB 서비스 누락
-- 포트: 8080
-
-### 4. Devpi ⚠️
+### 1. Devpi ⚠️
 - 문제: Dockerfile 누락, 이미지 없음
 - 포트: 미확인
 
-### 5. Gollum ⚠️
+### 2. Gollum ⚠️
 - 문제: Dockerfile 누락
 - 포트: 4567
 
-### 6. Docker Bitcoin ⚠️
+### 3. Docker Bitcoin ⚠️
 - 문제: btc-rpc-explorer 이미지 없음
 - 포트: 8332 (RPC), 8333 (P2P)
 
@@ -114,21 +127,19 @@
 | Flarum PHPMyAdmin | 8081 | ✅ |
 | Flarum | 8082 | ✅ |
 | Gnuboard6 | 8084 | ✅ |
+| **WordPress** | **8085** | ✅ |
+| **MediaWiki** | **8086** | ✅ |
 | Jenkins | 8087, 50000 | ✅ |
+| **Joomla** | **8088** | ✅ |
 | Minio | 9000, 9001 | ✅ |
 | Flarum Mailhog | 8026 | ✅ |
 | Bitcoin RPC | 8332, 8333 | ⚠️ |
-
-**포트 충돌 위험 (8080)**:
-- WordPress (권장: 8085)
-- MediaWiki (권장: 8086)
-- Joomla (권장: 8088)
 
 ---
 
 ## 📝 수정된 파일 목록
 
-### 커밋 1: 초기 수정
+### 커밋 1: 초기 수정 (Flarum, Gitea, Gnuboard6)
 ```
 flarum/compose.yml
 gitea/compose.yml
@@ -139,6 +150,13 @@ gnuboard6/gnuboard6-debian.dockerfile
 ### 커밋 2: Jenkins
 ```
 jenkins/compose.yml
+```
+
+### 커밋 3: PHP CMS (WordPress, MediaWiki, Joomla)
+```
+wordpress/compose.yml
+mediawiki/compose.yml
+joomla/compose.yml
 ```
 
 ---
