@@ -24,7 +24,7 @@ services:
 
   # Bitcoin Explorer (선택사항)
   btc-rpc-explorer:
-    image: saubyk/btc-rpc-explorer:latest
+    image: tyzbit/btc-rpc-explorer:latest
     container_name: btc-explorer
     restart: unless-stopped
     ports:

@@ -1,11 +1,9 @@
-version: "3.3"
-
 services:
   rtmp:
     # image: rtmp-nginx:alpine
     build:
-      context: .
-      dockerfile: ./alpine/Dockerfile
+      context: nginx
+      dockerfile: Dockerfile
     ports:
       - 1935:1935
     volumes:

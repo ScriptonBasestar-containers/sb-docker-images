@@ -3,25 +3,22 @@ services:
   gollum:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfiles/gollum-ruby-bookworm.dockerfile
     container_name: gollum_dev
     # image: gollumwiki/gollum
     restart: always
     ports:
-      - 4567:4567
+      - 4567:8081
     volumes:
       # - ./wiki:/wiki
-      - ./docker-entrypoint.sh:/docker-entrypoint.sh
       - gollum:/wiki
-    entrypoint: ["/docker-entrypoint.sh"]
-    command: ["gollum", "/wiki"]
-    # command: ["gollum", "/home/www-data"]
+    # entrypoint and command are defined in Dockerfile
     depends_on:
       - dollum
   dollum:
     image: busybox
     volumes:
-      - ./dollum-entrypoint.sh:/entrypoint.sh
+      - ./conf/dollum-entrypoint.sh:/entrypoint.sh
       - gollum:/wiki
     entrypoint: ["sh", "-C", "/entrypoint.sh"]
 

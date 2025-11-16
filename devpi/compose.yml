@@ -1,9 +1,8 @@
-version: '3.8'
-
 services:
   devpi:
     build:
       context: .
+      dockerfile: pypi/Dockerfile
       args:
         - INSTALL_WEB=${INSTALL_WEB:-true}
         - INSTALL_CONSTRAINED=${INSTALL_CONSTRAINED:-false}
