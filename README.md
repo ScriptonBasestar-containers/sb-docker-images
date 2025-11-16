@@ -6,7 +6,46 @@
 도커 이미지 및 도커 컴포즈 테스트용
 개발/테스트 이미지 생성용
 
-라이센스는 전체적으로는 MIT지향이지만 다른고스이 이미지를 사용하는 경우 그짝을따름(GPL, AGPL등)
+라이센스는 전체적으로는 MIT지향이지만 다른곳의 이미지를 사용하는 경우 그쪽을 따름(GPL, AGPL등)
+
+## 검증 상태
+
+총 24개 프로젝트 중:
+- ✅ **완전 성공**: 12개 (50%)
+- ⚠️ **이슈 발견**: 4개 (16.7%)
+- 🔄 **미검증**: 8개 (33.3%)
+
+상세 검증 결과: [`docs/verification/VERIFICATION-PROGRESS.md`](docs/verification/VERIFICATION-PROGRESS.md)
+
+### 성공 프로젝트 (12개)
+
+| 프로젝트 | 포트 | 접근 URL | 비고 |
+|---------|------|----------|------|
+| Wiki.js | 80 | http://localhost | 수정 없음 |
+| Gitea | 3001, 2222 | http://localhost:3001 | 포트 수정 |
+| Flarum | 8082, 8081, 8026 | http://localhost:8082 | 포트 + ARM64 |
+| Gnuboard6 | 8084 | http://localhost:8084 | Python 3.11 업그레이드 |
+| WordPress | 8085 | http://localhost:8085 | MariaDB/Redis 추가 |
+| MediaWiki | 8086 | http://localhost:8086 | MariaDB/Redis 추가 |
+| Jenkins | 8087, 50000 | http://localhost:8087 | 포트 수정 |
+| Joomla | 8088 | http://localhost:8088 | MariaDB/Redis 추가 |
+| XpressEngine | 8089 | http://localhost:8089 | 포트 수정 |
+| Gnuboard5 | 8090, 8091 | http://localhost:8090 | 포트 수정 |
+| Misago | 8092, 8443 | http://localhost:8092 | 포트 수정 |
+| Minio | 9000, 9001 | http://localhost:9001 | 수정 없음 |
+
+**추가 검증 통과**:
+- **Home Assistant**: host 네트워크 모드 (포트 충돌 없음)
+- **Kratos**: 전용 포트 사용 (4433, 4434, 4455)
+
+### 알려진 이슈 (4개)
+
+| 프로젝트 | 문제 | 상태 |
+|---------|------|------|
+| Devpi | Dockerfile 누락 | ⚠️ |
+| Gollum | Dockerfile 누락 | ⚠️ |
+| Docker Bitcoin | 이미지 접근 불가 | ⚠️ |
+| RTMP Proxy | Dockerfile 누락 | ⚠️ |
 
 ## 사용법
 

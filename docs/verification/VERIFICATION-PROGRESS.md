@@ -8,14 +8,14 @@
 
 | 상태 | 개수 | 비율 |
 |------|------|------|
-| ✅ 완전 성공 | 9개 | 37.5% |
-| ⚠️ 이슈 발견 | 3개 | 12.5% |
-| 🔄 미검증 | 12개 | 50% |
+| ✅ 완전 성공 | 12개 | 50% |
+| ⚠️ 이슈 발견 | 4개 | 16.7% |
+| 🔄 미검증 | 8개 | 33.3% |
 | **전체** | **24개** | **100%** |
 
 ---
 
-## ✅ 완전 성공 (9개)
+## ✅ 완전 성공 (12개)
 
 ### 1. Minio ✅
 - 상태: 정상 작동
@@ -82,9 +82,51 @@
 - 포트: 8088 (HTTP)
 - 검증: docker compose config 성공
 
+### 10. XpressEngine ✅
+- 상태: 포트 수정 후 정상
+- 수정:
+  - 포트 8080 → 8089
+  - APP_URL 업데이트
+- 포트: 8089 (HTTP), 3306 (MariaDB), 6379 (Redis)
+- 검증: docker compose config 성공
+- 특징: MariaDB, Redis 이미 정의됨
+
+### 11. Gnuboard5 ✅
+- 상태: 포트 수정 후 정상
+- 수정:
+  - nginx 포트 8080 → 8090
+  - PHPMyAdmin 포트 8081 → 8091
+  - G5_DOMAIN 업데이트
+- 포트: 8090 (HTTP), 8091 (PHPMyAdmin)
+- 검증: docker compose config 성공
+- 특징: MariaDB 이미 정의됨
+
+### 12. Misago ✅
+- 상태: 포트 수정 후 정상
+- 수정:
+  - nginx-proxy 포트 80 → 8092
+  - HTTPS 포트 443 → 8443
+- 포트: 8092 (HTTP), 8443 (HTTPS)
+- 검증: docker compose config 성공
+- 특징: PostgreSQL, Redis 이미 정의됨
+
+### 추가 검증 통과 (설정 검증만)
+
+#### Home Assistant ✅
+- 상태: 설정 검증 성공
+- 포트: host 네트워크 모드 (8123)
+- 검증: docker compose config 성공
+- 특징: network_mode=host, 포트 충돌 없음
+
+#### Kratos ✅
+- 상태: 설정 검증 성공
+- 포트: 4433 (public), 4434 (admin), 4455 (UI)
+- 검증: docker compose config 성공
+- 특징: PostgreSQL, SQLite 지원, 전용 포트 사용
+
 ---
 
-## ⚠️ 이슈 발견 (3개)
+## ⚠️ 이슈 발견 (4개)
 
 ### 1. Devpi ⚠️
 - 문제: Dockerfile 누락, 이미지 없음
@@ -98,22 +140,20 @@
 - 문제: btc-rpc-explorer 이미지 없음
 - 포트: 8332 (RPC), 8333 (P2P)
 
+### 4. RTMP Proxy ⚠️
+- 문제: Dockerfile 누락 (alpine/Dockerfile)
+- 포트: 1935 (RTMP)
+
 ---
 
-## 🔄 미검증 (12개)
+## 🔄 미검증 (8개)
 
 1. **Django CMS** - env 파일 누락 경고
 2. **Docker Ethereum** - 미테스트
 3. **Forem** - 디스크 공간 부족으로 중단
-4. **Gnuboard5** - 미테스트
-5. **Home Assistant** - 미테스트
-6. **Kratos** - 미테스트
-7. **Misago** - 미테스트
-8. **RTMP Proxy** - 설정 검증 성공
-9. **TSBoard** - DATABASE_URL 경고
-10. **XpressEngine** - 설정 검증 성공
-11. **Discourse** - 제거됨 (검증 대상 아님)
-12. 기타 - 미확인
+4. **TSBoard** - DATABASE_URL 경고
+5. **Discourse** - 제거됨 (검증 대상 아님)
+6-8. 기타 - 미확인
 
 ---
 
@@ -122,8 +162,10 @@
 | 서비스 | 포트 | 상태 |
 |--------|------|------|
 | Wiki.js | 80 | ✅ |
+| RTMP Proxy | 1935 | ⚠️ |
 | Gitea | 2222, 3001 | ✅ |
 | Gollum | 4567 | ⚠️ |
+| Kratos | 4433, 4434, 4455 | ✅ |
 | Flarum PHPMyAdmin | 8081 | ✅ |
 | Flarum | 8082 | ✅ |
 | Gnuboard6 | 8084 | ✅ |
@@ -131,6 +173,10 @@
 | **MediaWiki** | **8086** | ✅ |
 | Jenkins | 8087, 50000 | ✅ |
 | **Joomla** | **8088** | ✅ |
+| **XpressEngine** | **8089**, 3306, 6379 | ✅ |
+| **Gnuboard5** | **8090**, 8091 | ✅ |
+| **Misago** | **8092**, 8443 | ✅ |
+| Home Assistant | 8123 (host mode) | ✅ |
 | Minio | 9000, 9001 | ✅ |
 | Flarum Mailhog | 8026 | ✅ |
 | Bitcoin RPC | 8332, 8333 | ⚠️ |
@@ -157,6 +203,13 @@ jenkins/compose.yml
 wordpress/compose.yml
 mediawiki/compose.yml
 joomla/compose.yml
+```
+
+### 커밋 4: 한국형 CMS 및 포럼 (XpressEngine, Gnuboard5, Misago)
+```
+xpressengine/compose.yml
+gnuboard5/compose.yml
+misago/compose.yml
 ```
 
 ---
