@@ -7,7 +7,7 @@ services:
     user: root
     privileged: true
     ports:
-      - "8080:8080"
+      - "8087:8080"
       - "50000:50000"
     volumes:
       - ./tmp/jenkins/config:/var/jenkins_home
