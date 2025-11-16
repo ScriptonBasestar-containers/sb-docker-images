@@ -4,7 +4,7 @@ services:
     container_name: mediawiki
     restart: always
     ports:
-      - "8080:80"
+      - "8086:80"
     volumes:
       - mediawiki-images:/var/www/html/images
       - ./docker-entrypoint-install.sh:/docker-entrypoint-install.sh
@@ -19,16 +19,49 @@ services:
       - DB_PASS=passw0rd
       - DB_INSTALL_USER=root
       - DB_INSTALL_PASS=rootpass
-      - SERVER_HOSTNAME=http://localhost:8080
+      - SERVER_HOSTNAME=http://localhost:8086
       - ADMIN_USER=admin1
       - ADMIN_PASS=qwer1234!@
       - WIKI_NAME=MyWiki
     depends_on:
-      - mariadb
-      - redis
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - app-network
       - data-network
+
+  mariadb:
+    image: mariadb:11.8
+    container_name: mediawiki-mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=db01
+      - MYSQL_USER=user01
+      - MYSQL_PASSWORD=passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: mediawiki-redis
+    restart: unless-stopped
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app-network:
@@ -38,3 +71,4 @@ networks:
 
 volumes:
   mediawiki-images:
+  mariadb-data:

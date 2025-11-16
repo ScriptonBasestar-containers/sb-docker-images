@@ -6,7 +6,7 @@ services:
     # image: wordpress:6-php8-fpm
     restart: always
     ports:
-      - 8080:80
+      - 8085:80
     environment:
       WORDPRESS_DB_HOST: mariadb
       WORDPRESS_DB_USER: user01
@@ -15,9 +15,12 @@ services:
     volumes:
       - wordpress:/var/www/html
     depends_on:
-      - mariadb
-      - redis
-      - wp-install
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      wp-install:
+        condition: service_completed_successfully
     networks:
       - app-network
       - data-network
@@ -30,18 +33,51 @@ services:
       WORDPRESS_DB_USER: user01
       WORDPRESS_DB_PASSWORD: passw0rd
       WORDPRESS_DB_NAME: db01
-    # command: ["core", "install", "--url=http://localhost:8080", "--title=My WordPress Site", "--admin_user=admin", "--admin_password=password", "--]
+    # command: ["core", "install", "--url=http://localhost:8085", "--title=My WordPress Site", "--admin_user=admin", "--admin_password=password", "--]
     command: ["/run-wp-cli.sh"]
     volumes:
       # - entrypoint.sh:/entrypoint.sh
       - ./run-wp-cli.sh:/run-wp-cli.sh
       - wordpress:/var/www/html
     depends_on:
-      - mariadb
-      - redis
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - app-network
       - data-network
+
+  mariadb:
+    image: mariadb:11.8
+    container_name: wordpress-mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=db01
+      - MYSQL_USER=user01
+      - MYSQL_PASSWORD=passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: wordpress-redis
+    restart: unless-stopped
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app-network:
@@ -53,3 +89,4 @@ networks:
 
 volumes:
   wordpress:
+  mariadb-data:

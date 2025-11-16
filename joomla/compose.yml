@@ -7,7 +7,7 @@ services:
     container_name: joomla_dev
     restart: always
     ports:
-      - 8080:80
+      - 8088:80
     environment:
       JOOMLA_DB_HOST: mariadb
       JOOMLA_DB_USER: user01
@@ -21,11 +21,44 @@ services:
     volumes:
       - joomla:/var/www/html
     depends_on:
-      - mariadb
-      - redis
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - app-network
       - data-network
+
+  mariadb:
+    image: mariadb:11.8
+    container_name: joomla-mariadb
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=db01
+      - MYSQL_USER=user01
+      - MYSQL_PASSWORD=passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: joomla-redis
+    restart: unless-stopped
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app-network:
@@ -35,3 +68,4 @@ networks:
 
 volumes:
   joomla:
+  mariadb-data:
