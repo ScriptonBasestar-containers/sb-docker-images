@@ -33,6 +33,43 @@ make db-init
 # http://localhost:8250
 ```
 
+## Standalone 구성
+
+완전한 독립 실행 가능한 FlaskBB 포럼 시스템 구성이 `standalone/` 디렉토리에 제공됩니다.
+
+### 특징
+
+- **PostgreSQL 15 Alpine**: 메인 데이터베이스 (health check 포함)
+- **Redis 7 Alpine**: 캐시 및 세션 저장소
+- **네트워크 분리**: app-network, data-network
+- **환경 변수 지원**: .env 파일을 통한 유연한 설정
+- **완전한 문서**: 설치, 사용법, 백업/복원, 문제 해결
+
+### 사용법
+
+```bash
+# standalone 디렉토리로 이동
+cd standalone/
+
+# 환경 변수 설정
+cp .env.example .env
+# .env 파일에서 FLASKBB_SECRET_KEY, POSTGRES_PASSWORD 등 수정
+
+# 서비스 시작
+make up
+
+# 데이터베이스 초기화
+make db-init
+
+# 관리자 계정 생성
+make create-admin
+
+# 웹 브라우저에서 접속
+# http://localhost:8250
+```
+
+자세한 내용은 [standalone/README.md](./standalone/README.md)를 참조하세요.
+
 ## 서비스 구성
 
 docker-compose.yml에는 다음 서비스들이 포함되어 있습니다:
