@@ -265,13 +265,15 @@ services:
 | Redis | 6379 | 캐시 연결 |
 | Kratos Public | 4433 | 공개 API |
 | Kratos Admin | 4434 | 관리 API |
-
-포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 | Authelia | 9091 | Web UI |
 | MailSlurper Web | 8080 | Web UI |
 | MailSlurper SMTP | 2500 | SMTP |
 
-포트 충돌 방지는 [포트 가이드](../docs/PORT_GUIDE.md)를 참조하세요.
+> ℹ️ **buildbox는 재사용 가능한 템플릿 모음**입니다.
+>
+> 각 서비스는 독립적으로 실행되며, 여러 서비스를 조합하여 사용할 때 포트 충돌에 주의하세요.
+
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
 ## 모범 사례
 

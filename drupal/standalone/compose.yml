@@ -1,12 +1,11 @@
 services:
-
+  # Drupal - Open Source CMS
   # https://hub.docker.com/_/drupal
-  # admin // *V3FYY8fdK2rBYT
+  # Default admin: admin / *V3FYY8fdK2rBYT (configure via installation wizard)
   drupal:
     image: drupal:10-apache-bookworm
-    # image: drupal:10-php8-fpm
     container_name: drupal
-    restart: always
+    restart: unless-stopped
     ports:
       - 8120:80
     environment:
@@ -18,42 +17,45 @@ services:
       DRUPAL_DATABASE_PREFIX: dr_
       # Generate a salt with: `php -r "echo bin2hex(random_bytes(25));"`
       DRUPAL_HASH_SALT: db0de8a1556aa5348f87cfc950cd2c9641713d46e9412c8b05
-      DB_HOST: "mariadb"
-      DB_NAME: "db01"
-      DB_USER: "user01"
-      DB_PASS: "passw0rd"
-      # S3_BUCKET: ""
-      # S3_ROOT_FOLDER: "local"
-      # S3FS_ACCESS_KEY: ""
-      # S3FS_SECRET_KEY: ""
-      SITE_NAME: "Drupal Core - LOCAL"
-      # API_KEY: ""
     volumes:
-      - drupal:/var/www/html
-    #   # - /var/www/html/modules
-    #   # - /var/www/html/profiles
-    #   # - /var/www/html/themes
-    #   # # this takes advantage of the feature in Docker that a new anonymous
-    #   # # volume (which is what we're creating here) will be initialized with the
-    #   # # existing content of the image at the same location
-    #   - /var/www/html/sites
+      - drupal-data:/var/www/html
     depends_on:
-      # - drupal-cli
-      - mariadb
-      - redis
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - app-network
       - data-network
-  
-  # drupal-cli:
-  #   image: drupal:10-apache-bookworm
-  #   container_name: drupal-cli
-  #   restart: always
-  #   volumes:
-  #     - drupal:/var/www/html
-  #   networks:
-  #     - app-network
-  #     - data-network
+
+  mariadb:
+    image: mariadb:11.8
+    container_name: drupal-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db01
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: drupal-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - data-network
 
 networks:
   app-network:
@@ -62,5 +64,6 @@ networks:
     driver: bridge
 
 volumes:
-  drupal:
-  # db:
+  drupal-data:
+  mariadb-data:
+  redis-data:

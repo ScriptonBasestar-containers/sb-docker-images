@@ -8,6 +8,21 @@ Complete standalone Drupal 10 setup with MariaDB and Redis.
 - **MariaDB**: Database server with health check
 - **Redis**: Cache backend
 
+## Configuration
+
+### Environment Variables (Optional)
+
+For custom configuration, copy `.env.example` to `.env` and modify the values:
+
+```bash
+cp .env.example .env
+# Edit .env with your preferred settings
+```
+
+The default values in `compose.yml` work out of the box without creating a `.env` file.
+
+**⚠️ Security**: Always change default passwords in production!
+
 ## Quick Start
 
 ```bash
