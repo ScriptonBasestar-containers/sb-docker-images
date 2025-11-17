@@ -58,14 +58,17 @@ kratos/
 
 | 포트 | 서비스 | 설명 |
 |------|--------|------|
-| 4433 | Kratos Public API | 사용자 인증, 회원가입, 로그인 등 |
-| 4434 | Kratos Admin API | 관리자 API (사용자 관리, 설정 등) |
-| 4455 | Kratos UI | 셀프서비스 웹 UI (회원가입/로그인 화면) |
+| 4433 | Kratos Public API | 사용자 인증, 회원가입, 로그인 등 (Ory Kratos 기본 포트) |
+| 4434 | Kratos Admin API | 관리자 API (Ory Kratos 기본 포트) |
+| 4455 | Kratos UI | 셀프서비스 웹 UI |
 | 4436 | MailSlurper API | 메일 테스트 API |
 | 4437 | MailSlurper Web | 메일 확인 웹 UI |
 
-**참고**: PORT_GUIDE.md에서 권장하는 포트 (8800, 8801)와 다르게 Ory Kratos 기본 포트를 사용합니다.
-다른 프로젝트와 동시 실행 시 포트 충돌이 발생할 수 있으니 주의하세요.
+> ℹ️ **포트 설정**: Ory Kratos 공식 기본 포트(4433, 4434)를 사용하고 있습니다.
+>
+> **참고**: [포트 가이드](../docs/PORT_GUIDE.md)에서는 8800, 8801 포트를 제안하지만, Ory Kratos의 공식 기본 포트를 그대로 사용하는 것이 일반적입니다.
+
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
 ## 환경 변수
 

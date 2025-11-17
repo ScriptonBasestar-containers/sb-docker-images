@@ -59,25 +59,27 @@ docker compose -f compose.apache.yml \
 
 ## 포트 정보
 
-기본 포트 (PORT_GUIDE.md 기준):
+| 포트 | 서비스 | 용도 |
+|------|--------|------|
+| 8080 | nextcloud | 웹 서버 (현재 설정) |
+| 6379 | redis | Redis (FPM 버전, 내부) |
+| 9020 | phpmyadmin | phpMyAdmin (MariaDB 사용 시, 선택사항) |
 
-- `8900`: Nextcloud 웹 인터페이스 (권장)
-- `8080`: 개발/테스트용 대체 포트
-- `9020`: phpMyAdmin (MariaDB 사용 시)
+> ⚠️ **포트 충돌 주의**: 현재 8080 포트 사용 중입니다.
+>
+> **권장 포트**: 8900 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+>
+> **포트 변경 방법**:
+> ```bash
+> # 환경 변수로 포트 변경
+> NEXTCLOUD_PORT=8900 docker compose -f compose.fpm.yml up -d
+>
+> # 또는 compose 파일 수정
+> # ports:
+> #   - "8900:80"
+> ```
 
-compose 파일의 기본 포트:
-- `8080`: Nextcloud 웹 서버
-- `6379`: Redis (FPM 버전에서만 외부 노출)
-
-포트 변경 방법:
-```bash
-# 환경 변수로 포트 변경
-NEXTCLOUD_PORT=8900 docker compose -f compose.fpm.yml up -d
-
-# 또는 compose 파일 수정
-ports:
-  - "8900:80"  # 8080 대신 8900 사용
-```
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
 ## 환경 변수
 
