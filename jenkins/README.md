@@ -36,6 +36,39 @@ docker compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 
 웹 브라우저에서 http://localhost:8080 접속
 
+## Standalone 구성
+
+완전한 독립 실행 가능한 Jenkins CI/CD 서버 구성이 `standalone/` 디렉토리에 제공됩니다.
+
+### 특징
+
+- **Jenkins LTS (JDK 21)**: 공식 이미지 사용
+- **영구 데이터 저장**: jenkins-home 볼륨
+- **선택적 Docker-in-Docker**: Docker 빌드 지원
+- **환경 변수 지원**: .env 파일을 통한 유연한 설정
+- **완전한 문서**: 설치, 플러그인 관리, 백업/복원, 문제 해결
+
+### 사용법
+
+```bash
+# standalone 디렉토리로 이동
+cd standalone/
+
+# 환경 변수 설정 (선택사항)
+cp .env.example .env
+
+# Jenkins 시작
+make up
+
+# 초기 관리자 비밀번호 확인
+make initial-password
+
+# 웹 브라우저에서 접속
+# http://localhost:8080
+```
+
+자세한 내용은 [standalone/README.md](./standalone/README.md)를 참조하세요.
+
 ### 직접 실행
 
 ```bash
