@@ -1,24 +1,24 @@
 services:
-  # Drupal - Open Source CMS
-  # https://hub.docker.com/_/drupal
-  # Default admin: admin / *V3FYY8fdK2rBYT (configure via installation wizard)
-  drupal:
-    image: drupal:10-apache-bookworm
-    container_name: drupal
+  # Joomla - Open Source CMS
+  # https://hub.docker.com/_/joomla
+  joomla:
+    image: joomla:5-php8.3-apache
+    container_name: joomla
     restart: unless-stopped
     ports:
       - "8080:80"
     environment:
-      DRUPAL_DATABASE_HOST: mariadb
-      DRUPAL_DATABASE_PORT: 3306
-      DRUPAL_DATABASE_NAME: db01
-      DRUPAL_DATABASE_USERNAME: user01
-      DRUPAL_DATABASE_PASSWORD: passw0rd
-      DRUPAL_DATABASE_PREFIX: dr_
-      # Generate a salt with: `php -r "echo bin2hex(random_bytes(25));"`
-      DRUPAL_HASH_SALT: db0de8a1556aa5348f87cfc950cd2c9641713d46e9412c8b05
+      JOOMLA_DB_HOST: mariadb
+      JOOMLA_DB_USER: user01
+      JOOMLA_DB_PASSWORD: passw0rd
+      JOOMLA_DB_NAME: db01
+      JOOMLA_SITE_NAME: Joomla
+      JOOMLA_ADMIN_USER: Joomla Hero
+      JOOMLA_ADMIN_USERNAME: joomla
+      JOOMLA_ADMIN_PASSWORD: joomla@secured
+      JOOMLA_ADMIN_EMAIL: joomla@example.com
     volumes:
-      - drupal-data:/var/www/html
+      - joomla-data:/var/www/html
     depends_on:
       mariadb:
         condition: service_healthy
@@ -30,7 +30,7 @@ services:
 
   mariadb:
     image: mariadb:11.8
-    container_name: drupal-mariadb
+    container_name: joomla-mariadb
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: rootpass
@@ -49,7 +49,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: drupal-redis
+    container_name: joomla-redis
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
@@ -64,6 +64,6 @@ networks:
     driver: bridge
 
 volumes:
-  drupal-data:
+  joomla-data:
   mariadb-data:
   redis-data:

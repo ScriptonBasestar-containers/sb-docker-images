@@ -1,70 +1,87 @@
 services:
+  # Nextcloud - Self-hosted productivity platform
   # https://hub.docker.com/_/nextcloud
   nextcloud:
     image: nextcloud:29
-    # image: test1
+    container_name: nextcloud
+    restart: unless-stopped
     ports:
-      - 8080:80
+      - "8080:80"
     environment:
-      # DEBUG: true
-      # NEXTCLOUD_DEBUG_MODE: true
-      NC_debug: true
-
       NEXTCLOUD_ADMIN_USER: admin
       NEXTCLOUD_ADMIN_PASSWORD: passw0rd
 
       REDIS_HOST: redis
       REDIS_HOST_PORT: 6379
-      REDIS_HOST_PASSWORD: passw0rd
 
       MYSQL_HOST: mariadb
       MYSQL_DATABASE: db01
       MYSQL_USER: user01
       MYSQL_PASSWORD: passw0rd
 
-      # NEXTCLOUD_TRUSTED_DOMAINS: test2.scripton.net
-      # NEXTCLOUD_URL=http://test2.scripton.net: 10080
-
+      # Optional settings:
+      # NEXTCLOUD_TRUSTED_DOMAINS: example.com
       # NEXTCLOUD_UPLOAD_MAX_FILESIZE: 4G
-      # NEXTCLOUD_MAX_FILE_UPLOADS: 2
-
-      # NEXTCLOUD_BACKUPS_EXPIRY: 0
+      # NEXTCLOUD_MAX_FILE_UPLOADS: 20
     volumes:
       - nxc_root:/var/www/html
       - nxc_apps:/var/www/html/custom_apps
-      # - nxc_config:/var/www/html/config
       - nxc_data:/var/www/html/data
       - nxc_themes:/var/www/html/themes
-      # - ./config/log.config.php:/customfiles/config/log.config.php
+      # Hook directories (optional):
       # - ./app-hooks/pre-installation:/docker-entrypoint-hooks.d/pre-installation
       # - ./app-hooks/post-installation:/docker-entrypoint-hooks.d/post-installation
       # - ./app-hooks/pre-upgrade:/docker-entrypoint-hooks.d/pre-upgrade
       # - ./app-hooks/post-upgrade:/docker-entrypoint-hooks.d/post-upgrade
       # - ./app-hooks/before-starting:/docker-entrypoint-hooks.d/before-starting
     depends_on:
-      - mariadb
-      - redis
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
     networks:
-      - db-network
-      - code-network
+      - app-network
+      - data-network
 
+  mariadb:
+    image: mariadb:11.8
+    container_name: nextcloud-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db01
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-# pre-installation Executed before the Nextcloud is installed/initiated
-# post-installation Executed after the Nextcloud is installed/initiated
-# pre-upgrade Executed before the Nextcloud is upgraded
-# post-upgrade Executed after the Nextcloud is upgraded
-# before-starting Executed before the Nextcloud starts
+  redis:
+    image: redis:7-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - data-network
 
 networks:
-  code-network:
-      driver: bridge
-  db-network:
+  app-network:
+    driver: bridge
+  data-network:
     driver: bridge
 
 volumes:
-  mariadb:
   nxc_root:
   nxc_apps:
-  # nxc_config:
   nxc_data:
   nxc_themes:
+  mariadb-data:
+  redis-data:
