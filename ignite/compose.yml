@@ -1,0 +1,29 @@
+services:
+  # Apache Ignite - In-memory computing platform
+  # https://hub.docker.com/r/apacheignite/ignite
+  ignite:
+    image: apacheignite/ignite:latest
+    container_name: ignite
+    restart: unless-stopped
+    ports:
+      - "10800:10800"  # Thin client port
+      - "11211:11211"  # REST API port
+      - "47100:47100"  # Discovery port
+      - "47500:47500"  # Communication port
+    environment:
+      - IGNITE_WORK_DIR=/persistence
+      - OPTION_LIBS=ignite-rest-http
+      - JVM_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - ignite-persistence:/persistence
+      - ignite-work:/opt/ignite/apache-ignite/work
+    networks:
+      - ignite-network
+
+networks:
+  ignite-network:
+    driver: bridge
+
+volumes:
+  ignite-persistence:
+  ignite-work:
