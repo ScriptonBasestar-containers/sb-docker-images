@@ -2,6 +2,29 @@
 
 Modern, elegant forum software. Uses community-maintained Docker image (no official image available).
 
+## Deployment Options
+
+### Standalone (Recommended)
+
+Complete production-ready setup with all dependencies included:
+
+```bash
+cd standalone/
+docker compose up -d
+```
+
+**Includes:**
+- Flarum (mondedie/flarum:stable)
+- MariaDB 11.8 with health check
+- Redis 7 for session/cache (optional)
+- Network isolation (app-network, data-network)
+
+See [standalone/README.md](standalone/README.md) for detailed instructions.
+
+### Development Setup
+
+Development setup with additional tools:
+
 ## Features
 
 - **Flarum**: Community image `mondedie/flarum:stable`

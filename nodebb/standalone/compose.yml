@@ -1,0 +1,73 @@
+services:
+  # NodeBB - Modern Node.js Forum
+  # https://hub.docker.com/r/nodebb/docker
+  nodebb:
+    image: nodebb/docker:latest
+    container_name: nodebb
+    restart: unless-stopped
+    ports:
+      - "4567:4567"
+    environment:
+      - NODE_ENV=production
+      - url=http://localhost:4567
+      - database=postgres
+      - postgres__host=postgres
+      - postgres__port=5432
+      - postgres__database=nodebb
+      - postgres__username=nodebb
+      - postgres__password=nodebb_password
+      - redis__host=redis
+      - redis__port=6379
+    volumes:
+      - nodebb-data:/usr/src/app/build
+      - nodebb-config:/usr/src/app/config
+      - nodebb-public:/usr/src/app/public
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - app-network
+      - data-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: nodebb-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: nodebb
+      POSTGRES_USER: nodebb
+      POSTGRES_PASSWORD: nodebb_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nodebb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: nodebb-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - data-network
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  nodebb-data:
+  nodebb-config:
+  nodebb-public:
+  postgres-data:
+  redis-data:

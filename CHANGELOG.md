@@ -6,7 +6,65 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [2025-11-17]
+## [2025-11-17] - Phase 2
+
+### Added
+
+#### New Standalone Configurations
+추가 프로젝트에 독립 실행 가능한 완전한 구성 추가:
+
+- **flarum/standalone/**
+  - Flarum (mondedie/flarum:stable)
+  - MariaDB 11.8 with health check
+  - Redis 7 Alpine for session/cache
+  - Network isolation (app-network, data-network)
+  - 완전한 문서 및 설치 가이드
+
+- **nodebb/standalone/**
+  - NodeBB (nodebb/docker:latest)
+  - PostgreSQL 15 Alpine with health check
+  - Redis 7 Alpine for cache and sessions
+  - Network isolation (app-network, data-network)
+  - CLI 명령어 및 플러그인 가이드 포함
+
+#### Makefile Standardization
+13개 프로젝트에 표준 Makefile 추가:
+- chef-dev, django-cms, docker-bitcoin, docker-ethereum
+- jupyter, jupyter2, mariadb, mastodon
+- openNamu, rtmp-proxy, ruby-dev, spree, wikijs
+
+**표준 명령어:**
+- `make up` - 서비스 시작
+- `make down` - 서비스 중지
+- `make logs` - 로그 보기
+- `make restart` - 재시작
+- `make clean` - 모든 데이터 삭제
+- `make shell` - 컨테이너 접속
+
+#### Environment Variable Templates
+주요 CMS 프로젝트에 `.env.example` 파일 추가:
+- flarum, nodebb, wordpress, drupal, joomla
+- mediawiki, nextcloud
+
+**표준 섹션:**
+- Project Settings (이름, 타임존)
+- Port Configuration (포트 번호)
+- Database Configuration (DB 설정)
+- Redis Configuration (캐시 설정)
+- Application Settings (앱별 설정)
+- Security Notes (보안 경고)
+
+### Improved
+- **flarum/README.md** - Standalone 구성 안내 추가
+- **nodebb/README.md** - Standalone 구성 안내 추가
+- Documentation 일관성 향상
+
+### Coverage Statistics
+- **Standalone 구성**: 5개 → 7개 (11% → 16%)
+- **Makefile 지원**: 29개 → 42개 (67% → 98%)
+- **.env.example 지원**: 1개 → 8개 (2% → 19%)
+
+## [2025-11-17] - Phase 1
 
 ### Added
 

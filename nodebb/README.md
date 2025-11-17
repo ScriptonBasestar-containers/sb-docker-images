@@ -14,6 +14,29 @@ NodeBB는 다음과 같은 기능을 제공합니다:
 - 모바일 앱 지원
 - 마크다운 및 BBCode 지원
 
+## Deployment Options
+
+### Standalone (Recommended)
+
+Complete production-ready setup with all dependencies included:
+
+```bash
+cd standalone/
+docker compose up -d
+```
+
+**Includes:**
+- NodeBB (nodebb/docker:latest)
+- PostgreSQL 15 with health check
+- Redis 7 for cache and sessions
+- Network isolation (app-network, data-network)
+
+See [standalone/README.md](standalone/README.md) for detailed instructions.
+
+### Development Setup (NodeBB Repository)
+
+Development setup using official NodeBB repository:
+
 ## 빠른 시작
 
 ```bash
