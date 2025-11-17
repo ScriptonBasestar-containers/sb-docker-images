@@ -6,7 +6,7 @@ Complete standalone Flarum setup with MariaDB and Redis.
 
 - **Flarum**: Community image `mondedie/flarum:stable`
 - **MariaDB**: Database server with health check
-- **Redis**: Session and cache backend (optional)
+- **Redis**: Session and cache backend with health check (optional)
 
 ## Quick Start
 
@@ -242,6 +242,79 @@ docker compose exec flarum php flarum migrate
 # Clear cache
 docker compose exec flarum php flarum cache:clear
 ```
+
+## Health Checks
+
+All services include health checks for reliable startup:
+
+- **MariaDB**: Checks database readiness with `healthcheck.sh`
+- **Redis**: Verifies Redis is responding with `redis-cli ping`
+
+Services will wait for dependencies to be healthy before starting:
+- Flarum waits for MariaDB and Redis to be ready
+
+This ensures proper initialization and prevents connection errors.
+
+## Troubleshooting
+
+### Port Already in Use
+
+If port 8510 is already in use, create a `.env` file:
+
+```bash
+echo "FLARUM_PORT=8511" > .env
+docker compose up -d
+```
+
+### Database Connection Errors
+
+If Flarum can't connect to the database:
+
+1. Check if MariaDB is healthy:
+   ```bash
+   docker compose ps
+   ```
+
+2. Check database logs:
+   ```bash
+   docker compose logs mariadb
+   ```
+
+3. Restart services:
+   ```bash
+   docker compose restart
+   ```
+
+### Redis Connection Issues
+
+If Redis is not working:
+
+1. Check Redis health:
+   ```bash
+   docker compose exec redis redis-cli ping
+   # Should return: PONG
+   ```
+
+2. Verify Redis extension is installed in Flarum
+
+### Forum Not Loading
+
+If the forum doesn't load or shows errors:
+
+1. Check all container logs:
+   ```bash
+   docker compose logs
+   ```
+
+2. Clear Flarum cache:
+   ```bash
+   docker compose exec flarum php flarum cache:clear
+   ```
+
+3. Check file permissions:
+   ```bash
+   docker compose exec flarum chown -R www-data:www-data /flarum/app
+   ```
 
 ## Clean Up
 

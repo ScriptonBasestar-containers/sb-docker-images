@@ -6,7 +6,7 @@ Complete standalone Drupal 10 setup with MariaDB and Redis.
 
 - **Drupal**: Official image `drupal:10-apache-bookworm`
 - **MariaDB**: Database server with health check
-- **Redis**: Cache backend
+- **Redis**: Cache backend with health check
 
 ## Configuration
 
@@ -111,6 +111,80 @@ docker run --rm -v mariadb-data:/source -v $(pwd):/backup alpine tar czf /backup
 
 # Export database
 docker compose exec mariadb mysqldump -u root -prootpass db01 > drupal-db-backup.sql
+```
+
+## Health Checks
+
+All services include health checks for reliable startup:
+
+- **MariaDB**: Checks database readiness with `healthcheck.sh`
+- **Redis**: Verifies Redis is responding with `redis-cli ping`
+
+Services will wait for dependencies to be healthy before starting:
+- Drupal waits for MariaDB and Redis to be ready
+
+This ensures proper initialization and prevents connection errors.
+
+## Troubleshooting
+
+### Port Already in Use
+
+If port 8120 is already in use, create a `.env` file to change it:
+
+```bash
+echo "DRUPAL_PORT=8121" > .env
+docker compose up -d
+```
+
+### Database Connection Errors
+
+If Drupal can't connect to the database:
+
+1. Check if MariaDB is healthy:
+   ```bash
+   docker compose ps
+   ```
+
+2. Wait for health check to pass:
+   ```bash
+   docker compose logs mariadb
+   ```
+
+3. Restart services:
+   ```bash
+   docker compose restart
+   ```
+
+### Redis Connection Issues
+
+If Redis is not working:
+
+1. Check Redis health:
+   ```bash
+   docker compose exec redis redis-cli ping
+   # Should return: PONG
+   ```
+
+2. Verify Drupal configuration in `settings.php`
+
+### Trusted Host Settings
+
+If you see "The provided host name is not valid":
+
+1. Add to your `settings.php`:
+   ```php
+   $settings['trusted_host_patterns'] = [
+     '^localhost$',
+     '^127\.0\.0\.1$',
+   ];
+   ```
+
+### Permission Issues
+
+If you encounter file permission errors:
+
+```bash
+docker compose exec drupal chown -R www-data:www-data /var/www/html/sites/default/files
 ```
 
 ## Clean Up

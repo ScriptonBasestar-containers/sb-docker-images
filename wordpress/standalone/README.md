@@ -6,7 +6,22 @@ Complete standalone WordPress 6 setup with MariaDB and Redis.
 
 - **WordPress**: Official image `wordpress:6-php8.3-apache`
 - **MariaDB**: Database server with health check
-- **Redis**: Cache backend (requires plugin)
+- **Redis**: Cache backend with health check (requires plugin)
+
+## Configuration
+
+### Environment Variables (Optional)
+
+For custom configuration, copy `.env.example` to `.env` and modify the values:
+
+```bash
+cp .env.example .env
+# Edit .env with your preferred settings
+```
+
+The default values in `compose.yml` work out of the box without creating a `.env` file.
+
+**⚠️ Security**: Always change default passwords in production!
 
 ## Quick Start
 
@@ -126,7 +141,66 @@ docker compose exec -T mariadb mysql -u root -prootpass db01 < wordpress-db-back
 docker compose exec -T wordpress wp db import - < wordpress-db-backup.sql
 ```
 
-## Permissions
+## Health Checks
+
+All services include health checks for reliable startup:
+
+- **MariaDB**: Checks database readiness with `healthcheck.sh`
+- **Redis**: Verifies Redis is responding with `redis-cli ping`
+
+Services will wait for dependencies to be healthy before starting:
+- WordPress waits for MariaDB and Redis to be ready
+
+This ensures proper initialization and prevents connection errors.
+
+## Troubleshooting
+
+### Port Already in Use
+
+If port 8080 is already in use, create a `.env` file:
+
+```bash
+echo "WORDPRESS_PORT=8081" > .env
+docker compose up -d
+```
+
+### Database Connection Errors
+
+If WordPress can't connect to the database:
+
+1. Check if MariaDB is healthy:
+   ```bash
+   docker compose ps
+   ```
+
+2. Wait for health check to pass:
+   ```bash
+   docker compose logs mariadb
+   ```
+
+3. Restart services:
+   ```bash
+   docker compose restart
+   ```
+
+### Redis Connection Issues
+
+If Redis is not working:
+
+1. Check Redis health:
+   ```bash
+   docker compose exec redis redis-cli ping
+   # Should return: PONG
+   ```
+
+2. Verify Redis Object Cache plugin is installed and enabled
+
+3. Check plugin status:
+   ```bash
+   docker compose exec wordpress wp redis status
+   ```
+
+### Permissions
 
 If you encounter permission issues:
 
@@ -134,6 +208,21 @@ If you encounter permission issues:
 # Fix permissions
 docker compose exec wordpress chown -R www-data:www-data /var/www/html
 ```
+
+### White Screen of Death (WSOD)
+
+If WordPress shows a blank white screen:
+
+1. Enable debugging:
+   ```bash
+   docker compose exec wordpress wp config set WP_DEBUG true --raw
+   docker compose exec wordpress wp config set WP_DEBUG_LOG true --raw
+   ```
+
+2. Check error logs:
+   ```bash
+   docker compose exec wordpress tail -f /var/www/html/wp-content/debug.log
+   ```
 
 ## Security Recommendations
 

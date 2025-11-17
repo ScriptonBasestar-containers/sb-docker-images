@@ -6,7 +6,7 @@ Complete standalone MediaWiki setup with MariaDB and Redis.
 
 - **MediaWiki**: Official image `mediawiki:latest`
 - **MariaDB**: Database server with health check
-- **Redis**: Cache backend
+- **Redis**: Cache backend with health check
 
 ## Quick Start
 
@@ -134,6 +134,73 @@ docker compose exec mediawiki php maintenance/rebuildrecentchanges.php
 # Run jobs
 docker compose exec mediawiki php maintenance/runJobs.php
 ```
+
+## Health Checks
+
+All services include health checks for reliable startup:
+
+- **MariaDB**: Checks database readiness with `healthcheck.sh`
+- **Redis**: Verifies Redis is responding with `redis-cli ping`
+
+Services will wait for dependencies to be healthy before starting:
+- MediaWiki waits for MariaDB and Redis to be ready
+
+This ensures proper initialization and prevents connection errors.
+
+## Troubleshooting
+
+### Port Already in Use
+
+If port 8080 is already in use, create a `.env` file:
+
+```bash
+echo "MEDIAWIKI_PORT=8081" > .env
+docker compose up -d
+```
+
+### Database Connection Errors
+
+If MediaWiki can't connect to the database:
+
+1. Check if MariaDB is healthy:
+   ```bash
+   docker compose ps
+   ```
+
+2. Verify database credentials in installer or `LocalSettings.php`
+
+3. Restart services:
+   ```bash
+   docker compose restart
+   ```
+
+### Redis Connection Issues
+
+If Redis is not working:
+
+1. Check Redis health:
+   ```bash
+   docker compose exec redis redis-cli ping
+   # Should return: PONG
+   ```
+
+2. Verify Redis configuration in `LocalSettings.php`
+
+### LocalSettings.php Not Found
+
+If MediaWiki asks you to run the installer again after restart:
+
+1. Make sure you downloaded `LocalSettings.php` after installation
+
+2. Uncomment the volume mount in `compose.yml`:
+   ```yaml
+   - ./LocalSettings.php:/var/www/html/LocalSettings.php
+   ```
+
+3. Restart the container:
+   ```bash
+   docker compose restart mediawiki
+   ```
 
 ## Clean Up
 
