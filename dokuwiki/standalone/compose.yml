@@ -4,7 +4,7 @@ services:
     container_name: ${DOKUWIKI_CONTAINER_NAME:-dokuwiki}
     restart: unless-stopped
     ports:
-      - "${DOKUWIKI_PORT:-8080}:8080"
+      - "${DOKUWIKI_PORT:-8130}:8080"
     environment:
       # Administrator configuration
       DOKUWIKI_ADMIN_USER: ${DOKUWIKI_ADMIN_USER:-admin}

@@ -20,7 +20,7 @@ services:
       - ./nginx/php-web.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/.nginx.conf:/etc/nginx/conf.d/.nginx.conf
     ports:
-    - 8080:80
+      - "${FLARUM_PORT:-8140}:80"
     networks:
       - code-network
     depends_on:

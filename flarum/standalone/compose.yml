@@ -7,9 +7,9 @@ services:
     container_name: flarum
     restart: unless-stopped
     ports:
-      - "8080:8888"
+      - "${FLARUM_PORT:-8140}:8888"
     environment:
-      - FORUM_URL=http://localhost:8080
+      - FORUM_URL=http://localhost:${FLARUM_PORT:-8140}
       - DB_HOST=mariadb
       - DB_NAME=db01
       - DB_USER=user01
