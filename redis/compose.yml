@@ -1,0 +1,26 @@
+services:
+  # Redis - In-memory data store
+  # https://hub.docker.com/_/redis
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass passw0rd
+    volumes:
+      - redis-data:/data
+    networks:
+      - cache-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+networks:
+  cache-network:
+    driver: bridge
+
+volumes:
+  redis-data:
