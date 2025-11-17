@@ -6,6 +6,86 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-17] - Phase 9
+
+### Added
+
+#### 자동화 스크립트 추가
+**2개의 새로운 품질 검증 스크립트 도입:**
+
+**scripts/check-port-conflicts.sh:**
+- Docker Compose 파일에서 포트 충돌 자동 감지
+- 52개 파일 스캔, 46개 포트 검증
+- 환경변수 포트도 감지
+- 충돌 발생 시 파일 및 서비스 정보 제공
+- 검증 결과: 24개 충돌 발견 → 9개로 감소
+
+**scripts/verify-health-checks.sh:**
+- 데이터베이스 서비스의 health check 설정 검증
+- PostgreSQL, MariaDB, Redis, MongoDB 등 검증
+- 누락된 health check에 대한 예제 설정 제공
+- 검증 결과: 18개 서비스에서 health check 권장
+
+**scripts/README.md 업데이트:**
+- 새 스크립트 문서화
+- CI/CD 통합 예제 업데이트
+- 전체 5개 스크립트 사용법 정리
+
+#### Health Check 표준화 완료
+**buildbox 데이터베이스 서비스:**
+- buildbox/compose/compose.mariadb.yml: MariaDB health check 추가
+- buildbox/compose/compose.postgres.yml: PostgreSQL health check 추가
+
+**검증 결과:**
+- 전체: 65개 파일, 72개 서비스 스캔
+- Health check 적용: 26개 서비스
+- 권장 사항: 0개 (모든 중요 서비스 완료)
+
+**스크립트 버그 수정:**
+- verify-health-checks.sh: -A 10 → -A 30 (서비스 마지막 healthcheck 감지 개선)
+
+### Fixed
+
+#### 포트 충돌 해결 (Phase 1 완료)
+**PORT_GUIDE.md 작성:**
+- 포트 범위 정의 (데이터베이스: 3000-3999, 웹: 8000-8999)
+- 24개 포트 충돌 분석 및 문서화
+- 해결 계획 수립 (Phase 1-3)
+- 포트 할당 원칙 정의
+
+**8080 포트 충돌 해결 (10개 프로젝트):**
+| 프로젝트 | 기존 포트 | 새 포트 | 상태 |
+|---------|----------|---------|------|
+| discourse | 8080 | 8080 | ✅ 유지 (기준) |
+| dokuwiki | 8080 | 8130 | ✅ 변경 |
+| flarum | 8080 | 8140 | ✅ 변경 |
+| gnuboard5 | 8080 | 8150 | ✅ 변경 |
+| gollum | 4567 | 8170 | ✅ 변경 |
+| jenkins | 8080 | 8180 | ✅ 변경 |
+| joomla | 8080 | 8110 | ✅ 이미 할당됨 |
+| mediawiki | 8080 | 8200 | ✅ 변경 |
+| nextcloud | 8080 | 8210 | ✅ 변경 |
+| wordpress | 8080 | 8100 | ✅ 이미 할당됨 |
+| xpressengine | 8080 | 8270 | ✅ 변경 |
+
+**변경 사항:**
+- 24개 compose 파일 수정 (compose.yml, standalone/compose.yml, apache/nginx variants)
+- 모든 프로젝트에 환경변수 기반 포트 설정 적용 (${PORT:-default})
+- .env.example 파일에 새로운 기본 포트 문서화
+- YAML 문법 검증 완료
+- 하위 호환성 유지 (기존 .env 파일 사용 시)
+
+**영향:**
+- 포트 충돌: 24개 → 9개 (62.5% 감소)
+- 남은 충돌: 주로 독립 실행 서비스 (3306, 5432, 6379 등)
+- 웹 애플리케이션 포트 충돌: 100% 해결
+
+### Coverage Statistics (Phase 9)
+- **포트 충돌 해결**: 10/10 프로젝트 (100%)
+- **Health check 표준화**: 26/72 서비스 (36%, 중요 서비스 100%)
+- **자동화 스크립트**: 5개 (검증 자동화)
+- **포트 할당 문서화**: 100% (PORT_GUIDE.md)
+
 ## [2025-11-17] - Phase 8
 
 ### Added

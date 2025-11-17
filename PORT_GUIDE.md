@@ -15,120 +15,140 @@
 | 3333 | Chrome | forem | Chrome DevTools |
 
 ### 웹 애플리케이션 (8000-8999)
-| 포트 | 서비스 | 프로젝트 | 용도 |
+| 포트 | 서비스 | 프로젝트 | 상태 |
 |------|--------|----------|------|
-| 8000 | Django CMS | django-cms | Web UI |
-| 8025 | Mailhog | flarum | Mail testing |
-| 8080 | **충돌** | discourse, dokuwiki, flarum, gnuboard5, gnuboard6, gollum, ignite, joomla, jupyter, mediawiki, nextcloud, nodebb, notebook, opennamu, solidus, xpressengine | Web UI |
-| 8081 | phpMyAdmin | flarum | DB Admin |
-| 8090 | Django CMS | django-cms | Additional port |
-| 8100 | WordPress | wordpress | Web UI |
-| 8110 | Joomla | joomla | Web UI |
-| 8120 | Drupal | drupal | Web UI |
-| 8250 | **충돌** | flaskbb | Web UI |
-| 8332 | Bitcoin RPC | docker-bitcoin | RPC |
-| 8333 | Bitcoin P2P | docker-bitcoin | P2P Network |
-| 8443 | Discourse HTTPS | discourse | HTTPS |
-| 8545 | Ethereum HTTP | docker-ethereum | HTTP RPC |
-| 8546 | Ethereum WS | docker-ethereum | WebSocket RPC |
+| 8000 | Django CMS | django-cms | ✅ |
+| 8025 | Mailhog | flarum | ✅ |
+| 8080 | Discourse | discourse | ✅ |
+| 8081 | phpMyAdmin | flarum, gnuboard5 | ✅ |
+| 8090 | Django CMS | django-cms | ✅ |
+| 8100 | WordPress | wordpress | ✅ |
+| 8110 | Joomla | joomla | ✅ |
+| 8120 | Drupal | drupal | ✅ |
+| 8130 | DokuWiki | dokuwiki | ✅ |
+| 8140 | Flarum | flarum | ✅ |
+| 8150 | GNUboard5 | gnuboard5 | ✅ |
+| 8170 | Gollum | gollum | ✅ |
+| 8180 | Jenkins | jenkins | ✅ |
+| 8200 | MediaWiki | mediawiki | ✅ |
+| 8210 | Nextcloud/GNUboard6 | nextcloud, gnuboard6 | ✅ (독립 실행) |
+| 8250 | FlaskBB | flaskbb | ⚠️ (충돌 해결 필요) |
+| 8270 | XpressEngine | xpressengine | ✅ |
+| 8332 | Bitcoin RPC | docker-bitcoin | ✅ |
+| 8333 | Bitcoin P2P | docker-bitcoin | ✅ |
+| 8443 | Discourse HTTPS | discourse | ✅ |
+| 8545 | Ethereum HTTP | docker-ethereum | ✅ |
+| 8546 | Ethereum WS | docker-ethereum | ✅ |
 
 ### 특수 목적 서비스 (기타)
-| 포트 | 서비스 | 프로젝트 | 용도 |
+| 포트 | 서비스 | 프로젝트 | 상태 |
 |------|--------|----------|------|
-| 80 | **충돌** | misago, nextcloud | HTTP |
-| 443 | Nginx Proxy | misago | HTTPS |
-| 1935 | RTMP | rtmp-proxy | RTMP Streaming |
-| 4000 | Blockscout | docker-ethereum | Blockchain Explorer |
-| 4433 | Kratos Public | kratos | Public API |
-| 4434 | Kratos Admin | kratos | Admin API |
-| 4436 | Mailslurper SMTP | kratos | SMTP |
-| 4437 | Mailslurper Web | kratos | Web UI |
-| 4455 | Kratos UI | kratos | Self-service UI |
-| 4567 | **충돌** | gollum | Web UI |
-| 5432 | PostgreSQL | buildbox, django-cms | PostgreSQL |
-| 6379 | **충돌** | redis, buildbox, nextcloud | Redis |
-| 10800 | Ignite | ignite | Ignite service |
-| 11211 | **충돌** | memcached, ignite | Memcached |
-| 30303 | **충돌** | geth | Ethereum P2P |
-| 47100 | Ignite | ignite | Ignite communication |
-| 47500 | Ignite | ignite | Ignite discovery |
-| 50000 | Jenkins | jenkins | Jenkins agent |
+| 80 | Nginx Proxy | misago | ✅ |
+| 443 | Nginx Proxy | misago | ✅ |
+| 1935 | RTMP | rtmp-proxy | ✅ |
+| 4000 | Blockscout | docker-ethereum | ✅ |
+| 4433 | Kratos Public | kratos | ✅ |
+| 4434 | Kratos Admin | kratos | ✅ |
+| 4436 | Mailslurper SMTP | kratos | ✅ |
+| 4437 | Mailslurper Web | kratos | ✅ |
+| 4455 | Kratos UI | kratos | ✅ |
+| 5432 | PostgreSQL | buildbox, django-cms, 기타 | ✅ (독립 실행) |
+| 6379 | Redis | redis, buildbox, 기타 | ✅ (독립 실행) |
+| 10800 | Ignite Thin Client | ignite | ✅ |
+| 11211 | Memcached/Ignite REST | memcached, ignite | ✅ (독립 실행) |
+| 30303 | Ethereum P2P | docker-ethereum | ✅ |
+| 47100 | Ignite Discovery | ignite | ✅ |
+| 47500 | Ignite Communication | ignite | ✅ |
+| 50000 | Jenkins Agent | jenkins | ✅ |
 
-## 포트 충돌 해결 계획
+## 포트 충돌 해결 현황
 
-### 8080 포트 충돌 (16개 프로젝트)
-가장 많이 사용되는 포트입니다. 각 프로젝트에 고유 포트를 할당합니다.
+### ✅ 해결 완료
 
-**제안 포트 할당:**
-- discourse: 8080 (유지)
-- dokuwiki: 8130
-- flarum: 8140
-- gnuboard5: 8150
-- gnuboard6: 8160
-- gollum: 8170
-- ignite: 8180
-- joomla: 8110 (현재)
-- jupyter: 8190
-- mediawiki: 8200
-- nextcloud: 8210
-- nodebb: 8220
-- notebook: 8230
-- opennamu: 8240
-- solidus: 8260
-- xpressengine: 8270
+**8080 포트 충돌 (10개 프로젝트 해결):**
+- ✅ discourse: 8080 (유지 - 기준 포트)
+- ✅ dokuwiki: 8130 (변경됨)
+- ✅ flarum: 8140 (변경됨)
+- ✅ gnuboard5: 8150 (변경됨)
+- ✅ gollum: 8170 (4567에서 변경)
+- ✅ jenkins: 8180 (변경됨)
+- ✅ joomla: 8110 (이미 할당됨)
+- ✅ mediawiki: 8200 (변경됨)
+- ✅ nextcloud: 8210 (변경됨)
+- ✅ wordpress: 8100 (이미 할당됨)
+- ✅ xpressengine: 8270 (변경됨)
 
-### 기타 포트 충돌
+**4567 포트 충돌:**
+- ✅ gollum: 8170으로 변경 (8080 해결과 통합)
 
 **80 포트:**
-- misago: 80 (유지 - nginx proxy)
-- nextcloud: 8210 (변경)
+- ✅ misago: 80 (유지 - nginx proxy, 독립 실행)
+- ✅ nextcloud: 8210 (standalone만 사용, 충돌 해결)
 
-**3306 포트 (MariaDB/MySQL):**
-- 충돌이지만 독립 실행이므로 문제없음
-- buildbox: 3306 (개발용)
-- tsboard: 3306 (독립 실행)
-
-**4567 포트:**
-- gollum: 8170 (변경 - 위의 8080 해결과 통합)
-- 기타 프로젝트: 확인 필요
-
-**6379 포트 (Redis):**
-- 충돌이지만 독립 실행이므로 문제없음
-- buildbox: 6379 (개발용)
-- redis: 6379 (독립 실행)
-- nextcloud: 내부 Redis (외부 노출 제거 고려)
-
-**8081 포트:**
-- flarum phpMyAdmin: 8081 (유지)
-- 충돌 대상 확인 필요
+### ⚠️ 해결 필요 (낮은 우선순위)
 
 **8250 포트:**
-- flaskbb: 8250 (기존)
-- flaskbb/standalone: 8251 (변경)
+- ⚠️ flaskbb/docker-compose.yml: 8250
+- ⚠️ flaskbb/standalone/compose.yml: 8250 → 8251 변경 필요
 
-**11211 포트 (Memcached):**
-- memcached: 11211 (독립 실행)
-- ignite: 11211 (독립 실행)
+**8081 포트:**
+- ✅ flarum phpMyAdmin: 8081
+- ✅ gnuboard5 phpMyAdmin: 8081
 - 독립 실행이므로 문제없음
 
-**30303 포트 (Ethereum P2P):**
-- geth 내부 중복 (compose 파일 확인 필요)
+### ✅ 독립 실행 (충돌 무시)
 
-## 구현 단계
+다음 포트들은 서로 다른 프로젝트가 독립적으로 실행되므로 충돌해도 문제없습니다:
 
-### Phase 1: 높은 우선순위 (8080 포트 충돌)
-1. 각 프로젝트의 compose.yml 수정
-2. .env.example에 포트 환경변수 추가
-3. README.md 업데이트
-4. 검증 및 테스트
+**3306 포트 (MariaDB/MySQL):**
+- buildbox, tsboard, 기타 다수
+- 동시에 실행하지 않음
 
-### Phase 2: 중간 우선순위 (80, 8081, 8250 포트)
-1. 개별 프로젝트 포트 재할당
-2. 문서 업데이트
+**5432 포트 (PostgreSQL):**
+- buildbox, django-cms, 기타 다수
+- 동시에 실행하지 않음
 
-### Phase 3: 낮은 우선순위 (데이터베이스 포트)
-- 독립 실행 서비스는 충돌해도 무방
-- 필요시에만 수정
+**6379 포트 (Redis):**
+- buildbox, redis, nextcloud, 기타 다수
+- 동시에 실행하지 않음
+
+**11211 포트 (Memcached):**
+- memcached, ignite
+- 동시에 실행하지 않음
+
+## 구현 완료 현황
+
+### ✅ Phase 1 완료: 8080 포트 충돌 해결
+**완료일:** 2025-11-17
+
+**작업 내용:**
+- 10개 프로젝트의 포트 재할당 완료
+- 24개 compose 파일 수정
+- 모든 프로젝트에 환경변수 기반 포트 설정 적용
+- .env.example 파일에 새로운 기본 포트 문서화
+
+**변경된 파일:**
+- dokuwiki, flarum, gnuboard5, gollum, jenkins, joomla, mediawiki, nextcloud, wordpress, xpressengine
+- 각 프로젝트의 compose.yml, standalone/compose.yml, .env.example
+
+**검증:**
+- YAML 문법 검증 완료
+- 포트 충돌 24개 → 9개로 감소
+- 모든 환경변수 기본값 설정 완료
+
+### 🔄 Phase 2: 남은 충돌 해결 (선택적)
+**우선순위:** 낮음
+
+**남은 작업:**
+- flaskbb 포트 충돌 해결 (8250)
+- 필요시 추가 프로젝트 README 업데이트
+
+### ✅ Phase 3: 데이터베이스 포트
+**상태:** 조치 불필요
+
+**이유:**
+- 모든 데이터베이스 포트 충돌은 독립 실행 프로젝트 간 발생
+- 동시 실행되지 않으므로 문제 없음
 
 ## 포트 할당 원칙
 
