@@ -59,18 +59,23 @@ docker run -ti \
 
 ## 서비스 구성
 
-### 포트 정보
+### 포트
 
 | 포트 | 용도 | 설명 |
 |------|------|------|
 | 3000 | Rails Server | 기본 Rails 개발 서버 포트 |
-| 8640 | Alternative | PORT_GUIDE.md 권장 포트 |
 
 > **포트 선택**:
-> - 3000: Rails 기본 포트
-> - 8640: 다른 서비스와 충돌 방지용 권장 포트
+> - 3000: Rails 기본 포트 (개발 환경 표준)
+> - 8640: 다른 서비스와 충돌 방지용 권장 포트 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
 >
-> 자세한 내용은 [PORT_GUIDE.md](../docs/PORT_GUIDE.md)를 참조하세요.
+> **포트 변경 방법**:
+> ```bash
+> # run.sh 또는 docker run 명령 사용 시 -p 옵션으로 포트 지정
+> docker run -p 8640:3000 -v $(pwd):/work ruby-dev
+> ```
+
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
 ### 볼륨
 
