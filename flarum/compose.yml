@@ -1,6 +1,7 @@
 services:
   # Flarum - Modern PHP Forum
-  # 커뮤니티 이미지 사용 (공식 이미지 없음)
+  # Community image (no official image available)
+  # https://hub.docker.com/r/mondedie/flarum
   flarum:
     image: mondedie/flarum:stable
     container_name: flarum
@@ -25,19 +26,21 @@ services:
       mariadb:
         condition: service_healthy
     networks:
-      - db-network
+      - app-network
 
   mariadb:
     image: mariadb:11.8
+    container_name: flarum-mariadb
+    restart: unless-stopped
     environment:
       - MYSQL_ROOT_PASSWORD=rootpass
       - MYSQL_DATABASE=db01
       - MYSQL_USER=user01
       - MYSQL_PASSWORD=passw0rd
     volumes:
-      - mariadb:/var/lib/mysql
+      - mariadb-data:/var/lib/mysql
     networks:
-      - db-network
+      - app-network
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
@@ -46,30 +49,34 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
+    container_name: flarum-phpmyadmin
+    restart: unless-stopped
     depends_on:
       - mariadb
-    links:
-      - mariadb:db
     ports:
-      - 8081:80
+      - "8081:80"
     environment:
+      PMA_HOST: mariadb
       PMA_USER: root
-      PMA_PASSWORD: dockerPWDroot
+      PMA_PASSWORD: rootpass
+    networks:
+      - app-network
 
   mailhog:
     image: mailhog/mailhog:latest
+    container_name: flarum-mailhog
+    restart: unless-stopped
     ports:
-#        - "1025:1025"
       - "8025:8025"
     expose:
       - 1025
+    networks:
+      - app-network
 
 networks:
-  code-network:
-      driver: bridge
-  db-network:
+  app-network:
     driver: bridge
 
 volumes:
   flarum-data:
-  mariadb:
+  mariadb-data:
