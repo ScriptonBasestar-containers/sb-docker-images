@@ -4,14 +4,14 @@ services:
     container_name: flaskbb
     restart: unless-stopped
     ports:
-      - "8250:8080"
+      - "8251:8080"
     environment:
       # Flask configuration
       FLASK_APP: flaskbb
       FLASK_ENV: production
 
       # FlaskBB configuration
-      FLASKBB_SERVER_NAME: localhost:8250
+      FLASKBB_SERVER_NAME: localhost:8251
       FLASKBB_SECRET_KEY: ${FLASKBB_SECRET_KEY:-change-this-to-a-random-secret-key-min-32-chars}
 
       # Database configuration
