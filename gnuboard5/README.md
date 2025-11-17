@@ -122,6 +122,21 @@ chmod 707 app/theme
 
 ## 사용법
 
+### Makefile 명령어
+
+이 프로젝트는 간편한 관리를 위한 Makefile을 제공합니다:
+
+```bash
+make help      # 사용 가능한 명령어 보기
+make up        # 서비스 시작
+make down      # 서비스 중지
+make restart   # 서비스 재시작
+make logs      # 로그 보기
+make ps        # 실행 중인 컨테이너 확인
+make shell     # Nginx 컨테이너 접속
+make clean     # 모든 데이터 삭제 (주의!)
+```
+
 ### 관리자 페이지
 
 ```
