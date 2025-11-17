@@ -1,10 +1,10 @@
 services:
   mediawiki:
     image: mediawiki
-    container_name: mediawiki
+    container_name: ${MEDIAWIKI_CONTAINER_NAME:-mediawiki}
     restart: always
     ports:
-      - "8080:80"
+      - "${WEB_PORT:-8200}:80"
     volumes:
       - mediawiki-images:/var/www/html/images
       - ./docker-entrypoint-install.sh:/docker-entrypoint-install.sh
@@ -13,13 +13,13 @@ services:
       # the mediawiki service
       # - ./config/LocalSettings.php:/var/www/html/LocalSettings.php
     environment:
-      - DB_HOST=mariadb
-      - DB_NAME=db01
-      - DB_USER=user01
-      - DB_PASS=passw0rd
+      - DB_HOST=${MYSQL_HOST:-mariadb}
+      - DB_NAME=${MYSQL_DATABASE:-db01}
+      - DB_USER=${MYSQL_USER:-user01}
+      - DB_PASS=${MYSQL_PASSWORD:-passw0rd}
       - DB_INSTALL_USER=root
-      - DB_INSTALL_PASS=rootpass
-      - SERVER_HOSTNAME=http://localhost:8080
+      - DB_INSTALL_PASS=${MYSQL_ROOT_PASSWORD:-rootpass}
+      - SERVER_HOSTNAME=http://localhost:${WEB_PORT:-8200}
       - ADMIN_USER=admin1
       - ADMIN_PASS=qwer1234!@
       - WIKI_NAME=MyWiki

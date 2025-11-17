@@ -3,15 +3,15 @@ services:
   # https://hub.docker.com/_/mediawiki
   mediawiki:
     image: mediawiki:latest
-    container_name: mediawiki
+    container_name: ${MEDIAWIKI_CONTAINER_NAME:-mediawiki}
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "${WEB_PORT:-8200}:80"
     environment:
-      - DB_HOST=mariadb
-      - DB_NAME=db01
-      - DB_USER=user01
-      - DB_PASS=passw0rd
+      - DB_HOST=${MYSQL_HOST:-mariadb}
+      - DB_NAME=${MYSQL_DATABASE:-db01}
+      - DB_USER=${MYSQL_USER:-user01}
+      - DB_PASS=${MYSQL_PASSWORD:-passw0rd}
     volumes:
       - mediawiki-images:/var/www/html/images
       # After initial setup, download LocalSettings.php and uncomment:

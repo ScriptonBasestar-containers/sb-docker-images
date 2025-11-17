@@ -3,10 +3,10 @@ services:
   # https://hub.docker.com/_/joomla
   joomla:
     image: joomla:5-php8.3-apache
-    container_name: joomla
+    container_name: ${JOOMLA_CONTAINER_NAME:-joomla}
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "${WEB_PORT:-8110}:80"
     environment:
       JOOMLA_DB_HOST: mariadb
       JOOMLA_DB_USER: user01
