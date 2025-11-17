@@ -36,10 +36,10 @@ Development setup using docker-compose.yml:
 docker-compose up -d
 
 # 웹 브라우저로 접속
-# http://localhost:8200
+# http://localhost:8150
 
 # 설치 마법사 실행
-# 1. http://localhost:8200/install 접속
+# 1. http://localhost:8150/install 접속
 # 2. DB 정보 입력:
 #    - DB Host: mariadb
 #    - DB Name: db01
@@ -51,7 +51,7 @@ docker-compose up -d
 
 ## 서비스 구성
 
-- **nginx**: 웹 서버 (포트 8200)
+- **nginx**: 웹 서버 (포트 8150, NGINX_PORT로 변경 가능)
 - **php**: PHP-FPM (그누보드5)
 - **mariadb**: MariaDB 11.8 데이터베이스
 - **phpmyadmin**: 데이터베이스 관리 (포트 8201)
@@ -60,10 +60,10 @@ docker-compose up -d
 
 | 포트 | 서비스 | 용도 |
 |------|--------|------|
-| 8200 | nginx | 웹 사이트 (권장 포트 사용 중) |
+| 8150 | nginx | 웹 사이트 (NGINX_PORT로 변경 가능) |
 | 8201 | phpmyadmin | DB 관리 |
 
-> ✅ **포트 설정**: 이미 권장 포트(8200)를 사용하고 있습니다. ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+> ✅ **포트 설정**: 기본 포트는 8150입니다. NGINX_PORT 환경변수로 변경 가능합니다. ([포트 가이드](../PORT_GUIDE.md) 참조)
 
 포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
@@ -73,7 +73,7 @@ docker-compose.yml에서 설정:
 
 ```yaml
 environment:
-  - G5_DOMAIN=localhost:8200
+  - G5_DOMAIN=localhost:${NGINX_PORT:-8150}
   - MYSQL_ROOT_PASSWORD=rootpass
   - MYSQL_DATABASE=db01
   - MYSQL_USER=user01
@@ -118,7 +118,7 @@ chmod 707 app/theme
 
 ### 3. 설치 진행
 
-브라우저에서 http://localhost:8200/install 접속하여 설치 진행
+브라우저에서 http://localhost:8150/install 접속하여 설치 진행
 
 ## 사용법
 
@@ -140,7 +140,7 @@ make clean     # 모든 데이터 삭제 (주의!)
 ### 관리자 페이지
 
 ```
-URL: http://localhost:8200/adm
+URL: http://localhost:8150/adm
 ID: 설치 시 입력한 관리자 ID
 PW: 설치 시 입력한 관리자 비밀번호
 ```

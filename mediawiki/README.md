@@ -22,7 +22,7 @@ MediaWiki는 다음과 같은 기능을 제공합니다:
 docker compose up -d
 
 # 2. 브라우저에서 접속
-# http://localhost:8080
+# http://localhost:8200
 
 # 3. 초기 설정
 # compose.yml의 환경 변수로 자동 설정되어 있습니다
@@ -41,7 +41,7 @@ docker compose up -d
 
 compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
-- **mediawiki**: MediaWiki 애플리케이션 (포트 8080→80)
+- **mediawiki**: MediaWiki 애플리케이션 (포트 8200→80)
   - PHP 기반 위키 엔진
   - 웹 UI 제공
   - API 서버
@@ -63,46 +63,24 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 | 포트 | 서비스 | 용도 |
 |------|--------|------|
-| 8080 | mediawiki | MediaWiki 웹 사이트 (현재 설정) |
+| 8200 | mediawiki | MediaWiki 웹 사이트 (WEB_PORT로 변경 가능) |
 
-> ⚠️ **포트 충돌 주의**: 현재 8080 포트 사용 중입니다.
+> ✅ **포트 설정**: 기본 포트는 8200입니다. WEB_PORT 환경변수로 변경 가능합니다.
 >
-> **권장 포트**: 8300 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
->
-> **포트 변경 방법**:
-> ```bash
-> # compose.yml 파일에서 수정
-> sed -i 's/"8080:80"/"8300:80"/' compose.yml
->
-> # 또는 직접 편집
-> # ports:
-> #   - "8300:80"
-> ```
-
-포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
+> 포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
 
 ### 포트 변경 방법
 
-compose.yml을 편집하여 포트를 변경할 수 있습니다:
-
-```yaml
-services:
-  mediawiki:
-    ports:
-      - "8300:80"  # 8080 대신 8300 사용
-```
-
-또는 환경 변수를 사용:
+환경 변수를 사용하여 포트를 변경할 수 있습니다:
 
 ```bash
-# .env 파일 생성
-MEDIAWIKI_PORT=8300
+# .env.example 파일 참조
+WEB_PORT=8200
+MEDIAWIKI_CONTAINER_NAME=mediawiki
 
-# compose.yml 수정
-services:
-  mediawiki:
-    ports:
-      - "${MEDIAWIKI_PORT:-8080}:80"
+# compose.yml에서는 이미 환경변수로 설정됨
+ports:
+  - "${WEB_PORT:-8200}:80"
 ```
 
 ## 환경 변수
@@ -125,7 +103,7 @@ DB_INSTALL_PASS=rootpass # DB 관리자 비밀번호
 
 ```yaml
 # 서버 설정
-SERVER_HOSTNAME=http://localhost:8080  # 위키 URL
+SERVER_HOSTNAME=http://localhost:${WEB_PORT:-8200}  # 위키 URL
 
 # 관리자 계정
 ADMIN_USER=admin1        # 관리자 사용자명
@@ -185,7 +163,7 @@ docker compose down -v
 
 MediaWiki는 환경 변수로 자동 설정되지만, 수동 설정도 가능합니다:
 
-1. http://localhost:8080 접속
+1. http://localhost:8200 접속
 2. "Set up the wiki" 클릭
 3. 설치 마법사 실행:
    - 언어 선택
@@ -325,7 +303,7 @@ EXIT;
 
 ```bash
 # 초기 설정 실행
-# http://localhost:8080 접속하여 설치 마법사 완료
+# http://localhost:8200 접속하여 설치 마법사 완료
 
 # 또는 기존 LocalSettings.php 마운트
 # compose.yml의 volumes 주석 해제
@@ -546,7 +524,7 @@ services:
   mediawiki:
     image: docker-registry.wikimedia.org/dev/buster-php81-fpm:1.0.1-s2
     environment:
-      MW_DOCKER_PORT: "${MW_DOCKER_PORT:-8080}"
+      MW_DOCKER_PORT: "${MW_DOCKER_PORT:-8200}"
       MW_DBTYPE: 'sqlite'  # SQLite 사용
       MW_USER: '${MEDIAWIKI_USER:-Admin}'
       MW_PASS: '${MEDIAWIKI_PASSWORD:-dockerpass}'
@@ -604,7 +582,7 @@ docker compose exec mediawiki php maintenance/install.php \
   --installdbpass=rootpass \
   --dbuser=user01 \
   --dbpass=passw0rd \
-  --server="http://localhost:8080" \
+  --server="http://localhost:8200" \
   --lang=ko \
   --pass=qwer1234!@ \
   "MyWiki" \

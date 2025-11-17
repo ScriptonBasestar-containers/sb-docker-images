@@ -34,7 +34,7 @@ docker compose logs -f
 docker compose exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
-웹 브라우저에서 http://localhost:8080 접속
+웹 브라우저에서 http://localhost:8180 접속
 
 ## Standalone 구성
 
@@ -75,7 +75,7 @@ make initial-password
 # 공식 이미지 사용
 docker run -d \
   --name jenkins \
-  -p 8080:8080 \
+  -p 8180:8080 \
   -p 50000:50000 \
   -v jenkins_home:/var/jenkins_home \
   jenkins/jenkins:lts-jdk21
@@ -84,7 +84,7 @@ docker run -d \
 make jenkins-build
 docker run -d \
   --name jenkins \
-  -p 8080:8080 \
+  -p 8180:8080 \
   -p 50000:50000 \
   -v jenkins_home:/var/jenkins_home \
   jenkins
@@ -96,11 +96,11 @@ docker run -d \
 
 | 포트 | 용도 | 설명 |
 |------|------|------|
-| 8080 | Web UI | Jenkins 웹 인터페이스 |
-| 50000 | Agent | Jenkins Agent 통신 포트 (JNLP) |
+| 8180 | Web UI | Jenkins 웹 인터페이스 (JENKINS_HTTP_PORT로 변경 가능) |
+| 50000 | Agent | Jenkins Agent 통신 포트 (JNLP, JENKINS_AGENT_PORT로 변경 가능) |
 
-> **포트 충돌 방지**: 다른 프로젝트와 동시 실행 시 포트를 변경하세요.
-> 자세한 내용은 [PORT_GUIDE.md](../docs/PORT_GUIDE.md)를 참조하세요.
+> ✅ **포트 설정**: 기본 포트는 8180입니다. 환경변수로 변경 가능합니다.
+> 자세한 내용은 [PORT_GUIDE.md](../PORT_GUIDE.md)를 참조하세요.
 
 ### 볼륨
 
@@ -139,7 +139,7 @@ jenkins/
 
 ### 1. 초기 설정
 
-1. Jenkins 시작 후 웹 브라우저에서 http://localhost:8080 접속
+1. Jenkins 시작 후 웹 브라우저에서 http://localhost:8180 접속
 2. 초기 관리자 비밀번호 입력:
 
 ```bash
@@ -309,25 +309,17 @@ jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt
 
 ### 포트 충돌
 
-```bash
-# 다른 포트로 실행
-# compose.yml 수정
-ports:
-  - "8081:8080"    # 8080 대신 8081 사용
-  - "50001:50000"
-```
-
-또는 환경 변수 사용:
+환경 변수로 포트 변경:
 
 ```bash
-# .env 파일 생성
-WEB_PORT=8081
-AGENT_PORT=50001
+# .env.example 파일 참조
+JENKINS_HTTP_PORT=8180
+JENKINS_AGENT_PORT=50000
 
-# compose.yml에서 참조
+# compose.yml에서는 이미 환경변수로 설정됨
 ports:
-  - "${WEB_PORT:-8080}:8080"
-  - "${AGENT_PORT:-50000}:50000"
+  - "${JENKINS_HTTP_PORT:-8180}:8080"
+  - "${JENKINS_AGENT_PORT:-50000}:50000"
 ```
 
 ### 권한 문제
@@ -491,7 +483,7 @@ server {
     ssl_certificate_key /etc/nginx/ssl/key.pem;
 
     location / {
-        proxy_pass http://localhost:8080;
+        proxy_pass http://localhost:8180;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

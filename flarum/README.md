@@ -45,7 +45,7 @@ make up
 make logs
 
 # Access Flarum
-# Open http://localhost:8080 in your browser
+# Open http://localhost:8140 in your browser (port configurable via FLARUM_PORT)
 ```
 
 ## Default Credentials
