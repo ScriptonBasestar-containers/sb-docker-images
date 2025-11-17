@@ -47,18 +47,30 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
   - buildbox/compose/compose.redis.yml 사용
   - 세션 관리 및 캐싱
 
-## 포트 정보
+## 포트
 
-| 서비스 | 호스트 포트 | 컨테이너 포트 | 설명 |
-|--------|-------------|---------------|------|
-| discourse | 3000 | 3000 | Rails 서버 |
-| discourse | 8080 | 80 | HTTP |
-| discourse | 8443 | 443 | HTTPS |
-| postgres | (내부) | 5432 | PostgreSQL |
-| redis | (내부) | 6379 | Redis |
+| 포트 | 서비스 | 용도 |
+|------|--------|------|
+| 8080 | discourse | Discourse 웹 사이트 HTTP (현재 설정) |
+| 8443 | discourse | Discourse 웹 사이트 HTTPS (현재 설정) |
+| 3000 | discourse | Rails 서버 (현재 설정) |
 
-> 참고: 포트 충돌을 피하려면 compose.yml의 포트 설정을 수정하세요.
-> 권장 포트: 8230 (PORT_GUIDE.md 참조)
+> ⚠️ **포트 충돌 주의**: 현재 8080 포트 사용 중입니다.
+>
+> **권장 포트**: 8230 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+>
+> **포트 변경 방법**:
+> ```bash
+> # compose.yml 파일에서 수정
+> sed -i 's/8080:80/8230:80/' compose.yml
+>
+> # 또는 직접 편집
+> # ports:
+> #   - "8230:80"
+> #   - "8443:443"
+> ```
+
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
 ## 환경 변수
 
