@@ -1,7 +1,7 @@
 x-app: &app
   build:
     target: development
-    context: .
+    context: ./forem-src
     args:
       PG_MAJOR: '13'
   image: ghcr.io/forem/forem:1.0.0-development
@@ -17,7 +17,7 @@ x-backend: &backend
   stdin_open: true
   tty: true
   volumes:
-    - ${LOCAL_WORKSPACE_FOLDER:-.}:/app:cached
+    - ${LOCAL_WORKSPACE_FOLDER:-./forem-src}:/app:cached
     - bundle:/usr/local/bundle
     - cypress:/root/.cache/Cypress
     - rails_cache:/app/tmp/cache
@@ -25,7 +25,7 @@ x-backend: &backend
     - node_modules:/app/node_modules
     - builds:/app/public/builds
     - history:/usr/local/hist
-    - ${LOCAL_WORKSPACE_FOLDER:-.}/.dockerdev/.psqlrc:/root/.psqlrc:ro
+    - ${LOCAL_WORKSPACE_FOLDER:-./forem-src}/.dockerdev/.psqlrc:/root/.psqlrc:ro
   environment: &backend_environment
     <<: *env
     CHROME_URL: http://chrome:3333
@@ -57,14 +57,14 @@ services:
       DATABASE_URL_TEST: postgres://postgres:postgres@postgres:5432
       CHROME_URL: http://chrome:3333
     volumes:
-      - ${LOCAL_WORKSPACE_FOLDER:-.}:/workspaces/forem:cached
+      - ${LOCAL_WORKSPACE_FOLDER:-./forem-src}:/workspaces/forem:cached
       - bundle:/usr/local/bundle
       - cypress:/root/.cache/Cypress
       - rails_cache:/workspaces/forem/tmp/cache
       - assets:/workspaces/forem/public/assets
       - node_modules:/workspaces/forem/node_modules
       - history:/usr/local/hist
-      - ${LOCAL_WORKSPACE_FOLDER:-.}/.dockerdev/.psqlrc:/root/.psqlrc:ro
+      - ${LOCAL_WORKSPACE_FOLDER:-./forem-src}/.dockerdev/.psqlrc:/root/.psqlrc:ro
       - /var/run/docker.sock:/var/run/docker-host.sock
     command: sleep infinity
     tmpfs:
@@ -94,7 +94,7 @@ services:
   postgres:
     image: postgres:13
     volumes:
-      - ${LOCAL_WORKSPACE_FOLDER:-.}/.dockerdev/.psqlrc:/root/.psqlrc:ro
+      - ${LOCAL_WORKSPACE_FOLDER:-./forem-src}/.dockerdev/.psqlrc:/root/.psqlrc:ro
       - postgres:/var/lib/postgresql/data
       - history:/usr/local/hist
     environment:
@@ -122,7 +122,7 @@ services:
     <<: *app
     command: yarn build --watch
     volumes:
-      - ${LOCAL_WORKSPACE_FOLDER:-.}:/app:cached
+      - ${LOCAL_WORKSPACE_FOLDER:-./forem-src}:/app:cached
       - bundle:/usr/local/bundle
       - node_modules:/app/node_modules
       - builds:/app/assets/builds
@@ -139,7 +139,7 @@ services:
     # (otherwise Chrome won't be able to find files).
     # NOTE: Make sure you use absolute paths in `#attach_file`.
     volumes:
-      - ${LOCAL_WORKSPACE_FOLDER:-.}:/app:cached
+      - ${LOCAL_WORKSPACE_FOLDER:-./forem-src}:/app:cached
     environment:
       PORT: 3333
       CONNECTION_TIMEOUT: 600000
