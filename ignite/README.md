@@ -24,6 +24,39 @@ docker compose logs -f
 docker compose down
 ```
 
+## Standalone Configuration
+
+완전한 독립 실행 가능한 Apache Ignite In-Memory Computing 플랫폼 구성이 `standalone/` 디렉토리에 제공됩니다.
+
+### Features
+
+- **Apache Ignite**: 분산 인메모리 컴퓨팅 플랫폼
+- **REST API**: HTTP REST API 활성화
+- **Persistence**: 데이터 영구 저장
+- **환경 변수 지원**: .env 파일을 통한 유연한 설정
+- **완전한 문서**: 클라이언트 연결, SQL, Compute Grid, 모니터링
+
+### Usage
+
+```bash
+# standalone 디렉토리로 이동
+cd standalone/
+
+# 환경 변수 설정 (선택사항)
+cp .env.example .env
+
+# Ignite 시작
+make up
+
+# 버전 확인
+make version
+
+# REST API 테스트
+curl http://localhost:11211/ignite?cmd=version
+```
+
+자세한 내용은 [standalone/README.md](./standalone/README.md)를 참조하세요.
+
 ## Ports
 
 - **10800**: Thin client port (JDBC, ODBC, .NET, C++, Python, Node.js clients)

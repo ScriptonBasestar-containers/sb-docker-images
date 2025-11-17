@@ -1,0 +1,39 @@
+services:
+  ignite:
+    image: apacheignite/ignite:${IGNITE_TAG:-latest}
+    container_name: ${IGNITE_CONTAINER_NAME:-ignite}
+    restart: unless-stopped
+    ports:
+      - "${IGNITE_THIN_CLIENT_PORT:-10800}:10800"   # Thin client
+      - "${IGNITE_REST_PORT:-11211}:11211"          # REST API
+      - "${IGNITE_DISCOVERY_PORT:-47100}:47100"     # Discovery
+      - "${IGNITE_COMMUNICATION_PORT:-47500}:47500" # Communication
+    environment:
+      IGNITE_WORK_DIR: /persistence
+      OPTION_LIBS: ${IGNITE_OPTION_LIBS:-ignite-rest-http}
+      JVM_OPTS: >-
+        -Xms${IGNITE_JVM_MIN_MEMORY:-512m}
+        -Xmx${IGNITE_JVM_MAX_MEMORY:-512m}
+        -Djava.net.preferIPv4Stack=true
+      TZ: ${TZ:-Asia/Seoul}
+    volumes:
+      - ignite-persistence:/persistence
+      - ignite-work:/opt/ignite/apache-ignite/work
+    networks:
+      - ignite-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:11211/ignite?cmd=version || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+networks:
+  ignite-network:
+    driver: bridge
+
+volumes:
+  ignite-persistence:
+    driver: local
+  ignite-work:
+    driver: local
