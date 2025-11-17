@@ -32,11 +32,15 @@ docker-compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 ## 포트
 
-- `8000`: Django 백엔드 (http://localhost:8000)
-- `8090`: 프론트엔드 개발 서버 (webpack-dev-server)
-- `5432`: PostgreSQL (내부 또는 개발용)
+| 포트 | 서비스 | 용도 |
+|------|--------|------|
+| 8000 | web | Django 백엔드 (권장 포트 사용 중) |
+| 8090 | frontend | 프론트엔드 개발 서버 |
+| 5432 | db | PostgreSQL (내부) |
 
-포트 충돌이 발생할 경우 [포트 가이드](../docs/PORT_GUIDE.md)를 참조하세요.
+> ✅ **포트 설정**: 이미 권장 포트(8000)를 사용하고 있습니다. ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
 ## 환경 변수
 
