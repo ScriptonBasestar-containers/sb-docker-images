@@ -28,6 +28,40 @@ docker compose exec redis redis-cli -a passw0rd
 docker compose down
 ```
 
+## Standalone Configuration
+
+완전한 독립 실행 가능한 Redis In-Memory 데이터 저장소 구성이 `standalone/` 디렉토리에 제공됩니다.
+
+### Features
+
+- **Redis 7 Alpine**: 경량화된 공식 이미지
+- **AOF Persistence**: 데이터 영구 저장
+- **환경 변수 지원**: .env 파일을 통한 유연한 설정
+- **Health check**: 서비스 상태 모니터링
+- **완전한 문서**: 데이터 타입, 사용 사례, 모니터링, 성능 최적화
+
+### Usage
+
+```bash
+# standalone 디렉토리로 이동
+cd standalone/
+
+# 환경 변수 설정
+cp .env.example .env
+# .env 파일에서 REDIS_PASSWORD 수정
+
+# Redis 시작
+make up
+
+# 연결 테스트
+make ping
+
+# Redis CLI 접속
+make cli
+```
+
+자세한 내용은 [standalone/README.md](./standalone/README.md)를 참조하세요.
+
 ## Configuration
 
 The Redis server is configured with:
