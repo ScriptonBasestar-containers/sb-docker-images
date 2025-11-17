@@ -2,46 +2,38 @@
 
 Forem은 커뮤니티 플랫폼을 구축하기 위한 오픈소스 소프트웨어입니다. [DEV Community](https://dev.to)를 구동하는 플랫폼이기도 합니다.
 
-## 개요
+## 빠른 시작
 
-이 디렉토리는 Forem 애플리케이션의 개발 환경을 Docker Compose로 실행하기 위한 설정을 포함하고 있습니다.
-
-## 사용 방법
-
-### 1. Forem 소스코드 준비
-
-Forem을 실행하려면 먼저 공식 리포지토리를 클론해야 합니다:
+이 디렉토리에서 바로 Forem을 실행할 수 있습니다:
 
 ```bash
-# Forem 리포지토리 클론
-git clone https://github.com/forem/forem.git
-cd forem
+# 1. Forem 소스코드 클론 (최초 1회만)
+make prepare
 
-# 이 리포지토리의 compose.yml을 Forem 디렉토리로 복사
-cp /path/to/sb-docker-images/forem/compose.yml .
+# 2. 서비스 시작
+make up
+
+# 3. 데이터베이스 초기화
+make db-setup
+
+# 4. 브라우저에서 접속
+# http://localhost:3000
 ```
 
-### 2. 개발 환경 실행
+## 사용 가능한 명령어
 
 ```bash
-# 모든 서비스 시작
-docker compose up
-
-# 백그라운드 실행
-docker compose up -d
-
-# 특정 서비스만 시작
-docker compose up web postgres redis
-```
-
-### 3. 데이터베이스 초기화
-
-```bash
-# 데이터베이스 생성 및 마이그레이션
-docker compose exec web bundle exec rails db:create db:migrate
-
-# 샘플 데이터 로드 (선택사항)
-docker compose exec web bundle exec rails db:seed
+make help         # 도움말 보기
+make prepare      # Forem 소스코드 클론
+make up           # 모든 서비스 시작
+make down         # 모든 서비스 중지
+make restart      # 서비스 재시작
+make logs         # 로그 보기
+make shell        # 웹 컨테이너 쉘 접속
+make db-setup     # 데이터베이스 생성 및 마이그레이션
+make db-migrate   # 데이터베이스 마이그레이션 실행
+make db-seed      # 샘플 데이터 로드
+make clean        # 모든 컨테이너 및 볼륨 삭제
 ```
 
 ## 서비스 구성
@@ -55,15 +47,25 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 - **redis**: Redis 8.2 캐시 서버
 - **chrome**: Headless Chrome (테스트용, 포트 3333)
 
+## 디렉토리 구조
+
+```
+forem/
+├── compose.yml       # Docker Compose 설정
+├── Makefile          # 편의 명령어
+├── README.md         # 이 문서
+└── forem-src/        # Forem 소스코드 (make prepare로 생성)
+```
+
 ## 환경 변수
 
-주요 환경 변수:
+주요 환경 변수 (compose.yml에서 설정):
 
 - `RAILS_ENV`: Rails 환경 (기본값: development)
 - `NODE_ENV`: Node.js 환경 (기본값: development)
 - `DATABASE_URL`: PostgreSQL 연결 URL
 - `REDIS_URL`: Redis 연결 URL
-- `LOCAL_WORKSPACE_FOLDER`: 로컬 작업 디렉토리 경로
+- `PG_MAJOR`: PostgreSQL 버전 (기본값: 13)
 
 ## 포트
 
@@ -81,6 +83,30 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 - Redis 8.2
 - ImageMagick (이미지 처리)
 
+## 문제 해결
+
+### 소스코드가 없다는 에러
+```bash
+# forem-src 디렉토리가 없으면
+make prepare
+```
+
+### 빌드 에러
+```bash
+# 컨테이너와 볼륨을 모두 삭제하고 재시작
+make clean
+make prepare  # 소스코드가 없으면
+make up
+```
+
+### 데이터베이스 연결 에러
+```bash
+# postgres 서비스가 준비될 때까지 기다리고 재시도
+make down
+make up
+make db-setup
+```
+
 ## 참고 자료
 
 - [Forem 공식 GitHub](https://github.com/forem/forem)
@@ -90,11 +116,12 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 ## Docker 이미지
 
-Forem 공식 Docker 이미지:
-- `ghcr.io/forem/forem:development` - 개발 환경용
-- `ghcr.io/forem/forem:latest` - 프로덕션 환경용
+이 설정은 Forem을 소스코드에서 빌드합니다:
+- `context: ./forem-src` - 로컬에 클론된 소스에서 빌드
+- `target: development` - 개발 환경용 이미지
+- `image: ghcr.io/forem/forem:1.0.0-development` - 빌드된 이미지 태그
 
-공식 이미지를 사용하므로 별도로 Dockerfile을 빌드할 필요가 없습니다.
+공식 이미지도 사용 가능하지만, 개발 환경에서는 소스 빌드를 권장합니다.
 
 ## 라이선스
 
