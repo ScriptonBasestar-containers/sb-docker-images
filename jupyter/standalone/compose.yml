@@ -1,0 +1,41 @@
+services:
+  jupyter:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: ${JUPYTER_IMAGE_NAME:-jupyter-fullbook}:${JUPYTER_IMAGE_TAG:-latest}
+    container_name: ${JUPYTER_CONTAINER_NAME:-jupyter-notebook}
+    restart: unless-stopped
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    environment:
+      JUPYTER_ENABLE_LAB: ${JUPYTER_ENABLE_LAB:-yes}
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-change-me-secure-token}
+      NB_USER: ${NB_USER:-jovyan}
+      NB_UID: ${NB_UID:-1000}
+      NB_GID: ${NB_GID:-100}
+      GRANT_SUDO: ${GRANT_SUDO:-no}
+      TZ: ${TZ:-Asia/Seoul}
+    volumes:
+      # Work directory for notebooks
+      - jupyter-work:/home/jovyan/work
+      # Jupyter configuration
+      - jupyter-config:/home/jovyan/.jupyter
+    networks:
+      - jupyter-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8888/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  jupyter-network:
+    driver: bridge
+
+volumes:
+  jupyter-work:
+    driver: local
+  jupyter-config:
+    driver: local

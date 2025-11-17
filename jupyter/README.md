@@ -20,6 +20,39 @@ Jupyter Notebook은 데이터 분석, 과학 계산, 머신러닝을 위한 대�
   - Dask, H5py, HDF5
 - **포트**: 8888 (기본 Jupyter 포트)
 
+## Standalone Configuration
+
+완전한 독립 실행 가능한 Jupyter 데이터 과학 환경 구성이 `standalone/` 디렉토리에 제공됩니다.
+
+### Features
+
+- **Multi-Language**: Python, R, Julia, PySpark 커널
+- **JupyterLab**: 현대적인 웹 인터페이스
+- **Full Stack**: NumPy, Pandas, TensorFlow, Scikit-learn
+- **환경 변수 지원**: .env 파일을 통한 유연한 설정
+- **완전한 문서**: 사용 예시, 패키지 설치, 데이터 관리
+
+### Usage
+
+```bash
+# standalone 디렉토리로 이동
+cd standalone/
+
+# 환경 변수 설정 (선택사항)
+cp .env.example .env
+
+# 이미지 빌드 (최초 1회)
+make build
+
+# Jupyter 시작
+make up
+
+# 액세스 토큰 확인
+make token
+```
+
+자세한 내용은 [standalone/README.md](./standalone/README.md)를 참조하세요.
+
 ## 빠른 시작
 
 ### 이미지 빌드
