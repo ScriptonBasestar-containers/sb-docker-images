@@ -1,0 +1,23 @@
+services:
+  mailslurper:
+    image: ${MAILSLURPER_IMAGE:-scriptonbasestar/mailslurper:latest}
+    container_name: ${MAILSLURPER_CONTAINER_NAME:-mailslurper}
+    restart: unless-stopped
+    ports:
+      - "${MAILSLURPER_SMTP_PORT:-2500}:2500"    # SMTP
+      - "${MAILSLURPER_API_PORT:-8080}:8080"     # API
+      - "${MAILSLURPER_WEB_PORT:-8085}:8085"     # Web UI
+    environment:
+      TZ: ${TZ:-Asia/Seoul}
+    networks:
+      - mail-network
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 2500 && nc -z localhost 8085 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  mail-network:
+    driver: bridge

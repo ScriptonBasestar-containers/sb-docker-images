@@ -13,6 +13,39 @@ MailSlurper는 다음과 같은 기능을 제공합니다:
 
 개발 중인 애플리케이션의 이메일 기능을 테스트할 때 이상적입니다.
 
+## Standalone Configuration
+
+완전한 독립 실행 가능한 MailSlurper SMTP 메일 테스트 서버 구성이 `standalone/` 디렉토리에 제공됩니다.
+
+### Features
+
+- **MailSlurper**: SMTP 메일 테스트 서버
+- **Web UI**: 브라우저에서 이메일 확인
+- **REST API**: 프로그래밍 방식 이메일 관리
+- **환경 변수 지원**: .env 파일을 통한 유연한 설정
+- **완전한 문서**: 애플리케이션 연동, API 사용, 테스트 예시
+
+### Usage
+
+```bash
+# standalone 디렉토리로 이동
+cd standalone/
+
+# 환경 변수 설정 (선택사항)
+cp .env.example .env
+
+# MailSlurper 시작
+make up
+
+# Web UI 접속
+make web
+
+# API 테스트
+make api
+```
+
+자세한 내용은 [standalone/README.md](./standalone/README.md)를 참조하세요.
+
 ## 빠른 시작
 
 ### 방법 1: Docker 이미지 직접 실행 (권장)
