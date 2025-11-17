@@ -3,10 +3,10 @@ services:
   # https://hub.docker.com/_/wordpress
   wordpress:
     image: wordpress:6-php8.3-apache
-    container_name: wordpress
+    container_name: ${WORDPRESS_CONTAINER_NAME:-wordpress}
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "${WEB_PORT:-8100}:80"
     environment:
       WORDPRESS_DB_HOST: mariadb
       WORDPRESS_DB_USER: user01

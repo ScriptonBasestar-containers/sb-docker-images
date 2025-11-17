@@ -36,8 +36,9 @@ services:
   # https://hub.docker.com/_/nextcloud
   nextcloud:
     image: nextcloud:29
+    container_name: ${NEXTCLOUD_CONTAINER_NAME:-nextcloud}
     ports:
-      - 8080:80
+      - "${WEB_PORT:-8210}:80"
     depends_on:
       - postgres
       - redis
