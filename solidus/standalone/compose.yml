@@ -1,0 +1,90 @@
+services:
+  # PostgreSQL - Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${POSTGRES_CONTAINER_NAME:-solidus-postgres}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-solidus_production}
+    volumes:
+      - ${POSTGRES_DATA_VOLUME:-postgres-data}:/var/lib/postgresql/data
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - Cache and Session Storage
+  redis:
+    image: redis:7-alpine
+    container_name: ${REDIS_CONTAINER_NAME:-solidus-redis}
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - ${REDIS_DATA_VOLUME:-redis-data}:/data
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Solidus Web Application
+  web:
+    image: solidusio/solidus:latest
+    container_name: ${SOLIDUS_WEB_CONTAINER:-solidus-web}
+    restart: unless-stopped
+    command: bash -c "bundle exec rails db:prepare && bundle exec rails server -b 0.0.0.0"
+    ports:
+      - "${SOLIDUS_WEB_PORT:-8410}:3000"
+    environment:
+      # Rails Environment
+      RAILS_ENV: ${RAILS_ENV:-production}
+      RAILS_LOG_TO_STDOUT: ${RAILS_LOG_TO_STDOUT:-true}
+
+      # Database Configuration
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-solidus_production}
+
+      # Redis Configuration
+      REDIS_URL: redis://redis:6379/0
+
+      # Rails Secret
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-changeme-generate-with-rails-secret}
+
+      # Host Configuration
+      HOST: ${HOST:-localhost:8410}
+
+      # Optional: Email Configuration
+      # SMTP_SERVER: ${SMTP_SERVER:-smtp.gmail.com}
+      # SMTP_PORT: ${SMTP_PORT:-587}
+      # SMTP_USERNAME: ${SMTP_USERNAME}
+      # SMTP_PASSWORD: ${SMTP_PASSWORD}
+    volumes:
+      - ${SOLIDUS_STORAGE_VOLUME:-solidus-storage}:/rails/storage
+      - ${SOLIDUS_PUBLIC_VOLUME:-solidus-public}:/rails/public
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - external_network
+      - internal_network
+
+networks:
+  external_network:
+    driver: bridge
+  internal_network:
+    driver: bridge
+    internal: true
+
+volumes:
+  postgres-data:
+  redis-data:
+  solidus-storage:
+  solidus-public:
