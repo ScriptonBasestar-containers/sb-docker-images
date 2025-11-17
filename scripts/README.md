@@ -75,15 +75,97 @@ Docker Compose 파일의 YAML 문법을 검증합니다.
 **종료 코드:**
 - `0`: 항상 성공 (경고만 출력)
 
+### 4. check-port-conflicts.sh
+
+Docker Compose 파일에서 포트 충돌을 감지합니다.
+
+**사용법:**
+```bash
+# 전체 저장소 검사
+./scripts/check-port-conflicts.sh
+
+# 특정 디렉토리만 검사
+./scripts/check-port-conflicts.sh ./drupal
+```
+
+**검사 내용:**
+- 모든 Docker Compose 파일에서 포트 매핑 추출
+- 호스트 포트 충돌 감지
+- 충돌 발생 시 파일 및 서비스 정보 제공
+- 환경변수로 정의된 포트도 감지
+
+**출력 정보:**
+- 충돌하지 않는 포트: 초록색 ✓
+- 충돌하는 포트: 빨간색 ⚠ CONFLICT (파일 및 서비스 정보 포함)
+- 통계: 총 파일 수, 총 포트 수, 충돌 수
+
+**종료 코드:**
+- `0`: 항상 성공 (충돌 발견 시 경고만 출력)
+
+**참고:**
+- 포트 충돌은 서비스를 동시에 실행할 때만 문제가 됩니다
+- 독립적으로 실행되는 서비스는 같은 포트를 사용해도 무방합니다
+
+### 5. verify-health-checks.sh
+
+데이터베이스 서비스의 health check 설정을 검증합니다.
+
+**사용법:**
+```bash
+# 전체 저장소 검증
+./scripts/verify-health-checks.sh
+
+# 특정 디렉토리만 검증
+./scripts/verify-health-checks.sh ./drupal
+```
+
+**검증 대상 서비스:**
+- PostgreSQL / postgres / postgresql
+- MariaDB / MySQL
+- Redis
+- MongoDB
+- Elasticsearch
+- RabbitMQ
+
+**출력 정보:**
+- Health check 있음: 초록색 ✓
+- Health check 권장 (누락): 빨간색 ✗ (예제 설정 제공)
+- Health check 선택사항: 파란색 ○
+
+**제공 정보:**
+- 각 서비스별 권장 health check 설정 예제
+- Health check의 이점 설명
+- 통계: 전체 서비스 수, health check 설정 여부
+
+**종료 코드:**
+- `0`: 항상 성공 (권장 사항만 출력)
+
+**Health Check 이점:**
+1. 의존성 서비스가 준비된 후 시작 보장
+2. 컨테이너 오케스트레이션 안정성 향상
+3. 장애 시 자동 재시작 가능
+4. 모니터링 및 디버깅 향상
+
 ## 전체 검증 실행
 
 모든 스크립트를 한 번에 실행하려면:
 
 ```bash
-# 각 스크립트 순차 실행
+# 필수 검증 스크립트 (오류 발생 시 중단)
+./scripts/validate-compose.sh && \
+./scripts/test-env-examples.sh
+
+# 권장 검증 스크립트 (경고만 출력)
+./scripts/check-required-files.sh
+./scripts/check-port-conflicts.sh
+./scripts/verify-health-checks.sh
+
+# 모든 스크립트 순차 실행
 ./scripts/validate-compose.sh && \
 ./scripts/test-env-examples.sh && \
-./scripts/check-required-files.sh
+./scripts/check-required-files.sh && \
+./scripts/check-port-conflicts.sh && \
+./scripts/verify-health-checks.sh
 ```
 
 ## CI/CD 통합
@@ -101,12 +183,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      # 필수 검증 (실패 시 중단)
       - name: Validate Compose Files
         run: ./scripts/validate-compose.sh
       - name: Test .env.example Files
         run: ./scripts/test-env-examples.sh
+
+      # 권장 검증 (경고만 출력)
       - name: Check Required Files
         run: ./scripts/check-required-files.sh
+      - name: Check Port Conflicts
+        run: ./scripts/check-port-conflicts.sh
+      - name: Verify Health Checks
+        run: ./scripts/verify-health-checks.sh
 ```
 
 ## 요구사항
@@ -122,6 +212,14 @@ jobs:
 ### check-required-files.sh
 - Bash 4.0+
 - `find` 명령어
+
+### check-port-conflicts.sh
+- Bash 4.0+
+- `grep`, `sed` 명령어
+
+### verify-health-checks.sh
+- Bash 4.0+
+- `grep`, `sed` 명령어
 
 ## 출력 형식
 
