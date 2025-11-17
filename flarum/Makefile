@@ -4,6 +4,32 @@ FILES_APACHE=-f compose.yml -f compose.apache.yml
 FILES_NGINX=-f compose.yml -f compose.nginx.yml
 DOCKER_BASE_IMAGE=local_dev/flarum-base
 
+# Quick start commands
+up:
+	docker compose up -d
+
+down:
+	docker compose down
+
+logs:
+	docker compose logs -f
+
+restart:
+	docker compose restart
+
+clean:
+	docker compose down -v
+
+logs-flarum:
+	docker compose logs -f flarum
+
+logs-mariadb:
+	docker compose logs -f mariadb
+
+shell:
+	docker compose exec flarum bash
+
+# Build commands
 setup:
 	git clone https://github.com/flarum/flarum --depth 1 app
 	docker run --rm -it -v ./app:/app composer composer install
@@ -30,7 +56,3 @@ enter-apache:
 
 run-nginx:
 	docker compose ${FILES_NGINX} up
-
-clean:
-	docker rm -f $(docker ps -qa)
-	docker rmi $(docker images -q)

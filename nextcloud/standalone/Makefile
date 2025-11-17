@@ -1,26 +1,29 @@
-COMPOSE_DATA=-f ../../devbox/compose.bn-pg15.yml -f ../../devbox/compose.bn-redis.yml -f ../../devbox/compose.mariadb.yml
+up:
+	docker compose -f compose.apache.yml up -d
 
-server-up:
-	docker compose -f compose.apache.yml \
-	${COMPOSE_DATA} \
-	up -d
+down:
+	docker compose -f compose.apache.yml down
 
-#server_env:
-#	docker compose -f compose.yml \
-#	${COMPOSE_KRATOS} ${COMPOSE_DATA} \
-#	exec postgres env
+logs:
+	docker compose -f compose.apache.yml logs -f
 
-server_migrate:
-	docker compose -f compose.apache.yml \
-	${COMPOSE_DATA} \
-	run discourse /var/www/discourse/bin/rake db:migrate
+restart:
+	docker compose -f compose.apache.yml restart
 
-server-down:
-	docker compose -f compose.apache.yml \
-	${COMPOSE_DATA} \
-	down -v
+clean:
+	docker compose -f compose.apache.yml down -v
 
-server-enter:
-	docker compose -f compose.apache.yml \
-	${COMPOSE_DATA} \
-	run wp-install bash
+logs-nextcloud:
+	docker compose -f compose.apache.yml logs -f nextcloud
+
+logs-mariadb:
+	docker compose -f compose.apache.yml logs -f mariadb
+
+logs-redis:
+	docker compose -f compose.apache.yml logs -f redis
+
+shell:
+	docker compose -f compose.apache.yml exec nextcloud bash
+
+occ:
+	docker compose -f compose.apache.yml exec -u www-data nextcloud php occ
