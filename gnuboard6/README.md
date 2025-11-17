@@ -38,12 +38,24 @@ docker-compose exec gnuboard6 python manage.py createsuperuser
 
 | 포트 | 서비스 | 용도 |
 |------|--------|------|
-| 8210 | gnuboard6 | 웹 사이트 |
+| 8080 | gnuboard6 | 웹 사이트 (현재 설정) |
 | 8211 | phpmyadmin | DB 관리 (선택사항) |
 
-포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
+> ⚠️ **포트 충돌 주의**: 현재 8080 포트 사용 중입니다.
+>
+> **권장 포트**: 8210 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+>
+> **포트 변경 방법**:
+> ```bash
+> # docker-compose.yml 파일에서 수정
+> sed -i 's/"8080:8000"/"8210:8000"/' docker-compose.yml
+>
+> # 또는 직접 편집
+> # ports:
+> #   - "8210:8000"
+> ```
 
-※ 참고: docker-compose.yml에서는 8080 포트를 사용하지만, PORT_GUIDE.md의 표준에 따라 8210 포트 사용을 권장합니다.
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
 ## 환경 변수
 

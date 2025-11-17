@@ -265,6 +265,8 @@ services:
 | Redis | 6379 | 캐시 연결 |
 | Kratos Public | 4433 | 공개 API |
 | Kratos Admin | 4434 | 관리 API |
+
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 | Authelia | 9091 | Web UI |
 | MailSlurper Web | 8080 | Web UI |
 | MailSlurper SMTP | 2500 | SMTP |
