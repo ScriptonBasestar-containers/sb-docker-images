@@ -82,20 +82,34 @@ make run-apache  # Apache + mod_php 사용
   - Apache 웹 서버 내장
   - 직접 PHP 처리
 
-## 포트 정보
+## 포트
 
-| 서비스 | 호스트 포트 | 컨테이너 포트 | 설명 |
-|--------|-------------|---------------|------|
-| flarum | 8080 | 8888 | Flarum 웹 서버 |
-| mariadb | (내부) | 3306 | MariaDB |
-| phpmyadmin | 8081 | 80 | phpMyAdmin |
-| mailhog | 8025 | 8025 | MailHog Web UI |
-| mailhog | (내부) | 1025 | SMTP |
+| 포트 | 서비스 | 용도 |
+|------|--------|------|
+| 8080 | flarum | Flarum 포럼 웹 사이트 (현재 설정) |
+| 8081 | phpmyadmin | DB 관리 도구 |
+| 8025 | mailhog | 메일 테스트 Web UI |
 
-> 참고: 포트 충돌을 피하려면 compose.yml의 포트 설정을 수정하세요.
-> 권장 포트: 8510 (PORT_GUIDE.md 참조)
+> ⚠️ **포트 충돌 주의**: 현재 8080 포트 사용 중입니다.
+>
+> **권장 포트**: 8510 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+>
+> **포트 변경 방법**:
+> ```bash
+> # compose.yml 파일에서 수정
+> sed -i 's/"8080:8888"/"8510:8888"/' compose.yml
+> sed -i 's/localhost:8080/localhost:8510/' compose.yml
+>
+> # 또는 직접 편집
+> # ports:
+> #   - "8510:8888"
+> # environment:
+> #   - FORUM_URL=http://localhost:8510
+> ```
 
-포트를 8510으로 변경하려면 compose.yml을 수정:
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
+
+또는 docker-compose.yml을 수정:
 ```yaml
 services:
   flarum:
