@@ -6,6 +6,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-17] - Phase 4
+
+### Added
+
+#### Environment Variable Templates (.env.example)
+8개 프로젝트에 환경변수 템플릿 추가 또는 개선:
+
+**새로 추가 (3개):**
+- **discourse/.env.example** - PostgreSQL, Redis, SMTP 설정
+- **wikijs/.env.example** - PostgreSQL 설정
+- **gnuboard6/.env.example** - Django, MariaDB 설정 (한국어 주석)
+
+**기존 개선 (5개):**
+- **redis/.env.example** - 보안 권장사항, persistence 설정 추가
+- **memcached/.env.example** - 성능 튜닝 가이드 추가
+- **dokuwiki/.env.example** - 보안 권장사항 추가
+- **ignite/.env.example** - JVM 메모리 권장사항 추가
+- **gnuboard5/.env.example** - 한국어 주석, 보안 가이드 추가
+
+**표준 섹션:**
+- Project Settings (이름, 타임존)
+- Port Configuration (포트 번호)
+- Database Configuration (DB 설정)
+- Application Settings (앱별 설정)
+- Container Names (컨테이너 이름)
+- Volume Names (볼륨 이름)
+- Network Names (네트워크 이름)
+- Security Notes (보안 경고 및 권장사항)
+
+### Improved
+- 모든 .env.example 파일에 보안 권장사항 추가
+- 한국어 프로젝트(gnuboard5, gnuboard6)에 한국어 주석 추가
+- 일관된 포맷과 구조 적용
+
+### Coverage Statistics (Phase 4)
+- **.env.example 지원**: 8개 → 16개 (19% → 37%)
+
 ## [2025-11-17] - Phase 3
 
 ### Added
