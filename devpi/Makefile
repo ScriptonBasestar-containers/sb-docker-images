@@ -1,45 +1,70 @@
-.PHONY: help prepare clean
+.PHONY: help prepare up down logs restart ps clean shell source pypi-%
 
 help:
+	@echo "devpi - Python Package Index Server"
+	@echo ""
 	@echo "Available commands:"
-	@echo "  prepare      - Clone devpi repository and plugins"
-	@echo "  setup        - Setup directories and permissions"
-	@echo "  build        - Build Docker image (with web interface)"
-	@echo "  build-full   - Build image with all plugins enabled"
-	@echo "  build-minimal- Build minimal image (no web interface)"
-	@echo "  build-custom - Build custom image with specific plugins"
-	@echo "               Usage: make build-custom web=true constrained=true"
-	@echo "  push         - Push image to registry"
-	@echo "  clean        - Clean up cloned repositories and Docker resources"
-	@echo "  server-up    - Start devpi server"
-	@echo "  server-down  - Stop devpi server"
-	@echo "  server-logs  - View server logs"
-	@echo "  server-enter - Enter running container"
+	@echo "  make prepare  - Clone devpi repository and plugins"
+	@echo "  make up       - Start devpi server"
+	@echo "  make down     - Stop devpi server"
+	@echo "  make restart  - Restart devpi server"
+	@echo "  make logs     - View server logs"
+	@echo "  make ps       - Show running containers"
+	@echo "  make shell    - Enter running container"
+	@echo "  make clean    - Clean up repositories and Docker resources (⚠️  destructive)"
+	@echo ""
+	@echo "Build commands:"
+	@echo "  make source   - Build from source"
+	@echo "  make pypi-*   - PyPI-related commands"
 
 prepare:
 	@echo "Preparing devpi environment..."
-	rm -rf devpi
-	touch .env
-	git clone https://github.com/devpi/devpi.git --depth 1
-	git clone https://github.com/devpi/devpi-constrained.git --depth 1
-	git clone https://github.com/devpi/devpi-findlinks.git --depth 1
-	git clone https://github.com/devpi/devpi-jenkins.git --depth 1
-	git clone https://github.com/devpi/devpi-lockdown.git --depth 1
-	@echo "devpi repository cloned successfully"
+	@rm -rf devpi devpi-constrained devpi-findlinks devpi-jenkins devpi-lockdown 2>/dev/null || true
+	@touch .env
+	@if [ ! -d "devpi" ]; then \
+		git clone https://github.com/devpi/devpi.git --depth 1; \
+		git clone https://github.com/devpi/devpi-constrained.git --depth 1; \
+		git clone https://github.com/devpi/devpi-findlinks.git --depth 1; \
+		git clone https://github.com/devpi/devpi-jenkins.git --depth 1; \
+		git clone https://github.com/devpi/devpi-lockdown.git --depth 1; \
+		echo "✅ devpi repositories cloned successfully"; \
+	else \
+		echo "✅ devpi repositories already exist"; \
+	fi
+
+up:
+	docker compose up -d
+	@echo ""
+	@echo "✅ devpi server is starting..."
+
+down:
+	docker compose down
+
+logs:
+	docker compose logs -f
+
+restart:
+	docker compose restart
+
+ps:
+	docker compose ps
 
 clean:
-	@echo "Cleaning up..."
-	rm -rf devpi devpi-constrained devpi-findlinks devpi-jenkins devpi-lockdown
-	rm -rf data logs
+	@echo "⚠️  This will remove all devpi data and repositories!"
+	@read -p "Are you sure? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		docker compose down -v; \
+		rm -rf devpi devpi-constrained devpi-findlinks devpi-jenkins devpi-lockdown; \
+		rm -rf data logs; \
+		echo "✅ All data removed"; \
+	fi
 
-.PHONY: source
+shell:
+	docker compose exec devpi sh
+
 source:
-	@echo "Source"
-	@#$(MAKE) -f Makefile.source.mk $(MAKECMDGOALS)
 	@make -f Makefile.source.mk --no-print-directory $(REM_ARGS)
 
-.PHONY: pypi
 pypi-%:
-	@echo "Pypi"
-	@#$(MAKE) -f Makefile.pypi.mk $(MAKECMDGOALS)
 	@make -f Makefile.pypi.mk --no-print-directory $*
