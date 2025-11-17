@@ -1,4 +1,4 @@
-.PHONY: help prepare up down logs shell db-setup db-migrate db-seed clean restart
+.PHONY: help prepare up down logs ps shell db-setup db-migrate db-seed clean restart
 
 help:
 	@echo "Forem Docker Compose Commands"
@@ -8,6 +8,7 @@ help:
 	@echo "down         - Stop all services"
 	@echo "restart      - Restart all services"
 	@echo "logs         - Show logs"
+	@echo "ps           - Show running containers"
 	@echo "shell        - Enter web container shell"
 	@echo "db-setup     - Create and migrate database"
 	@echo "db-migrate   - Run database migrations"
@@ -33,6 +34,9 @@ restart: down up
 
 logs:
 	docker compose logs -f
+
+ps:
+	docker compose ps
 
 shell:
 	docker compose exec web /bin/bash

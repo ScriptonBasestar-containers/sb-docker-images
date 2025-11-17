@@ -1,45 +1,79 @@
-COMPOSE_KRATOS=-f ../buildbox/compose/compose.kratos.yml \
+.PHONY: help prepare build-base build-app up down logs restart ps clean shell
+
+# Compose file configuration
+COMPOSE_FILES=-f compose.yml \
+	-f ../buildbox/compose/compose.kratos.yml \
 	-f ../buildbox/compose/compose.kratos-pg.yml \
-	-f ../buildbox/compose/compose.kratos-standalone.yml
+	-f ../buildbox/compose/compose.kratos-standalone.yml \
+	-f ../buildbox/compose/compose.bn-pg15.yml \
+	-f ../buildbox/compose/compose.bn-redis.yml \
+	-f ../buildbox/compose/compose.mariadb.yml
 
-COMPOSE_DATA=-f ../buildbox/compose/compose.bn-pg15.yml -f ../buildbox/compose/compose.bn-redis.yml -f ../buildbox/compose/compose.mariadb.yml
+help:
+	@echo "Nextcloud - Self-hosted Cloud Storage and Collaboration Platform"
+	@echo ""
+	@echo "Available commands:"
+	@echo "  make prepare    - Clone Nextcloud repositories"
+	@echo "  make build-base - Build base Docker image"
+	@echo "  make build-app  - Build application Docker image"
+	@echo "  make up         - Start Nextcloud"
+	@echo "  make down       - Stop Nextcloud"
+	@echo "  make restart    - Restart Nextcloud"
+	@echo "  make logs       - View logs"
+	@echo "  make ps         - Show running containers"
+	@echo "  make shell      - Access Nextcloud container shell"
+	@echo "  make clean      - Stop and remove all data (⚠️  destructive)"
+	@echo ""
+	@echo "Dependencies: PostgreSQL, Redis, MariaDB, Kratos (from buildbox)"
 
-init:
-	@echo "No setup required"
-	git clone https://github.com/nextcloud/all-in-one.git
-	git clone https://github.com/nextcloud/docker.git
-	git clone https://github.com/nextcloud/server.git --depth 1
+prepare:
+	@echo "Cloning Nextcloud repositories..."
+	@if [ ! -d "all-in-one" ]; then \
+		git clone https://github.com/nextcloud/all-in-one.git; \
+		echo "✅ Nextcloud all-in-one cloned"; \
+	fi
+	@if [ ! -d "docker" ]; then \
+		git clone https://github.com/nextcloud/docker.git; \
+		echo "✅ Nextcloud docker cloned"; \
+	fi
+	@if [ ! -d "server" ]; then \
+		git clone https://github.com/nextcloud/server.git --depth 1; \
+		echo "✅ Nextcloud server cloned"; \
+	fi
 
 build-base:
 	docker build -f image/base/slim.Dockerfile image/base -t discourse/base
 
 build-app:
-	@docker build -t nextcloud-app .
+	docker build -t nextcloud-app .
 
+up:
+	docker compose $(COMPOSE_FILES) up -d
+	@echo ""
+	@echo "✅ Nextcloud is starting..."
+	@echo "   Make sure PostgreSQL, Redis, MariaDB, and Kratos are running (buildbox)"
 
-server-up:
-	docker compose -f compose.yml \
-	${COMPOSE_KRATOS} \
-	${COMPOSE_DATA} \
-	up -d
+down:
+	docker compose $(COMPOSE_FILES) down
 
-#server_env:
-#	docker compose -f compose.yml \
-#	${COMPOSE_KRATOS} ${COMPOSE_DATA} \
-#	exec postgres env
+logs:
+	docker compose $(COMPOSE_FILES) logs -f
 
-server_migrate:
-	docker compose -f compose.yml \
-	${COMPOSE_KRATOS} ${COMPOSE_DATA} \
-	run discourse /var/www/discourse/bin/rake db:migrate
+restart:
+	docker compose $(COMPOSE_FILES) restart
 
-server-down:
-	docker compose -f compose.yml \
-	${COMPOSE_KRATOS} ${COMPOSE_DATA} \
-	down -v
+ps:
+	docker compose $(COMPOSE_FILES) ps
 
-server-enter:
-	docker compose -f compose.yml \
-	${COMPOSE_KRATOS} ${COMPOSE_DATA} \
-	run wp-install bash
+clean:
+	@echo "⚠️  This will remove all Nextcloud data!"
+	@read -p "Are you sure? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		docker compose $(COMPOSE_FILES) down -v; \
+		echo "✅ All data removed"; \
+	fi
+
+shell:
+	docker compose $(COMPOSE_FILES) run wp-install bash
 
