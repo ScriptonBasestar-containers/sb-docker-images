@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   xe:
-    container_name: xe
+    container_name: ${XE_CONTAINER_NAME:-xe}
     build:
       context: .
       # dockerfile: ./alpine-3.11/Dockerfile
@@ -14,7 +14,7 @@ services:
     #     composer run;
     #   "
     ports:
-      - 8080:80
+      - "${XE_PORT:-8270}:80"
     environment:
       ## install
       # - APP_ENV=production
