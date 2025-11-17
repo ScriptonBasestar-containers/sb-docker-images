@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-17] - Phase 5
+
+### Added
+
+#### Environment Variable Templates (.env.example)
+7개 프로젝트에 환경변수 템플릿 추가:
+
+**인기 오픈소스 프로젝트 (4개):**
+- **forem/.env.example** - Rails/Node.js 개발 환경, PostgreSQL, Redis, Elasticsearch
+- **mariadb/.env.example** - MariaDB 백업 시스템 (Restic, Rclone)
+- **postgres-exts/.env.example** - PostgreSQL 확장 (pgvector, PostGIS, TimescaleDB), CloudNativePG
+- **kratos/.env.example** - Ory Kratos 인증 시스템, PostgreSQL/SQLite DSN, 쿠키 시크릿
+
+**한국 프로젝트 (3개, 한국어 주석):**
+- **tsboard/.env.example** - TypeScript 게시판, Go 백엔드, MySQL, JWT 설정
+- **openNamu/.env.example** - 한국어 위키, Python/Flask, SQLite/MariaDB, Redis 캐싱
+- **xpressengine/.env.example** - Laravel 기반 CMS (⚠️ 지원 중단), MariaDB, Redis
+
+**주요 특징:**
+- 한국어 프로젝트에 한국어 주석 및 가이드 제공
+- 개발 환경과 프로덕션 환경 설정 구분
+- 데이터베이스 선택 가이드 (SQLite vs MariaDB/MySQL/PostgreSQL)
+- 백업 및 복원 설정 포함
+- 보안 권장사항 및 비밀번호 생성 방법 안내
+
+### Coverage Statistics (Phase 5)
+- **.env.example 지원**: 16개 → 23개 (37% → 53%)
+
 ## [2025-11-17] - Phase 4
 
 ### Added
