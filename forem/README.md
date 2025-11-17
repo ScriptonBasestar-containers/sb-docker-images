@@ -17,7 +17,7 @@ make up
 make db-setup
 
 # 4. 브라우저에서 접속
-# http://localhost:3000
+# http://localhost:8520
 ```
 
 ## 사용 가능한 명령어
@@ -40,7 +40,7 @@ make clean        # 모든 컨테이너 및 볼륨 삭제
 
 compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
-- **web**: Forem Rails 애플리케이션 서버 (포트 3000)
+- **web**: Forem Rails 애플리케이션 서버 (포트 8520)
 - **sidekiq**: 백그라운드 작업 처리
 - **esbuild**: JavaScript 빌드 (watch 모드)
 - **postgres**: PostgreSQL 13 데이터베이스
@@ -71,12 +71,12 @@ forem/
 
 | 포트 | 서비스 | 용도 |
 |------|--------|------|
-| 3000 | web | Rails 애플리케이션 (권장 포트 사용 중) |
+| 8520 | web | Rails 애플리케이션 (권장 포트) |
 | 5432 | postgres | PostgreSQL (내부) |
 | 6379 | redis | Redis (내부) |
 | 3333 | chrome | Chrome (테스트용) |
 
-> ✅ **포트 설정**: 이미 권장 포트(3000, 3333)를 사용하고 있습니다. ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+> ✅ **포트 설정**: 소셜/커뮤니티 플랫폼 권장 포트 8520을 사용합니다. ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
 
 포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 

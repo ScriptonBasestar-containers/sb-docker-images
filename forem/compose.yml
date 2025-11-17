@@ -70,7 +70,7 @@ services:
     tmpfs:
       - /workspaces/forem/tmp/pids
     ports:
-      - '3000:3000'
+      - "${FOREM_WEB_PORT:-8520}:3000"
 
   rails:
     <<: *backend
@@ -80,7 +80,7 @@ services:
     <<: *backend
     command: bundle exec rails server -b 0.0.0.0
     ports:
-      - '3000:3000'
+      - "${FOREM_WEB_PORT:-8520}:3000"
     depends_on:
       esbuild:
         condition: service_started
