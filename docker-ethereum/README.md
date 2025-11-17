@@ -36,10 +36,12 @@ docker-compose logs -f geth
 
 | 포트 | 서비스 | 용도 |
 |------|--------|------|
-| 8545 | geth | HTTP JSON-RPC API |
-| 8546 | geth | WebSocket API |
+| 8545 | geth | HTTP JSON-RPC API (권장 포트 사용 중) |
+| 8546 | geth | WebSocket API (권장 포트 사용 중) |
 | 30303 | geth | P2P 네트워크 (TCP/UDP) |
 | 4000 | blockscout | 웹 UI |
+
+> ✅ **포트 설정**: 이미 권장 포트(8545, 8546, 30303)를 사용하고 있습니다. ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
 
 포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 

@@ -32,9 +32,11 @@ docker-compose logs -f bitcoind
 
 | 포트 | 서비스 | 용도 |
 |------|--------|------|
-| 8332 | bitcoind | JSON-RPC API |
+| 8332 | bitcoind | JSON-RPC API (권장 포트 사용 중) |
 | 8333 | bitcoind | P2P 네트워크 |
 | 3002 | btc-rpc-explorer | 웹 UI |
+
+> ✅ **포트 설정**: 이미 권장 포트(8332, 8333)를 사용하고 있습니다. ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
 
 포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
