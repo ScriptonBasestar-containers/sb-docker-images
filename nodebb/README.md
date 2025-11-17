@@ -49,24 +49,27 @@ NodeBB 저장소의 docker-compose.yml에는 다음 서비스들이 포함되어
   - 실시간 데이터 캐싱
   - Pub/Sub 메시징
 
-## 포트 정보
+## 포트
 
-| 서비스 | 호스트 포트 | 컨테이너 포트 | 설명 |
-|--------|-------------|---------------|------|
-| nodebb | 4567 | 4567 | NodeBB 웹 서버 |
-| postgres | (내부) | 5432 | PostgreSQL |
-| redis | (내부) | 6379 | Redis |
+| 포트 | 서비스 | 용도 |
+|------|--------|------|
+| 4567 | nodebb | NodeBB 웹 서버 (현재 설정) |
 
-> 참고: 포트 충돌을 피하려면 nodebb 디렉토리의 docker-compose.yml에서 포트를 수정하세요.
-> 권장 포트: 8240 (PORT_GUIDE.md 참조)
+> ⚠️ **포트 충돌 주의**: 현재 4567 포트 사용 중입니다.
+>
+> **권장 포트**: 8240 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+>
+> **포트 변경 방법**:
+> ```bash
+> # NodeBB 저장소의 docker-compose.yml 파일에서 수정
+> # (nodebb 디렉토리 내 docker-compose.yml 파일 수정)
+>
+> # 직접 편집
+> # ports:
+> #   - "8240:4567"
+> ```
 
-포트를 8240으로 변경하려면 docker-compose.yml을 수정:
-```yaml
-services:
-  nodebb:
-    ports:
-      - "8240:4567"  # 기본 4567 대신 8240 사용
-```
+포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
 ## 환경 변수
 
