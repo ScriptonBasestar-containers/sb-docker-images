@@ -7,7 +7,7 @@ services:
     container_name: joomla_dev
     restart: always
     ports:
-      - 8080:80
+      - 8110:80
     environment:
       JOOMLA_DB_HOST: mariadb
       JOOMLA_DB_USER: user01

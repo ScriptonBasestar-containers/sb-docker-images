@@ -1,0 +1,82 @@
+services:
+  flaskbb:
+    image: flaskbb/flaskbb:latest
+    container_name: flaskbb
+    restart: unless-stopped
+    ports:
+      - "8250:8080"
+    environment:
+      # Flask 설정
+      FLASK_APP: flaskbb
+      FLASK_ENV: production
+
+      # FlaskBB 설정
+      FLASKBB_SERVER_NAME: localhost:8250
+      FLASKBB_SECRET_KEY: change-this-to-a-random-secret-key
+
+      # 데이터베이스 설정
+      FLASKBB_DATABASE_URI: postgresql://user01:passw0rd@postgres:5432/db01
+
+      # Redis 설정
+      FLASKBB_REDIS_URL: redis://redis:6379/0
+
+      # 메일 설정
+      FLASKBB_MAIL_SERVER: smtp.gmail.com
+      FLASKBB_MAIL_PORT: 587
+      FLASKBB_MAIL_USE_TLS: "true"
+      FLASKBB_MAIL_USERNAME: your-email@gmail.com
+      FLASKBB_MAIL_PASSWORD: your-app-password
+      FLASKBB_MAIL_DEFAULT_SENDER: noreply@example.com
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - flaskbb-network
+    volumes:
+      - flaskbb-uploads:/flaskbb/uploads
+      - flaskbb-logs:/flaskbb/logs
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: flaskbb_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: db01
+      POSTGRES_USER: user01
+      POSTGRES_PASSWORD: passw0rd
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - flaskbb-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user01 -d db01"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8.2-alpine
+    container_name: flaskbb_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - flaskbb-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  flaskbb-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  flaskbb-uploads:
+  flaskbb-logs:

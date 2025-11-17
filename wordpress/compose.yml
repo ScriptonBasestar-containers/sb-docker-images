@@ -6,7 +6,7 @@ services:
     # image: wordpress:6-php8-fpm
     restart: always
     ports:
-      - 8080:80
+      - 8100:80
     environment:
       WORDPRESS_DB_HOST: mariadb
       WORDPRESS_DB_USER: user01
