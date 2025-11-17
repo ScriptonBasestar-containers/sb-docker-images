@@ -1,33 +1,35 @@
-.PHONY: help build build-dev build-prod up down logs shell db-setup db-migrate db-seed clean
+.PHONY: help prepare up down logs shell db-setup db-migrate db-seed clean restart
 
 help:
-	@echo "Forem Docker Commands"
-	@echo "====================="
-	@echo "build        - Build development image"
-	@echo "build-dev    - Build development image"
-	@echo "build-prod   - Build production image"
+	@echo "Forem Docker Compose Commands"
+	@echo "=============================="
+	@echo "prepare      - Clone Forem repository (if not exists)"
 	@echo "up           - Start all services"
 	@echo "down         - Stop all services"
+	@echo "restart      - Restart all services"
 	@echo "logs         - Show logs"
 	@echo "shell        - Enter web container shell"
 	@echo "db-setup     - Create and migrate database"
 	@echo "db-migrate   - Run database migrations"
 	@echo "db-seed      - Seed database with sample data"
-	@echo "clean        - Remove all containers, volumes, and images"
+	@echo "clean        - Remove all containers and volumes"
 
-build: build-dev
-
-build-dev:
-	docker compose build --target development
-
-build-prod:
-	docker compose build --target production
+prepare:
+	@if [ ! -d "forem-src" ]; then \
+		echo "Cloning Forem repository..."; \
+		git clone https://github.com/forem/forem.git forem-src --depth 1; \
+		echo "Forem repository cloned to forem-src/"; \
+	else \
+		echo "Forem repository already exists in forem-src/"; \
+	fi
 
 up:
 	docker compose up -d
 
 down:
 	docker compose down
+
+restart: down up
 
 logs:
 	docker compose logs -f
@@ -46,4 +48,3 @@ db-seed:
 
 clean:
 	docker compose down -v
-	docker rmi -f forem:latest forem:development 2>/dev/null || true
