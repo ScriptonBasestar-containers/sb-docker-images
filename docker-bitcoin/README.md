@@ -2,6 +2,24 @@
 
 Bitcoin Core 노드 및 탐색기 환경
 
+## 목차
+
+- [개요](#개요)
+- [빠른 시작](#빠른 시작)
+- [Makefile 명령어](#makefile-명령어)
+- [서비스 구성](#서비스-구성)
+- [포트](#포트)
+- [환경 변수](#환경-변수)
+- [사용법](#사용법)
+- [네트워크 모드](#네트워크-모드)
+- [RPC API 사용](#rpc-api-사용)
+- [볼륨 및 데이터](#볼륨-및-데이터)
+- [보안 설정](#보안-설정)
+- [모니터링](#모니터링)
+- [Health Checks](#health-checks)
+- [문제 해결](#문제-해결)
+- [시스템 요구사항](#시스템-요구사항)
+
 ## 개요
 
 Bitcoin Core 풀 노드와 BTC RPC Explorer를 Docker로 실행할 수 있는 환경입니다. 개발, 테스트, 또는 프라이빗 네트워크 운영에 사용할 수 있습니다.
@@ -16,11 +34,31 @@ RPC_PASSWORD=your-secure-password
 TESTNET=0
 EOF
 
-# 서비스 시작
-docker-compose up -d
+# Makefile 사용 (권장)
+make up
+
+# 또는 docker compose 직접 사용
+docker compose up -d
 
 # 로그 확인
-docker-compose logs -f bitcoind
+make logs
+# 또는
+docker compose logs -f bitcoind
+```
+
+## Makefile 명령어
+
+이 프로젝트는 간편한 관리를 위한 Makefile을 제공합니다:
+
+```bash
+make help      # 사용 가능한 명령어 보기
+make up        # 서비스 시작
+make down      # 서비스 중지
+make restart   # 서비스 재시작
+make logs      # 로그 보기
+make ps        # 실행 중인 컨테이너 확인
+make shell     # Bitcoin 컨테이너 접속
+make clean     # 모든 데이터 삭제 (주의!)
 ```
 
 ## 서비스 구성
@@ -240,27 +278,95 @@ services:
 
 ```bash
 # 블록 동기화 상태
-docker-compose exec bitcoind bitcoin-cli \
+docker compose exec bitcoind bitcoin-cli \
   -rpcuser=bitcoin \
   -rpcpassword=changeme \
   getblockchaininfo | grep -E '(blocks|headers|verificationprogress)'
 
 # 피어 연결 확인
-docker-compose exec bitcoind bitcoin-cli \
+docker compose exec bitcoind bitcoin-cli \
   -rpcuser=bitcoin \
   -rpcpassword=changeme \
   getpeerinfo | grep -c addr
 
 # 메모리풀 확인
-docker-compose exec bitcoind bitcoin-cli \
+docker compose exec bitcoind bitcoin-cli \
   -rpcuser=bitcoin \
   -rpcpassword=changeme \
   getmempoolinfo
 ```
 
+## Health Checks
+
+### 서비스 상태 확인
+
+```bash
+# 컨테이너 health status 확인
+docker compose ps
+
+# 상세 health check 로그
+docker inspect --format='{{json .State.Health}}' docker-bitcoin-bitcoind-1 | jq
+
+# 수동으로 health check 테스트
+docker compose exec bitcoind bitcoin-cli \
+  -rpcuser=${RPC_USER} \
+  -rpcpassword=${RPC_PASSWORD} \
+  getblockchaininfo
+```
+
+### Health Check 설정
+
+Docker Compose에 정의된 health check:
+```yaml
+healthcheck:
+  test: ["CMD-SHELL", "bitcoin-cli -rpcuser=${RPC_USER} -rpcpassword=${RPC_PASSWORD} getblockchaininfo || exit 1"]
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 60s
+```
+
 ## 문제 해결
 
-### 동기화가 느린 경우
+### 일반적인 문제
+
+#### 1. 컨테이너가 시작되지 않는 경우
+
+```bash
+# 로그 확인
+make logs
+# 또는
+docker compose logs bitcoind
+
+# 컨테이너 상태 확인
+make ps
+# 또는
+docker compose ps
+```
+
+#### 2. RPC 연결 실패
+
+```bash
+# RPC 인증 정보 확인
+cat .env
+
+# RPC 테스트
+curl --user bitcoin:changeme http://localhost:8332/
+
+# 네트워크 연결 확인
+docker compose exec bitcoind netstat -tlnp | grep 8332
+```
+
+#### 3. 블록체인 데이터 손상
+
+```bash
+# 데이터베이스 재구축
+make down
+docker volume rm docker-bitcoin_bitcoin-data
+make up
+```
+
+#### 4. 동기화가 느린 경우
 
 ```yaml
 # docker-compose.override.yml
@@ -272,7 +378,7 @@ services:
       -maxconnections=125
 ```
 
-### 디스크 공간 부족
+#### 5. 디스크 공간 부족
 
 ```bash
 # 블록체인 데이터 정리 (pruned mode)
@@ -284,14 +390,17 @@ services:
       -prune=10000  # 10GB로 제한
 ```
 
-### RPC 연결 실패
+### 데이터 영속성 확인
 
 ```bash
-# 로그 확인
-docker-compose logs bitcoind
+# 볼륨 확인
+docker volume ls | grep bitcoin
 
-# RPC 테스트
-curl --user bitcoin:changeme http://localhost:8332/
+# 볼륨 상세 정보
+docker volume inspect docker-bitcoin_bitcoin-data
+
+# 데이터 크기 확인
+docker run --rm -v docker-bitcoin_bitcoin-data:/data alpine du -sh /data
 ```
 
 ## 시스템 요구사항

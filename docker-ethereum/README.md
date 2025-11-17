@@ -2,6 +2,25 @@
 
 Ethereum Geth 노드 및 블록 탐색기 환경
 
+## 목차
+
+- [개요](#개요)
+- [빠른 시작](#빠른 시작)
+- [Makefile 명령어](#makefile-명령어)
+- [서비스 구성](#서비스-구성)
+- [포트](#포트)
+- [환경 변수](#환경-변수)
+- [사용법](#사용법)
+- [네트워크 모드](#네트워크-모드)
+- [JSON-RPC API 사용](#json-rpc-api-사용)
+- [동기화 모드](#동기화-모드)
+- [볼륨 및 데이터](#볼륨-및-데이터)
+- [보안 설정](#보안-설정)
+- [모니터링](#모니터링)
+- [Health Checks](#health-checks)
+- [문제 해결](#문제-해결)
+- [시스템 요구사항](#시스템-요구사항)
+
 ## 개요
 
 Ethereum Geth (Go Ethereum) 풀 노드와 BlockScout 블록 탐색기를 Docker로 실행할 수 있는 환경입니다. 개발, 테스트, 또는 프라이빗 네트워크 운영에 사용할 수 있습니다.
@@ -16,14 +35,34 @@ CACHE=2048
 SECRET_KEY_BASE=$(openssl rand -base64 64)
 EOF
 
-# Geth 노드만 실행 (BlockScout 제외)
-docker-compose up -d geth
+# Makefile 사용 (권장)
+make up
+
+# 또는 Geth 노드만 실행 (BlockScout 제외)
+docker compose up -d geth
 
 # 모든 서비스 실행 (Geth + BlockScout + PostgreSQL)
-docker-compose up -d
+docker compose up -d
 
 # 로그 확인
-docker-compose logs -f geth
+make logs
+# 또는
+docker compose logs -f geth
+```
+
+## Makefile 명령어
+
+이 프로젝트는 간편한 관리를 위한 Makefile을 제공합니다:
+
+```bash
+make help      # 사용 가능한 명령어 보기
+make up        # 서비스 시작
+make down      # 서비스 중지
+make restart   # 서비스 재시작
+make logs      # 로그 보기
+make ps        # 실행 중인 컨테이너 확인
+make shell     # Geth 컨테이너 접속
+make clean     # 모든 데이터 삭제 (주의!)
 ```
 
 ## 서비스 구성
@@ -319,13 +358,13 @@ chmod 600 keystore-backup/*
 
 ```bash
 # JavaScript 콘솔
-docker-compose exec geth geth attach --exec "eth.syncing"
+docker compose exec geth geth attach --exec "eth.syncing"
 
 # 블록 번호
-docker-compose exec geth geth attach --exec "eth.blockNumber"
+docker compose exec geth geth attach --exec "eth.blockNumber"
 
 # 헤더 vs 블록 비교
-docker-compose exec geth geth attach --exec "web3.eth.syncing"
+docker compose exec geth geth attach --exec "web3.eth.syncing"
 ```
 
 ### 리소스 사용량
@@ -338,53 +377,116 @@ docker stats geth
 docker exec geth df -h /root/.ethereum
 
 # 피어 정보
-docker-compose exec geth geth attach --exec "admin.peers.length"
+docker compose exec geth geth attach --exec "admin.peers.length"
+```
+
+## Health Checks
+
+### 서비스 상태 확인
+
+```bash
+# 컨테이너 health status 확인
+docker compose ps
+
+# 상세 health check 로그
+docker inspect --format='{{json .State.Health}}' docker-ethereum-geth-1 | jq
+
+# 수동으로 health check 테스트
+curl -X POST http://localhost:8545 \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+```
+
+### Health Check 설정
+
+Docker Compose에 정의된 health check:
+```yaml
+healthcheck:
+  test: ["CMD-SHELL", "geth attach --exec 'eth.blockNumber' || exit 1"]
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 120s
 ```
 
 ## 문제 해결
 
-### 동기화가 멈춘 경우
+### 일반적인 문제
+
+#### 1. 컨테이너가 시작되지 않는 경우
+
+```bash
+# 로그 확인
+make logs
+# 또는
+docker compose logs geth
+
+# 컨테이너 상태 확인
+make ps
+# 또는
+docker compose ps
+```
+
+#### 2. 동기화가 멈춘 경우
 
 ```bash
 # 피어 추가
-docker-compose exec geth geth attach --exec '
+docker compose exec geth geth attach --exec '
   admin.addPeer("enode://...")
 '
 
 # 재시작
-docker-compose restart geth
+make restart
+# 또는
+docker compose restart geth
 ```
 
-### 디스크 공간 부족
+#### 3. 디스크 공간 부족
 
 ```bash
 # 오래된 트랜잭션 정리 (gcmode=archive 제거)
 # docker-compose.yml에서 --gcmode=archive 라인 삭제 후 재시작
 ```
 
-### RPC 연결 실패
+#### 4. RPC 연결 실패
 
 ```bash
 # 로그 확인
-docker-compose logs geth
+docker compose logs geth
 
 # 포트 확인
 curl http://localhost:8545 -X POST \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+
+# 네트워크 연결 확인
+docker compose exec geth netstat -tlnp | grep 8545
 ```
 
-### BlockScout 시작 실패
+#### 5. BlockScout 시작 실패
 
 ```bash
 # DB 마이그레이션
-docker-compose exec blockscout mix ecto.migrate
+docker compose exec blockscout mix ecto.migrate
 
 # DB 재생성
-docker-compose down -v
-docker-compose up -d postgres
+make clean
+docker compose up -d postgres
 # 잠시 대기
-docker-compose up -d blockscout
+docker compose up -d blockscout
+```
+
+### 데이터 영속성 확인
+
+```bash
+# 볼륨 확인
+docker volume ls | grep ethereum
+
+# 볼륨 상세 정보
+docker volume inspect docker-ethereum_geth-data
+
+# 데이터 크기 확인
+docker run --rm -v docker-ethereum_geth-data:/data alpine du -sh /data
 ```
 
 ## 시스템 요구사항
