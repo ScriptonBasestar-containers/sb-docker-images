@@ -24,6 +24,39 @@ Squid는 웹 객체를 캐싱하고 네트워크 성능을 향상시키는 오�
 - 대역폭 최적화
 - 패키지 저장소 캐싱 (apt, yum 등)
 
+## Standalone Configuration
+
+완전한 독립 실행 가능한 Squid 캐싱 프록시 서버 구성이 `standalone/` 디렉토리에 제공됩니다.
+
+### Features
+
+- **Squid Proxy**: 고성능 캐싱 프록시 서버
+- **Custom Image**: Ubuntu 20.04 + Squid 4.10 최적화 이미지
+- **Access Control**: ACL 기반 접근 제어
+- **환경 변수 지원**: .env 파일을 통한 유연한 설정
+- **완전한 문서**: 클라이언트 설정, 캐시 관리, 모니터링
+
+### Usage
+
+```bash
+# standalone 디렉토리로 이동
+cd standalone/
+
+# 환경 변수 설정 (선택사항)
+cp .env.example .env
+
+# Squid 시작
+make up
+
+# 프록시 테스트
+make test
+
+# 통계 확인
+make stats
+```
+
+자세한 내용은 [standalone/README.md](./standalone/README.md)를 참조하세요.
+
 ## 빠른 시작
 
 ### 필수 요구사항
