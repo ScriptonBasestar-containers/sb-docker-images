@@ -1,0 +1,16 @@
+services:
+  # Memcached - High-performance distributed memory object caching system
+  # https://hub.docker.com/_/memcached
+  memcached:
+    image: memcached:1.6-alpine
+    container_name: memcached
+    restart: unless-stopped
+    ports:
+      - "11211:11211"
+    command: memcached -m 64
+    networks:
+      - cache-network
+
+networks:
+  cache-network:
+    driver: bridge
