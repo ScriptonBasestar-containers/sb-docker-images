@@ -1,7 +1,7 @@
 #!/bin/bash
 
 wp core install \
-  --url=http://localhost:8080 \
+  --url=http://localhost:8100 \
   --title=My\ WordPress\ Site \
   --admin_user=a01 \
   --admin_password=passw0rd \
