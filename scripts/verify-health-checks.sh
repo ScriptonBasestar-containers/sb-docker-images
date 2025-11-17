@@ -60,8 +60,9 @@ for file in $COMPOSE_FILES; do
         TOTAL_SERVICES=$((TOTAL_SERVICES + 1))
 
         # Check if service has healthcheck
+        # Look ahead more lines (30) to catch healthchecks defined at the end of service
         HAS_HEALTHCHECK=false
-        if grep -A 10 "^  $service:" "$file" 2>/dev/null | grep -q "healthcheck:"; then
+        if grep -A 30 "^  $service:" "$file" 2>/dev/null | grep -q "healthcheck:"; then
             HAS_HEALTHCHECK=true
             SERVICES_WITH_HC=$((SERVICES_WITH_HC + 1))
         fi
