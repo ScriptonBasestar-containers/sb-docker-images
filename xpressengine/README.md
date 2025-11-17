@@ -23,7 +23,7 @@ make docker-up
 docker-compose up -d
 
 # 웹 브라우저로 접속
-# http://localhost:8220
+# http://localhost:8270
 
 # 설치 마법사 실행
 # 웹 브라우저에서 초기 설정 진행
@@ -31,7 +31,7 @@ docker-compose up -d
 
 ## 서비스 구성
 
-- **xe**: XpressEngine 3 애플리케이션 (포트 8220)
+- **xe**: XpressEngine 3 애플리케이션 (포트 8270)
 - **mariadb**: MariaDB 11.8 데이터베이스 (포트 3306)
 - **redis**: Redis 8.2 (캐시/세션/큐)
 
@@ -39,25 +39,20 @@ docker-compose up -d
 
 | 포트 | 서비스 | 용도 |
 |------|--------|------|
-| 8080 | xe | 웹 사이트 (현재 설정) |
+| 8270 | xe | 웹 사이트 (XE_PORT로 변경 가능) |
 | 3306 | mariadb | 데이터베이스 (선택사항) |
 | 6379 | redis | 캐시/세션 (선택사항) |
 
-> ⚠️ **포트 충돌 주의**: 현재 8080 포트 사용 중입니다.
+> ✅ **포트 설정**: 기본 포트는 8270입니다. XE_PORT 환경변수로 변경 가능합니다.
 >
-> **권장 포트**: 8220 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+> 포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
 >
 > **포트 변경 방법**:
 > ```bash
-> # docker-compose.yml 파일에서 수정
-> sed -i 's/8080:80/8220:80/' docker-compose.yml
->
-> # 또는 직접 편집
-> # ports:
-> #   - "8220:80"
+> # .env.example 파일 참조
+> XE_PORT=8270
+> XE_CONTAINER_NAME=xe
 > ```
-
-포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
 
 ## 환경 변수
 
@@ -149,7 +144,7 @@ docker-compose up -d
 ### 4. XE3 설치
 
 ```
-1. 웹 브라우저에서 http://localhost:8220 접속
+1. 웹 브라우저에서 http://localhost:8270 접속
 2. 설치 마법사 시작
 3. 데이터베이스 정보 입력:
    - DB Host: mariadb
@@ -158,7 +153,7 @@ docker-compose up -d
    - DB Password: password
    - DB Prefix: (비워둠)
 4. 사이트 정보 입력:
-   - Site URL: http://localhost:8220
+   - Site URL: http://localhost:8270
    - Timezone: Asia/Seoul
    - Locale: ko
 5. 관리자 정보 입력
@@ -170,7 +165,7 @@ docker-compose up -d
 ### 관리자 페이지
 
 ```
-URL: http://localhost:8220/settings
+URL: http://localhost:8270/settings
 ID: 설치 시 입력한 관리자 ID
 PW: 설치 시 입력한 관리자 비밀번호
 ```
@@ -294,19 +289,19 @@ docker-compose exec xe php artisan view:clear
 services:
   xe:
     ports:
-      - "8221:80"  # 기본 8220 대신 8221 사용
+      - "8271:80"  # 기본 8270 대신 8271 사용 (충돌 시)
 ```
 
 ## 포트 변경 방법
 
-PORT_GUIDE.md의 표준 포트(8220)로 변경:
+PORT_GUIDE.md의 표준 포트(8270)로 변경:
 
 ```yaml
 # docker-compose.yml 수정
 services:
   xe:
     ports:
-      - "8220:80"  # 기존 8080:80에서 변경
+      - "8270:80"  # 기존 8080:80에서 변경
 ```
 
 ## 보안 설정

@@ -20,7 +20,7 @@ cd nextcloud/standalone
 docker compose -f compose.fpm.yml up -d
 
 # 3. 브라우저에서 접속
-# http://localhost:8080
+# http://localhost:8210
 ```
 
 ### 외부 데이터베이스 사용
@@ -45,7 +45,7 @@ docker compose -f compose.apache.yml \
 
 독립 실행형 구성, 외부 데이터베이스 서비스 필요:
 
-- **nextcloud**: Nextcloud Apache 웹 서버 (포트 8080)
+- **nextcloud**: Nextcloud Apache 웹 서버 (포트 8210)
 - **외부 MariaDB**: 데이터베이스 (devbox 사용)
 - **외부 Redis**: 캐시 서버 (devbox 사용)
 
@@ -53,7 +53,7 @@ docker compose -f compose.apache.yml \
 
 완전한 올인원 구성, 모든 서비스 포함:
 
-- **nextcloud**: Nextcloud FPM 애플리케이션 (포트 8080)
+- **nextcloud**: Nextcloud FPM 애플리케이션 (포트 8210)
 - **postgres**: PostgreSQL 16 데이터베이스
 - **redis**: Redis 8.2 캐시 서버 (포트 6379)
 
@@ -61,18 +61,18 @@ docker compose -f compose.apache.yml \
 
 | 포트 | 서비스 | 용도 |
 |------|--------|------|
-| 8080 | nextcloud | 웹 서버 (현재 설정) |
+| 8210 | nextcloud | 웹 서버 (WEB_PORT로 변경 가능) |
 | 6379 | redis | Redis (FPM 버전, 내부) |
 | 9020 | phpmyadmin | phpMyAdmin (MariaDB 사용 시, 선택사항) |
 
-> ⚠️ **포트 충돌 주의**: 현재 8080 포트 사용 중입니다.
+> ✅ **포트 설정**: 기본 포트는 8210입니다. WEB_PORT 환경변수로 변경 가능합니다.
 >
-> **권장 포트**: 8900 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+> 포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
 >
 > **포트 변경 방법**:
 > ```bash
-> # 환경 변수로 포트 변경
-> NEXTCLOUD_PORT=8900 docker compose -f compose.fpm.yml up -d
+> # 환경 변수로 포트 변경 (.env.example 파일 참조)
+> WEB_PORT=8210 docker compose -f compose.fpm.yml up -d
 >
 > # 또는 compose 파일 수정
 > # ports:

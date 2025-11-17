@@ -7,7 +7,7 @@ Simple to use and highly versatile Open Source wiki software that doesn't requir
 - Official Docker image: `dokuwiki/dokuwiki:stable`
 - File-based storage (no database required)
 - Admin user pre-configured
-- Port: 8080
+- Port: 8130 (configurable via `DOKUWIKI_PORT`)
 
 ## Quick Start
 
@@ -19,7 +19,7 @@ docker compose up -d
 docker compose logs -f
 
 # Access DokuWiki
-# Open http://localhost:8080 in your browser
+# Open http://localhost:8130 in your browser
 
 # Stop DokuWiki
 docker compose down
@@ -51,7 +51,7 @@ cp .env.example .env
 make up
 
 # 웹 브라우저에서 접속
-# http://localhost:8080
+# http://localhost:8130
 ```
 
 자세한 내용은 [standalone/README.md](./standalone/README.md)를 참조하세요.

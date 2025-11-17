@@ -20,7 +20,7 @@ Gollum은 다음과 같은 기능을 제공합니다:
 docker compose up -d
 
 # 2. 브라우저에서 접속
-# http://localhost:4567
+# http://localhost:8170 (GOLLUM_PORT로 변경 가능)
 
 # 3. 위키 페이지 생성
 # - "New Page" 버튼 클릭
@@ -51,35 +51,18 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 | 포트 | 서비스 | 용도 |
 |------|--------|------|
-| 4567 | gollum | Gollum 위키 웹 사이트 (현재 설정) |
+| 8170 | gollum | Gollum 위키 웹 사이트 (GOLLUM_PORT로 변경 가능) |
 
-> ⚠️ **포트 충돌 주의**: 현재 4567 포트 사용 중입니다.
+> ✅ **포트 설정**: 기본 포트는 8170입니다. GOLLUM_PORT 환경변수로 변경 가능합니다.
 >
-> **권장 포트**: 8310 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
->
-> **포트 변경 방법**:
-> ```bash
-> # compose.yml 파일에서 수정
-> sed -i 's/4567:4567/8310:4567/' compose.yml
->
-> # 또는 직접 편집
-> # ports:
-> #   - "8310:4567"
-> ```
+> 포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
 
-포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
-
-또는 환경 변수를 사용:
+환경 변수 사용 예:
 
 ```bash
-# .env 파일 생성
-GOLLUM_PORT=8310
-
-# compose.yml 수정
-services:
-  gollum:
-    ports:
-      - "${GOLLUM_PORT:-4567}:4567"
+# .env.example 파일 참조
+GOLLUM_PORT=8170
+GOLLUM_CONTAINER_NAME=gollum
 ```
 
 ## 환경 변수
@@ -233,7 +216,7 @@ services:
       - gollum
       - /wiki
       - --port
-      - "4567"
+      - "8170"
       - --host
       - "0.0.0.0"
       - --config
@@ -295,7 +278,7 @@ docker compose down
 docker compose up -d
 
 # 또는 임시로 다른 포트 사용
-docker compose run -p 8310:4567 gollum
+docker compose run -p 8888:4567 gollum
 ```
 
 ### 검색이 작동하지 않음
@@ -394,7 +377,7 @@ Gollum은 기본적으로 인증 기능이 없으므로, 리버스 프록시로 
 location / {
     auth_basic "Restricted";
     auth_basic_user_file /etc/nginx/.htpasswd;
-    proxy_pass http://localhost:4567;
+    proxy_pass http://localhost:8170;
 }
 ```
 
