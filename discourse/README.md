@@ -45,7 +45,7 @@ make prepare
 
 # 2. 데이터베이스 및 Redis 서비스 시작
 # buildbox의 postgres와 redis 서비스 필요
-make server-up
+make up
 
 # 3. 브라우저에서 접속
 # http://localhost:3000 (Rails 서버)
@@ -140,27 +140,20 @@ DISCOURSE_REDIS_USE_SSL=false
 
 ## 사용 가능한 명령어
 
-### 초기 설정
+### Makefile 명령어
+
+이 프로젝트는 간편한 관리를 위한 Makefile을 제공합니다:
 
 ```bash
-# Discourse 소스코드 클론
-make prepare
-
-# 기존 소스 삭제 및 재클론
-make prepare
-```
-
-### 서비스 관리
-
-```bash
-# 서비스 시작
-make server-up
-
-# 서비스 중지 및 볼륨 삭제
-make server-down
-
-# 컨테이너 쉘 접속
-make server-enter
+make help          # 사용 가능한 명령어 보기
+make prepare       # Discourse 소스코드 클론
+make up            # 서비스 시작
+make down          # 서비스 중지
+make restart       # 서비스 재시작
+make logs          # 로그 보기
+make ps            # 실행 중인 컨테이너 확인
+make shell         # Discourse 컨테이너 접속
+make clean         # 모든 데이터 삭제 (주의!)
 ```
 
 ### 빌드 관리
@@ -175,6 +168,8 @@ make build-base
 # 애플리케이션 이미지 빌드
 make build-app
 ```
+
+**참고**: 이전의 `make server-up`, `make server-down`, `make server-enter` 명령어는 표준 명령어인 `make up`, `make down`, `make shell`로 변경되었습니다.
 
 ## 사용법
 
