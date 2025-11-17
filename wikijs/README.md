@@ -14,6 +14,28 @@ Wiki.js는 다음과 같은 기능을 제공합니다:
 - 테마 및 커스터마이징
 - REST API
 
+## Deployment Options
+
+### Standalone (Recommended)
+
+Complete production-ready setup with all dependencies included:
+
+```bash
+cd standalone/
+docker compose up -d
+```
+
+**Includes:**
+- Wiki.js (ghcr.io/requarks/wiki:2)
+- PostgreSQL 15 with health check
+- Network isolation (app-network, data-network)
+
+See [standalone/README.md](standalone/README.md) for detailed instructions.
+
+### Basic Setup
+
+Basic setup using docker-compose.yml:
+
 ## 빠른 시작
 
 ```bash

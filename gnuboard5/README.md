@@ -6,6 +6,29 @@
 
 그누보드5는 한국에서 가장 많이 사용되는 오픈소스 PHP 게시판 시스템입니다. 커뮤니티 사이트, 회사 홈페이지 등에 활용됩니다.
 
+## Deployment Options
+
+### Standalone (Recommended)
+
+Complete production-ready setup with all dependencies included:
+
+```bash
+cd standalone/
+docker compose up -d --build
+```
+
+**Includes:**
+- GNUboard5 (Custom PHP-FPM image)
+- Nginx Alpine web server
+- MariaDB 11.8 with health check
+- Network isolation (app-network, data-network)
+
+See [standalone/README.md](standalone/README.md) for detailed instructions.
+
+### Development Setup
+
+Development setup using docker-compose.yml:
+
 ## 빠른 시작
 
 ```bash

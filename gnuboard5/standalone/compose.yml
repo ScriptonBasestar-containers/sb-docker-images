@@ -1,0 +1,67 @@
+services:
+  # Nginx - Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: gnuboard5-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - gnuboard5-data:/var/www/html
+      - ./nginx/php-web.conf:/etc/nginx/conf.d/default.conf
+      - ./.nginx.conf:/etc/nginx/conf.d/.nginx.conf
+    environment:
+      - G5_DOMAIN=localhost:8080
+    depends_on:
+      - php
+    networks:
+      - app-network
+
+  # PHP-FPM - GNUboard5
+  php:
+    build:
+      context: .
+      dockerfile: gnuboard5-fpm.dockerfile
+    image: gnuboard5:latest
+    container_name: gnuboard5
+    restart: unless-stopped
+    volumes:
+      - gnuboard5-data:/var/www/html
+    environment:
+      - G5_DOMAIN=localhost:8080
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - app-network
+      - data-network
+
+  # MariaDB - Database Server
+  mariadb:
+    image: mariadb:11.8
+    container_name: gnuboard5-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db01
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  gnuboard5-data:
+  mariadb-data:

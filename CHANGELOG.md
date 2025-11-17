@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-17] - Phase 3
+
+### Added
+
+#### Additional Standalone Configurations
+3개 프로젝트에 독립 실행 가능한 완전한 구성 추가:
+
+- **discourse/standalone/**
+  - Discourse (discourse/base:2.0.20241119-0129)
+  - PostgreSQL 15 Alpine with health check
+  - Redis 7 Alpine for cache and sessions
+  - Network isolation (app-network, data-network)
+  - 완전한 문서 및 관리 가이드
+
+- **wikijs/standalone/**
+  - Wiki.js (ghcr.io/requarks/wiki:2)
+  - PostgreSQL 15 Alpine with health check
+  - Network isolation (app-network, data-network)
+  - Git 동기화 및 검색 엔진 가이드 포함
+
+- **gnuboard5/standalone/**
+  - GNUboard5 (Custom PHP-FPM image)
+  - Nginx Alpine web server
+  - MariaDB 11.8 with health check
+  - Network isolation (app-network, data-network)
+  - 한국어 사용자 맞춤 문서
+
+### Improved
+- **discourse/README.md** - Standalone 구성 안내 추가
+- **wikijs/README.md** - Standalone 구성 안내 추가
+- **gnuboard5/README.md** - Standalone 구성 안내 추가
+
+### Coverage Statistics (Phase 3)
+- **Standalone 구성**: 7개 → 10개 (16% → 23%)
+
 ## [2025-11-17] - Phase 2
 
 ### Added
