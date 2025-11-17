@@ -4,11 +4,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: gollum_dev
+    container_name: ${GOLLUM_CONTAINER_NAME:-gollum}
     # image: gollumwiki/gollum
     restart: always
     ports:
-      - 4567:4567
+      - "${GOLLUM_PORT:-8170}:4567"
     volumes:
       # - ./wiki:/wiki
       - ./docker-entrypoint.sh:/docker-entrypoint.sh
