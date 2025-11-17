@@ -3,10 +3,10 @@ services:
   # https://hub.docker.com/r/dokuwiki/dokuwiki
   dokuwiki:
     image: dokuwiki/dokuwiki:stable
-    container_name: dokuwiki
+    container_name: ${DOKUWIKI_CONTAINER_NAME:-dokuwiki}
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "${DOKUWIKI_PORT:-8130}:8080"
     environment:
       - DOKUWIKI_ADMIN_USER=admin
       - DOKUWIKI_ADMIN_PASS=passw0rd

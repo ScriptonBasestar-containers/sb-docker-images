@@ -6,7 +6,7 @@ services:
     image: flarum-apache
     container_name: flarum
     ports:
-      - 8080:80
+      - "${FLARUM_PORT:-8140}:80"
     environment:
       MYSQL_USER: user01
       MYSQL_PASSWORD: passw0rd
