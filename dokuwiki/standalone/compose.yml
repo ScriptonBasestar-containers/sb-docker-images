@@ -1,0 +1,38 @@
+services:
+  dokuwiki:
+    image: dokuwiki/dokuwiki:${DOKUWIKI_TAG:-stable}
+    container_name: ${DOKUWIKI_CONTAINER_NAME:-dokuwiki}
+    restart: unless-stopped
+    ports:
+      - "${DOKUWIKI_PORT:-8080}:8080"
+    environment:
+      # Administrator configuration
+      DOKUWIKI_ADMIN_USER: ${DOKUWIKI_ADMIN_USER:-admin}
+      DOKUWIKI_ADMIN_PASS: ${DOKUWIKI_ADMIN_PASS:-change-me-strong-password}
+      DOKUWIKI_ADMIN_NAME: ${DOKUWIKI_ADMIN_NAME:-Admin}
+      DOKUWIKI_ADMIN_EMAIL: ${DOKUWIKI_ADMIN_EMAIL:-admin@example.com}
+
+      # Wiki configuration
+      DOKUWIKI_WIKI_TITLE: ${DOKUWIKI_WIKI_TITLE:-My DokuWiki}
+      DOKUWIKI_WIKI_LANG: ${DOKUWIKI_WIKI_LANG:-en}
+
+      # Timezone
+      TZ: ${TZ:-Asia/Seoul}
+    volumes:
+      - dokuwiki-storage:/dokuwiki/storage
+    networks:
+      - wiki-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  wiki-network:
+    driver: bridge
+
+volumes:
+  dokuwiki-storage:
+    driver: local

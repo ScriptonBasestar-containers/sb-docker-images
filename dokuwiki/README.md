@@ -25,6 +25,37 @@ docker compose logs -f
 docker compose down
 ```
 
+## Standalone Configuration
+
+완전한 독립 실행 가능한 DokuWiki 위키 시스템 구성이 `standalone/` 디렉토리에 제공됩니다.
+
+### Features
+
+- **공식 이미지**: dokuwiki/dokuwiki:stable
+- **파일 기반**: 데이터베이스 불필요
+- **환경 변수 지원**: .env 파일을 통한 유연한 설정
+- **Health check**: 서비스 상태 모니터링
+- **완전한 문서**: 사용법, 플러그인, ACL, 백업/복원, 문제 해결
+
+### Usage
+
+```bash
+# standalone 디렉토리로 이동
+cd standalone/
+
+# 환경 변수 설정
+cp .env.example .env
+# .env 파일에서 DOKUWIKI_ADMIN_PASS 수정
+
+# DokuWiki 시작
+make up
+
+# 웹 브라우저에서 접속
+# http://localhost:8080
+```
+
+자세한 내용은 [standalone/README.md](./standalone/README.md)를 참조하세요.
+
 ## Default Credentials
 
 - **Username**: admin
