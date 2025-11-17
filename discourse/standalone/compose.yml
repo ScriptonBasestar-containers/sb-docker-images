@@ -3,31 +3,31 @@ services:
   # https://hub.docker.com/r/discourse/base
   discourse:
     image: discourse/base:2.0.20241119-0129
-    container_name: discourse
+    container_name: ${DISCOURSE_CONTAINER_NAME:-discourse}
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "${DISCOURSE_PORT:-8230}:80"
     environment:
-      LANG: en_US.UTF-8
-      RAILS_ENV: production
+      LANG: ${LANG:-en_US.UTF-8}
+      RAILS_ENV: ${RAILS_ENV:-production}
 
       # Database Configuration
-      DISCOURSE_DB_HOST: postgres
-      DISCOURSE_DB_PORT: 5432
-      DISCOURSE_DB_NAME: discourse
-      DISCOURSE_DB_USERNAME: discourse
-      DISCOURSE_DB_PASSWORD: discourse_password
+      DISCOURSE_DB_HOST: ${DISCOURSE_DB_HOST:-postgres}
+      DISCOURSE_DB_PORT: ${DISCOURSE_DB_PORT:-5432}
+      DISCOURSE_DB_NAME: ${DISCOURSE_DB_NAME:-discourse}
+      DISCOURSE_DB_USERNAME: ${DISCOURSE_DB_USERNAME:-discourse}
+      DISCOURSE_DB_PASSWORD: ${DISCOURSE_DB_PASSWORD:-discourse_password}
 
       # Redis Configuration
-      DISCOURSE_REDIS_HOST: redis
-      DISCOURSE_REDIS_PORT: 6379
+      DISCOURSE_REDIS_HOST: ${DISCOURSE_REDIS_HOST:-redis}
+      DISCOURSE_REDIS_PORT: ${DISCOURSE_REDIS_PORT:-6379}
 
       # Site Configuration
-      DISCOURSE_HOSTNAME: localhost
-      DISCOURSE_DEVELOPER_EMAILS: admin@example.com
+      DISCOURSE_HOSTNAME: ${DISCOURSE_HOSTNAME:-localhost}
+      DISCOURSE_DEVELOPER_EMAILS: ${DISCOURSE_DEVELOPER_EMAILS:-admin@example.com}
 
     volumes:
-      - discourse-data:/shared
+      - ${DISCOURSE_DATA_VOLUME:-discourse-data}:/shared
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,14 +39,14 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: discourse-postgres
+    container_name: ${POSTGRES_CONTAINER_NAME:-discourse-postgres}
     restart: unless-stopped
     environment:
-      POSTGRES_DB: discourse
-      POSTGRES_USER: discourse
-      POSTGRES_PASSWORD: discourse_password
+      POSTGRES_DB: ${POSTGRES_DB:-discourse}
+      POSTGRES_USER: ${POSTGRES_USER:-discourse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-discourse_password}
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ${POSTGRES_DATA_VOLUME:-postgres-data}:/var/lib/postgresql/data
     networks:
       - data-network
     healthcheck:
@@ -57,11 +57,11 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: discourse-redis
+    container_name: ${REDIS_CONTAINER_NAME:-discourse-redis}
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
-      - redis-data:/data
+      - ${REDIS_DATA_VOLUME:-redis-data}:/data
     networks:
       - data-network
 

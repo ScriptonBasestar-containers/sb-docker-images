@@ -8,23 +8,23 @@ services:
       context: .
       dockerfile: gnuboard6-debian.dockerfile
     image: gnuboard6:latest
-    container_name: gnuboard6
+    container_name: ${GNUBOARD6_CONTAINER_NAME:-gnuboard6}
     restart: unless-stopped
     ports:
-      - "8080:8000"
+      - "${GNUBOARD6_PORT:-8210}:8000"
     environment:
-      - DB_ENGINE=django.db.backends.mysql
-      - DB_NAME=gnuboard6
-      - DB_USER=gnuboard
-      - DB_PASSWORD=passw0rd
-      - DB_HOST=mariadb
-      - DB_PORT=3306
+      - DB_ENGINE=${DB_ENGINE:-django.db.backends.mysql}
+      - DB_NAME=${DB_NAME:-gnuboard6}
+      - DB_USER=${DB_USER:-gnuboard}
+      - DB_PASSWORD=${DB_PASSWORD:-passw0rd}
+      - DB_HOST=${DB_HOST:-mariadb}
+      - DB_PORT=${DB_PORT:-3306}
       - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
-      - DEBUG=true
-      - ALLOWED_HOSTS=localhost,127.0.0.1
+      - DEBUG=${DEBUG:-false}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1}
     volumes:
-      - gnuboard6-media:/app/media
-      - gnuboard6-static:/app/static
+      - ${GNUBOARD6_MEDIA_VOLUME:-gnuboard6-media}:/app/media
+      - ${GNUBOARD6_STATIC_VOLUME:-gnuboard6-static}:/app/static
     networks:
       - app-network
       - db-network
@@ -35,15 +35,15 @@ services:
   # MariaDB
   mariadb:
     image: mariadb:11.8
-    container_name: gnuboard6-mariadb
+    container_name: ${MARIADB_CONTAINER_NAME:-gnuboard6-mariadb}
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=rootpass
-      - MYSQL_DATABASE=gnuboard6
-      - MYSQL_USER=gnuboard
-      - MYSQL_PASSWORD=passw0rd
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpass}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-gnuboard6}
+      - MYSQL_USER=${MYSQL_USER:-gnuboard}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-passw0rd}
     volumes:
-      - mariadb-data:/var/lib/mysql
+      - ${MARIADB_DATA_VOLUME:-mariadb-data}:/var/lib/mysql
     networks:
       - db-network
     healthcheck:
