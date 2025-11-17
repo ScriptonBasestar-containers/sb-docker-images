@@ -15,6 +15,11 @@ services:
       - postgres:/var/lib/postgresql/data
     networks:
       - data-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user01}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app-network:

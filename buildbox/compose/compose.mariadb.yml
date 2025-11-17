@@ -13,6 +13,11 @@ services:
       - mariadb:/var/lib/mysql
     networks:
       - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # phpmyadmin:
   #   image: phpmyadmin/phpmyadmin:latest
