@@ -6,6 +6,97 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-17] - Phase 8
+
+### Added
+
+#### Makefile 표준화 및 확장
+**41개 프로젝트 Makefile 전면 개선** - CLI 사용성 대폭 향상:
+
+**표준 타겟 통일:**
+- `help` - 사용 가능한 명령어 및 설명 표시
+- `up` - 서비스 시작 (접속 정보 포함)
+- `down` - 서비스 중지
+- `restart` - 서비스 재시작
+- `logs` - 로그 실시간 보기
+- `ps` - 실행 중인 컨테이너 확인
+- `shell` - 컨테이너 쉘 접근
+- `clean` - 데이터 포함 완전 삭제 (확인 프롬프트)
+
+**프로젝트별 특수 타겟 유지:**
+- 데이터베이스: `mysql`, `db-setup`, `db-migrate`
+- 빌드: `build`, `prepare`, `build-base`
+- 테스트: `test`, `verify`
+- 백업: `backup`, `restore` (데이터 서비스)
+
+**사용자 친화성 향상:**
+- ✅ 이모지로 시각적 피드백
+- ✅ 접속 URL/포트/credentials 안내
+- ✅ 의존성 명시 (buildbox 서비스)
+- ✅ clean 타겟에 안전 확인 프롬프트 (데이터 손실 방지)
+
+**복잡한 Compose 구성 개선:**
+```makefile
+COMPOSE_FILES=-f compose.yml \
+    -f ../buildbox/compose/compose.base-network.yml \
+    -f ../buildbox/compose/compose.redis.yml
+```
+
+**영향:**
+- 41개 Makefile 표준화 (+1774/-429 라인)
+- help 타겟 커버리지: 25% → 100%
+- .PHONY 선언: 47% → 100%
+- 명명 규칙 통일 (server-*, docker_* → 표준)
+
+#### Port 표준화
+**PORT_GUIDE.md 정확성 개선:**
+- 각 프로젝트별 기본 포트 문서화
+- 포트 충돌 방지 가이드
+- 표준 포트 범위 정의
+
+#### Redis Health Check 표준화
+**7개 standalone 프로젝트에 Redis health check 추가:**
+- drupal/standalone, joomla/standalone, mediawiki/standalone
+- nextcloud/standalone, flarum/standalone, nodebb/standalone
+- gnuboard5/standalone
+
+**개선사항:**
+```yaml
+healthcheck:
+  test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+  interval: 10s
+  timeout: 3s
+  retries: 5
+```
+
+#### 환경변수 템플릿 100% 커버리지 달성
+**마지막 5개 프로젝트 .env.example 추가:**
+- dokuwiki, ignite, memcached, redis (루트)
+- 최종 커버리지: 43/43 (100%)
+
+### Improved
+
+#### Standalone README 품질 개선
+**모든 standalone 프로젝트 README에 추가:**
+- Health checks 상세 설명
+- Troubleshooting 섹션
+- 일반적인 문제 해결 방법
+- 로그 확인 방법
+- 데이터 영속성 확인
+
+**영향받은 프로젝트:**
+- drupal, joomla, mediawiki, nextcloud, wordpress
+- flarum, nodebb, discourse, wikijs, gnuboard5
+- dokuwiki, redis, memcached, ignite, jenkins
+- flaskbb, mailslurper, squid, jupyter, mastodon
+- django-cms, solidus, openNamu
+
+### Coverage Statistics (Phase 8)
+- **Makefile help 타겟**: 14개 → 52개 (25% → 100%)
+- **Makefile .PHONY 선언**: 27개 → 52개 (47% → 100%)
+- **.env.example 지원**: 43개 (100% 유지)
+- **Standalone health checks**: 대부분 프로젝트 적용
+
 ## [2025-11-17] - Phase 7
 
 ### Added
