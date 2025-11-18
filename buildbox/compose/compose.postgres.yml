@@ -4,7 +4,6 @@ services:
     container_name: postgres_dev
     restart: unless-stopped
     environment:
-      - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_DB=${POSTGRES_DB:-db01}
       - POSTGRES_USER=${POSTGRES_USER:-user01}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-passw0rd}

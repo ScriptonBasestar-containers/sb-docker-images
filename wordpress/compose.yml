@@ -8,10 +8,10 @@ services:
     ports:
       - 8100:80
     environment:
-      WORDPRESS_DB_HOST: mariadb
-      WORDPRESS_DB_USER: user01
-      WORDPRESS_DB_PASSWORD: passw0rd
-      WORDPRESS_DB_NAME: db01
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-mariadb}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-user01}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-passw0rd}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-db01}
     volumes:
       - wordpress:/var/www/html
     depends_on:
@@ -26,10 +26,10 @@ services:
     image: wordpress:cli-php8.3
     user: 33:33
     environment:
-      WORDPRESS_DB_HOST: mariadb
-      WORDPRESS_DB_USER: user01
-      WORDPRESS_DB_PASSWORD: passw0rd
-      WORDPRESS_DB_NAME: db01
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-mariadb}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-user01}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-passw0rd}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-db01}
     # command: ["core", "install", "--url=http://localhost:8080", "--title=My WordPress Site", "--admin_user=admin", "--admin_password=password", "--]
     command: ["/run-wp-cli.sh"]
     volumes:

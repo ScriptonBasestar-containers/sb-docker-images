@@ -9,11 +9,11 @@ services:
     ports:
       - 8120:80
     environment:
-      DRUPAL_DATABASE_HOST: mariadb
-      DRUPAL_DATABASE_PORT: 3306
-      DRUPAL_DATABASE_NAME: db01
-      DRUPAL_DATABASE_USERNAME: user01
-      DRUPAL_DATABASE_PASSWORD: passw0rd
+      DRUPAL_DATABASE_HOST: ${DRUPAL_DATABASE_HOST:-mariadb}
+      DRUPAL_DATABASE_PORT: ${DRUPAL_DATABASE_PORT:-3306}
+      DRUPAL_DATABASE_NAME: ${DRUPAL_DATABASE_NAME:-db01}
+      DRUPAL_DATABASE_USERNAME: ${DRUPAL_DATABASE_USERNAME:-user01}
+      DRUPAL_DATABASE_PASSWORD: ${DRUPAL_DATABASE_PASSWORD:-passw0rd}
       DRUPAL_DATABASE_PREFIX: dr_
       # Generate a salt with: `php -r "echo bin2hex(random_bytes(25));"`
       DRUPAL_HASH_SALT: db0de8a1556aa5348f87cfc950cd2c9641713d46e9412c8b05
@@ -33,10 +33,10 @@ services:
     container_name: drupal-mariadb
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: db01
-      MYSQL_USER: user01
-      MYSQL_PASSWORD: passw0rd
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-db01}
+      MYSQL_USER: ${MYSQL_USER:-user01}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-passw0rd}
     volumes:
       - mariadb-data:/var/lib/mysql
     networks:

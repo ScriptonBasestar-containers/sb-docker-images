@@ -12,7 +12,7 @@ services:
             - '.:/app:rw'
             - './data:/data:rw'
         command: python manage.py runserver 0.0.0.0:80
-        env_file: backend/.local-env
+        # env_file: backend/.local-env  # File does not exist - use environment variables instead
 
     frontend:
         build:
@@ -36,6 +36,12 @@ services:
             - '5432:5432'
         environment:
             POSTGRES_DB: 'db'
-            POSTGRES_HOST_AUTH_METHOD: trust
+            POSTGRES_USER: 'postgres'
+            POSTGRES_PASSWORD: 'postgres'
         volumes:
             - '.:/app:rw'
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres -d db"]
+            interval: 10s
+            timeout: 5s
+            retries: 5

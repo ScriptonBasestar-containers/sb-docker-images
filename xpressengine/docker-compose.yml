@@ -1,5 +1,3 @@
-version: "3.7"
-
 services:
   xe:
     container_name: ${XE_CONTAINER_NAME:-xe}
@@ -60,10 +58,10 @@ services:
       #- MEMCACHED_USERNAME=
       #- MEMCACHED_PASSWORD=
       ## redis
-      - CACHE_DRIVER=redis
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=password
+      - CACHE_DRIVER=${CACHE_DRIVER:-redis}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-password}
 
       # google/naver
       # - CAPTCHA_DRIVER=google
@@ -73,13 +71,13 @@ services:
       # - CAPTCHA_APIS_NAVER_SECRET
 
       # sqlite/mysql
-      - DB_CONNECTION=mysql
-      - DB_DATABASE=xe_db
-      - DB_HOST=mariadb
-      - DB_PORT=3306
-      - DB_USERNAME=root
-      - DB_PASSWORD=password
-      - DB_PREFIX=
+      - DB_CONNECTION=${DB_CONNECTION:-mysql}
+      - DB_DATABASE=${DB_DATABASE:-xe_db}
+      - DB_HOST=${DB_HOST:-mariadb}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_PREFIX=${DB_PREFIX:-}
 
       # local/s3/rackspace/ftp
       - FILESYSTEM_DRIVER=local
@@ -123,11 +121,11 @@ services:
 
   redis:
     image: redis:8.2-alpine
-    container_name: redis
+    container_name: ${REDIS_CONTAINER_NAME:-xe-redis}
     restart: always
     ports:
-      - 6379:6379
-    command: redis-server --requirepass password
+      - "${REDIS_PORT:-6379}:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD:-password}
     volumes:
       - redis:/data
     healthcheck:
@@ -138,13 +136,18 @@ services:
 
   mariadb:
     image: mariadb:11.8
-    container_name: mariadb
+    container_name: ${MARIADB_CONTAINER_NAME:-xe-mariadb}
     restart: always
     ports:
-      - 3306:3306
+      - "${DB_PORT:-3306}:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=xe_db
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-password}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-xe_db}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # mysql:
   #   image: mysql

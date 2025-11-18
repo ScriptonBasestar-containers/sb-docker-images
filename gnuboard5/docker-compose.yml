@@ -40,29 +40,36 @@ services:
   mariadb:
     image: mariadb:11.8
     environment:
-      - MYSQL_ROOT_PASSWORD=rootpass
-      - MYSQL_DATABASE=db01
-      - MYSQL_USER=user01
-      - MYSQL_PASSWORD=passw0rd
-#    volumes:
-#      - db:/var/lib/mysql
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpass}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-db01}
+      - MYSQL_USER=${MYSQL_USER:-user01}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-passw0rd}
+    volumes:
+      - db:/var/lib/mysql
     networks:
       - db-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     depends_on:
       - mariadb
-    links:
-      - mariadb:db
     ports:
-      - 8201:80
+      - "${PHPMYADMIN_PORT:-8201}:80"
     environment:
-      PMA_USER: root
-      PMA_PASSWORD: dockerPWDroot
+      PMA_USER: ${PMA_USER:-root}
+      PMA_PASSWORD: ${PMA_PASSWORD:-rootpass}
+      PMA_HOST: mariadb
     networks:
       - db-network
 
 networks:
   code-network:
   db-network:
+
+volumes:
+  db:

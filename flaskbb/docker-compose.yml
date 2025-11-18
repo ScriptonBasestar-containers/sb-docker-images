@@ -11,11 +11,11 @@ services:
       FLASK_ENV: production
 
       # FlaskBB 설정
-      FLASKBB_SERVER_NAME: localhost:8250
-      FLASKBB_SECRET_KEY: change-this-to-a-random-secret-key
+      FLASKBB_SERVER_NAME: ${FLASKBB_SERVER_NAME:-localhost:8250}
+      FLASKBB_SECRET_KEY: ${FLASKBB_SECRET_KEY:-change-this-to-a-random-secret-key}
 
       # 데이터베이스 설정
-      FLASKBB_DATABASE_URI: postgresql://user01:passw0rd@postgres:5432/db01
+      FLASKBB_DATABASE_URI: postgresql://${POSTGRES_USER:-user01}:${POSTGRES_PASSWORD:-passw0rd}@postgres:5432/${POSTGRES_DB:-db01}
 
       # Redis 설정
       FLASKBB_REDIS_URL: redis://redis:6379/0
@@ -43,9 +43,9 @@ services:
     container_name: flaskbb_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: db01
-      POSTGRES_USER: user01
-      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_DB: ${POSTGRES_DB:-db01}
+      POSTGRES_USER: ${POSTGRES_USER:-user01}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-passw0rd}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:

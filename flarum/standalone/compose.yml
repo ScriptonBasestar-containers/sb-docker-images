@@ -10,14 +10,14 @@ services:
       - "${FLARUM_PORT:-8140}:8888"
     environment:
       - FORUM_URL=http://localhost:${FLARUM_PORT:-8140}
-      - DB_HOST=mariadb
-      - DB_NAME=db01
-      - DB_USER=user01
-      - DB_PASS=passw0rd
-      - DB_PREF=flarum_
-      - DB_PORT=3306
-      - FLARUM_ADMIN_USER=admin
-      - FLARUM_ADMIN_PASS=password
+      - DB_HOST=${DB_HOST:-mariadb}
+      - DB_NAME=${DB_NAME:-db01}
+      - DB_USER=${DB_USER:-user01}
+      - DB_PASS=${DB_PASS:-passw0rd}
+      - DB_PREF=${DB_PREF:-flarum_}
+      - DB_PORT=${DB_PORT:-3306}
+      - FLARUM_ADMIN_USER=${FLARUM_ADMIN_USER:-admin}
+      - FLARUM_ADMIN_PASS=${FLARUM_ADMIN_PASS:-password}
       - FLARUM_ADMIN_MAIL=admin@example.com
       - FLARUM_TITLE=Flarum Forum
     volumes:
@@ -36,10 +36,10 @@ services:
     container_name: flarum-mariadb
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: db01
-      MYSQL_USER: user01
-      MYSQL_PASSWORD: passw0rd
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-db01}
+      MYSQL_USER: ${MYSQL_USER:-user01}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-passw0rd}
     volumes:
       - mariadb-data:/var/lib/mysql
     networks:
