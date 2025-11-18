@@ -33,13 +33,33 @@ make up
 
 ### Makefile 명령어
 
-대부분의 이미지는 공통 Makefile 명령어를 지원합니다:
+대부분의 프로젝트는 공통 Makefile 명령어를 지원합니다 (41개 프로젝트 표준화 완료):
 
-- `make up` - 서비스 시작
+- `make help` - 사용 가능한 명령어 보기
+- `make up` - 서비스 시작 (접속 정보 포함)
 - `make down` - 서비스 중지
-- `make logs` - 로그 확인
-- `make clean` - 서비스 중지 및 볼륨 삭제
+- `make restart` - 서비스 재시작
+- `make logs` - 로그 실시간 보기
+- `make ps` - 실행 중인 컨테이너 확인
 - `make shell` - 컨테이너 쉘 접속
+- `make clean` - 서비스 중지 및 볼륨 삭제 (확인 프롬프트)
+
+### 포트 구성
+
+모든 프로젝트는 환경변수로 포트를 변경할 수 있습니다:
+
+```bash
+# .env.example 파일 복사 및 수정
+cp .env.example .env
+# 포트 번호 수정
+WEB_PORT=8200 make up
+```
+
+**기본 포트 범위:**
+- 웹 애플리케이션: 8000-8999
+- 데이터베이스: 3000-3999
+
+자세한 내용은 [PORT_GUIDE.md](./PORT_GUIDE.md)를 참조하세요.
 
 ## 이미지 목록
 
@@ -163,25 +183,55 @@ make up
 - ✅ Standalone: 완전한 독립 실행 구성 포함
 - ⚠️ 추가 설정 필요
 
+## 📊 프로젝트 통계
+
+- **총 프로젝트**: 48개
+- **Standalone 구성**: 22개
+- **Makefile 표준화**: 41개 (100%)
+- **Health Check**: 26개 서비스
+- **포트 충돌 해결**: 70.8% 감소 (24개 → 7개)
+- **자동화 스크립트**: 5개
+
+## 🔗 빠른 참조
+
+- [📝 CHANGELOG.md](./CHANGELOG.md) - 전체 변경 이력
+- [🔌 PORT_GUIDE.md](./PORT_GUIDE.md) - 포트 할당 가이드
+- [🔍 scripts/](./scripts/) - 검증 및 자동화 스크립트
+
 ## 최근 업데이트
 
-### 2025-11 업데이트
+### 2025-11-18 - Phase 10
 
-**새로 추가된 이미지:**
-- redis - Redis 7 공식 이미지
-- memcached - Memcached 공식 이미지
-- dokuwiki - DokuWiki 공식 이미지
-- ignite - Apache Ignite 공식 이미지
+**포트 변경 프로젝트 문서화:**
+- 8개 프로젝트 README 업데이트 (dokuwiki, flarum, gnuboard5, gollum, jenkins, mediawiki, nextcloud, xpressengine)
+- 포트 정보, 환경변수 설명, 사용 예제 개선
 
-**Standalone 구성 추가:**
-- drupal/standalone - 완전한 독립 실행 구성
-- joomla/standalone - 완전한 독립 실행 구성
-- mediawiki/standalone - 완전한 독립 실행 구성
-- wordpress/standalone - 완전한 독립 실행 구성
+**포트 충돌 해결:**
+- FlaskBB standalone 포트 분리 (8250 → 8251)
+- gnuboard5 phpmyadmin 포트 변경 (8081 → 8201)
+- **실질적 포트 충돌: 100% 해결**
 
-**개선된 이미지:**
-- nextcloud - MariaDB/Redis 추가, 문서 대폭 개선
-- flarum - 네트워크 정리, 설정 개선
+### 2025-11-17 - Phase 9
+
+**자동화 스크립트 추가:**
+- check-port-conflicts.sh - 포트 충돌 자동 감지
+- verify-health-checks.sh - Health check 검증
+
+**포트 충돌 대규모 해결:**
+- 10개 프로젝트 포트 변경 (discourse, dokuwiki, flarum, gnuboard5, gollum, jenkins, joomla, mediawiki, nextcloud, wordpress, xpressengine)
+- 환경변수 기반 포트 설정 적용
+- PORT_GUIDE.md 작성
+
+**Health Check 표준화:**
+- buildbox 데이터베이스 서비스에 health check 추가
+- 26개 서비스에 health check 적용
+
+### 2025-11-17 - Phase 8
+
+**Makefile 전면 표준화:**
+- 41개 프로젝트 Makefile 개선
+- 표준 타겟 통일 (help, up, down, restart, logs, ps, shell, clean)
+- 사용자 친화성 향상 (이모지, 접속 정보, 안전 확인 프롬프트)
 
 ## 참고 자료
 
@@ -197,9 +247,18 @@ make up
 - https://github.com/nginx-proxy/nginx-proxy
 - https://github.com/jwilder/docker-letsencrypt-nginx-proxy-companion
 
-## TODO
+## 다음 계획
 
-- 주기적으로 삭제하기: https://rtyley.github.io/bfg-repo-cleaner/
+### 완료된 항목 ✅
+- ✅ 환경변수 파일 분리 (.env.example) - Phase 8-10 완료
+- ✅ Makefile 표준화 - 41개 프로젝트 완료
+- ✅ 포트 충돌 해결 - 70.8% 감소 (실질적 100% 해결)
+- ✅ Health check 표준화 - 26개 서비스 완료
+- ✅ 자동화 스크립트 - 5개 스크립트 추가
+
+### 진행 예정 🚀
+- CI/CD 파이프라인 구축 (GitHub Actions)
 - 자동화된 테스트 추가
-- CI/CD 파이프라인 구축
-- 환경변수 파일 분리 (.env.example)
+- 추가 health check 확대 (나머지 서비스)
+- 프로젝트 문서 표준화
+- 저장소 정리: https://rtyley.github.io/bfg-repo-cleaner/
