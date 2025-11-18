@@ -63,9 +63,9 @@ docker-compose up -d
 | 8150 | nginx | 웹 사이트 (NGINX_PORT로 변경 가능) |
 | 8201 | phpmyadmin | DB 관리 |
 
-> ✅ **포트 설정**: 기본 포트는 8150입니다. NGINX_PORT 환경변수로 변경 가능합니다. ([포트 가이드](../PORT_GUIDE.md) 참조)
-
-포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
+> ✅ **포트 설정**: 기본 포트는 8150입니다. NGINX_PORT 환경변수로 변경 가능합니다.
+>
+> 포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
 
 ## 환경 변수
 

@@ -9,6 +9,10 @@ Simple to use and highly versatile Open Source wiki software that doesn't requir
 - Admin user pre-configured
 - Port: 8130 (configurable via `DOKUWIKI_PORT`)
 
+> ✅ **포트 설정**: 기본 포트는 8130입니다. DOKUWIKI_PORT 환경변수로 변경 가능합니다.
+>
+> 포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
+
 ## Quick Start
 
 ```bash
