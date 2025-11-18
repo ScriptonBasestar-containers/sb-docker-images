@@ -662,5 +662,5 @@ If MailSlurper doesn't meet your needs:
 - [MailSlurper GitHub](https://github.com/mailslurper/mailslurper)
 - [MailSlurper Wiki](https://github.com/mailslurper/mailslurper/wiki)
 - [Configuration Guide](https://github.com/mailslurper/mailslurper/wiki/Configuration-File)
-- [Port Guide](../../docs/PORT_GUIDE.md)
+- [Port Guide](../../PORT_GUIDE.md)
 - [Main README](../README.md)

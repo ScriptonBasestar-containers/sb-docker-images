@@ -273,7 +273,7 @@ services:
 >
 > 각 서비스는 독립적으로 실행되며, 여러 서비스를 조합하여 사용할 때 포트 충돌에 주의하세요.
 
-포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
+포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
 
 ## 모범 사례
 
@@ -404,4 +404,4 @@ docker-compose \
 - [Ory Kratos 문서](https://www.ory.sh/docs/kratos/)
 - [Authelia 문서](https://www.authelia.com/)
 - [서비스 템플릿 가이드](../docs/SERVICE_TEMPLATES.md)
-- [포트 충돌 방지 가이드](../docs/PORT_GUIDE.md)
+- [포트 충돌 방지 가이드](../PORT_GUIDE.md)

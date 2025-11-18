@@ -446,7 +446,7 @@ services:
 - [FlaskBB GitHub](https://github.com/flaskbb/flaskbb)
 - [Flask 문서](https://flask.palletsprojects.com/)
 - [Docker Compose 문서](https://docs.docker.com/compose/)
-- [포트 가이드](../../docs/PORT_GUIDE.md)
+- [포트 가이드](../../PORT_GUIDE.md)
 
 ## 라이센스
 

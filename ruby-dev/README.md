@@ -67,7 +67,7 @@ docker run -ti \
 
 > ⚠️ **포트 충돌 주의**: 현재 3000 포트 사용 중입니다.
 >
-> **권장 포트**: 8640 ([포트 가이드](../docs/PORT_GUIDE.md) 참조)
+> **권장 포트**: 8640 ([포트 가이드](../PORT_GUIDE.md) 참조)
 >
 > **포트 변경 방법**:
 > ```bash
@@ -75,7 +75,7 @@ docker run -ti \
 > docker run -p 8640:3000 -v $(pwd):/work ruby-dev
 > ```
 
-포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
+포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
 
 ### 볼륨
 
