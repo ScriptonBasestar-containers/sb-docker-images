@@ -484,7 +484,7 @@ EXEC
 - [데이터 타입](https://redis.io/docs/data-types/)
 - [Persistence](https://redis.io/docs/management/persistence/)
 - [보안](https://redis.io/docs/management/security/)
-- [포트 가이드](../../docs/PORT_GUIDE.md)
+- [포트 가이드](../../PORT_GUIDE.md)
 
 ## 라이센스
 

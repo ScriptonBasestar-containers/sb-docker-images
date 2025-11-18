@@ -63,7 +63,7 @@ Ansible은 일반적으로 클라이언트 도구로 사용되며 포트를 직�
 
 > **참고**: 웹 기반 관리가 필요한 경우 AWX (Ansible Tower의 오픈소스 버전)를 고려하세요.
 >
-> 포트 할당 정보는 [PORT_GUIDE.md](../docs/PORT_GUIDE.md)를 참조하세요.
+> 포트 할당 정보는 [PORT_GUIDE.md](../PORT_GUIDE.md)를 참조하세요.
 
 ### 볼륨
 

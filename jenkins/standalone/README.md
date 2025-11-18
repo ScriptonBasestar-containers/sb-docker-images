@@ -598,7 +598,7 @@ pipeline {
 - [Docker Plugin 문서](https://plugins.jenkins.io/docker-plugin/)
 - [Blue Ocean 문서](https://www.jenkins.io/doc/book/blueocean/)
 - [Jenkins Best Practices](https://www.jenkins.io/doc/book/using/best-practices/)
-- [포트 가이드](../../docs/PORT_GUIDE.md)
+- [포트 가이드](../../PORT_GUIDE.md)
 
 ## 라이센스
 

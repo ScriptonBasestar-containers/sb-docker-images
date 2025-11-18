@@ -110,7 +110,7 @@ docker run --rm \
 > **포트 충돌 방지**: 다른 프로젝트와 동시 실행 시 포트를 변경하세요.
 > PORT_GUIDE.md에서 jupyter는 8888, jupyter2는 8889를 사용하도록 권장됩니다.
 >
-> 자세한 내용은 [PORT_GUIDE.md](../docs/PORT_GUIDE.md)를 참조하세요.
+> 자세한 내용은 [PORT_GUIDE.md](../PORT_GUIDE.md)를 참조하세요.
 
 ### 볼륨
 

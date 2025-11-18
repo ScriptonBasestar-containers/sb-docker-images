@@ -78,7 +78,7 @@ make server-down    # 서버 중지
 > **포트 번호**: DevPI의 전통적인 포트 번호는 π(파이)의 근사값인 3141입니다.
 >
 > **포트 충돌 방지**: 다른 프로젝트와 동시 실행 시 포트를 변경하세요.
-> 자세한 내용은 [PORT_GUIDE.md](../docs/PORT_GUIDE.md)를 참조하세요.
+> 자세한 내용은 [PORT_GUIDE.md](../PORT_GUIDE.md)를 참조하세요.
 
 ### 볼륨
 

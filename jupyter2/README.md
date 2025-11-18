@@ -83,7 +83,7 @@ docker run --rm -it \
 >
 > 두 서비스를 동시에 실행할 수 있도록 다른 포트를 사용합니다.
 >
-> 자세한 내용은 [PORT_GUIDE.md](../docs/PORT_GUIDE.md)를 참조하세요.
+> 자세한 내용은 [PORT_GUIDE.md](../PORT_GUIDE.md)를 참조하세요.
 
 ### 볼륨
 

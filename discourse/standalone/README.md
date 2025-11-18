@@ -287,7 +287,7 @@ docker compose down -v
 
 ## Port Information
 
-See [PORT_GUIDE.md](../../docs/PORT_GUIDE.md) for port allocation strategy.
+See [PORT_GUIDE.md](../../PORT_GUIDE.md) for port allocation strategy.
 
 **Default ports:**
 - Discourse: 8080

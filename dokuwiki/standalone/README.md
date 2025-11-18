@@ -542,7 +542,7 @@ echo "PHP 코드";
 - [플러그인 목록](https://www.dokuwiki.org/plugins)
 - [템플릿 목록](https://www.dokuwiki.org/template)
 - [FAQ](https://www.dokuwiki.org/faq)
-- [포트 가이드](../../docs/PORT_GUIDE.md)
+- [포트 가이드](../../PORT_GUIDE.md)
 
 ## 라이센스
 
