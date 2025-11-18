@@ -28,6 +28,11 @@ services:
       - ENABLE_IPV6=true
     volumes:
       - misago-postgres-15:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${MISAGO_POSTGRES_USER:-user01} -d ${MISAGO_POSTGRES_DB:-db01}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:8.2-alpine
