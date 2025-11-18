@@ -79,8 +79,6 @@ docker compose -f compose.apache.yml \
 > #   - "8900:80"
 > ```
 
-포트 충돌 방지: [포트 가이드](../docs/PORT_GUIDE.md)
-
 ## 환경 변수
 
 ### 관리자 계정

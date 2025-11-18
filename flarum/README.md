@@ -48,6 +48,10 @@ make logs
 # Open http://localhost:8140 in your browser (port configurable via FLARUM_PORT)
 ```
 
+> ✅ **포트 설정**: 기본 포트는 8140입니다. FLARUM_PORT 환경변수로 변경 가능합니다.
+>
+> 포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
+
 ## Default Credentials
 
 Pre-configured via environment variables:
