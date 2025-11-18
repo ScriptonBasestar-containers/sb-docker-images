@@ -56,7 +56,7 @@ services:
     links:
       - mariadb:db
     ports:
-      - 8081:80
+      - 8201:80
     environment:
       PMA_USER: root
       PMA_PASSWORD: dockerPWDroot
