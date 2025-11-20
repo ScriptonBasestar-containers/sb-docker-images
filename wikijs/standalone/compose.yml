@@ -1,0 +1,52 @@
+services:
+  # Wiki.js - Modern Wiki Platform
+  # https://hub.docker.com/r/requarks/wiki
+  wiki:
+    image: ghcr.io/requarks/wiki:2
+    container_name: ${WIKIJS_CONTAINER_NAME:-wikijs}
+    restart: unless-stopped
+    ports:
+      - "${WIKIJS_PORT:-8320}:3000"
+    environment:
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-wikijs}
+      DB_PASS: ${DB_PASS:-wikijs_password}
+      DB_NAME: ${DB_NAME:-wiki}
+    volumes:
+      - ${WIKI_DATA_VOLUME:-wiki-data}:/wiki/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+      - data-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${POSTGRES_CONTAINER_NAME:-wikijs-postgres}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-wiki}
+      POSTGRES_USER: ${POSTGRES_USER:-wikijs}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wikijs_password}
+    volumes:
+      - ${POSTGRES_DATA_VOLUME:-postgres-data}:/var/lib/postgresql/data
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wikijs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  wiki-data:
+  postgres-data:

@@ -1,0 +1,93 @@
+services:
+  flaskbb:
+    image: flaskbb/flaskbb:latest
+    container_name: flaskbb
+    restart: unless-stopped
+    ports:
+      - "8250:8080"
+    environment:
+      # Flask configuration
+      FLASK_APP: flaskbb
+      FLASK_ENV: production
+
+      # FlaskBB configuration
+      FLASKBB_SERVER_NAME: localhost:8250
+      FLASKBB_SECRET_KEY: ${FLASKBB_SECRET_KEY:-change-this-to-a-random-secret-key-min-32-chars}
+
+      # Database configuration
+      FLASKBB_DATABASE_URI: postgresql://${POSTGRES_USER:-user01}:${POSTGRES_PASSWORD:-passw0rd}@postgres:5432/${POSTGRES_DB:-db01}
+
+      # Redis configuration
+      FLASKBB_REDIS_URL: redis://redis:6379/${REDIS_DB:-0}
+
+      # Celery configuration
+      FLASKBB_CELERY_BROKER_URL: redis://redis:6379/${REDIS_DB:-0}
+      FLASKBB_CELERY_RESULT_BACKEND: redis://redis:6379/${REDIS_DB:-0}
+
+      # Mail configuration (optional)
+      FLASKBB_MAIL_SERVER: ${FLASKBB_MAIL_SERVER:-smtp.gmail.com}
+      FLASKBB_MAIL_PORT: ${FLASKBB_MAIL_PORT:-587}
+      FLASKBB_MAIL_USE_TLS: ${FLASKBB_MAIL_USE_TLS:-true}
+      FLASKBB_MAIL_USERNAME: ${FLASKBB_MAIL_USERNAME:-}
+      FLASKBB_MAIL_PASSWORD: ${FLASKBB_MAIL_PASSWORD:-}
+      FLASKBB_MAIL_DEFAULT_SENDER: ${FLASKBB_MAIL_DEFAULT_SENDER:-noreply@example.com}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - app-network
+      - data-network
+    volumes:
+      - flaskbb-uploads:/flaskbb/uploads
+      - flaskbb-logs:/flaskbb/logs
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: flaskbb_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-db01}
+      POSTGRES_USER: ${POSTGRES_USER:-user01}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-passw0rd}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user01} -d ${POSTGRES_DB:-db01}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: flaskbb_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  flaskbb-uploads:
+    driver: local
+  flaskbb-logs:
+    driver: local

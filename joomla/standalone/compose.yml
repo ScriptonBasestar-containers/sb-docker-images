@@ -1,0 +1,74 @@
+services:
+  # Joomla - Open Source CMS
+  # https://hub.docker.com/_/joomla
+  joomla:
+    image: joomla:5-php8.3-apache
+    container_name: ${JOOMLA_CONTAINER_NAME:-joomla}
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8110}:80"
+    environment:
+      JOOMLA_DB_HOST: mariadb
+      JOOMLA_DB_USER: user01
+      JOOMLA_DB_PASSWORD: passw0rd
+      JOOMLA_DB_NAME: db01
+      JOOMLA_SITE_NAME: Joomla
+      JOOMLA_ADMIN_USER: Joomla Hero
+      JOOMLA_ADMIN_USERNAME: joomla
+      JOOMLA_ADMIN_PASSWORD: joomla@secured
+      JOOMLA_ADMIN_EMAIL: joomla@example.com
+    volumes:
+      - joomla-data:/var/www/html
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+      - data-network
+
+  mariadb:
+    image: mariadb:11.8
+    container_name: joomla-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db01
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: joomla-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  joomla-data:
+  mariadb-data:
+  redis-data:

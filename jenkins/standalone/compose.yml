@@ -1,0 +1,59 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:${JENKINS_TAG:-lts-jdk21}
+    container_name: ${JENKINS_CONTAINER_NAME:-jenkins}
+    restart: unless-stopped
+    user: root
+    ports:
+      - "${JENKINS_HTTP_PORT:-8180}:8080"
+      - "${JENKINS_AGENT_PORT:-50000}:50000"
+    environment:
+      TZ: ${TZ:-Asia/Seoul}
+      JAVA_OPTS: >-
+        ${JAVA_OPTS_XMS:--Xms512m}
+        ${JAVA_OPTS_XMX:--Xmx2048m}
+        -Djava.awt.headless=true
+        -Djenkins.install.runSetupWizard=${JENKINS_SETUP_WIZARD:-true}
+    volumes:
+      - jenkins-home:/var/jenkins_home
+      - jenkins-logs:/var/log/jenkins
+      # Uncomment to enable Docker-in-Docker
+      # - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - jenkins-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/login || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Optional: Docker-in-Docker service
+  # Uncomment if you need Docker builds in Jenkins
+  # docker-dind:
+  #   image: docker:${DOCKER_DIND_TAG:-27-dind}
+  #   container_name: ${DOCKER_DIND_CONTAINER_NAME:-jenkins-docker}
+  #   restart: unless-stopped
+  #   privileged: true
+  #   environment:
+  #     DOCKER_TLS_CERTDIR: /certs
+  #   volumes:
+  #     - jenkins-docker-certs:/certs/client
+  #     - jenkins-docker-data:/var/lib/docker
+  #   networks:
+  #     - jenkins-network
+  #   command: --storage-driver=overlay2
+
+networks:
+  jenkins-network:
+    driver: bridge
+
+volumes:
+  jenkins-home:
+    driver: local
+  jenkins-logs:
+    driver: local
+  # jenkins-docker-certs:
+  #   driver: local
+  # jenkins-docker-data:
+  #   driver: local

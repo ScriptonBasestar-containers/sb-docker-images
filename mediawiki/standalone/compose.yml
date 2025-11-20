@@ -1,0 +1,71 @@
+services:
+  # MediaWiki - Wiki software
+  # https://hub.docker.com/_/mediawiki
+  mediawiki:
+    image: mediawiki:latest
+    container_name: ${MEDIAWIKI_CONTAINER_NAME:-mediawiki}
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8200}:80"
+    environment:
+      - DB_HOST=${MYSQL_HOST:-mariadb}
+      - DB_NAME=${MYSQL_DATABASE:-db01}
+      - DB_USER=${MYSQL_USER:-user01}
+      - DB_PASS=${MYSQL_PASSWORD:-passw0rd}
+    volumes:
+      - mediawiki-images:/var/www/html/images
+      # After initial setup, download LocalSettings.php and uncomment:
+      # - ./LocalSettings.php:/var/www/html/LocalSettings.php
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+      - data-network
+
+  mariadb:
+    image: mariadb:11.8
+    container_name: mediawiki-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db01
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: mediawiki-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  mediawiki-images:
+  mariadb-data:
+  redis-data:

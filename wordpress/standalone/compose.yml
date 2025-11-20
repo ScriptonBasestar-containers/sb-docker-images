@@ -1,0 +1,72 @@
+services:
+  # WordPress - Open Source CMS
+  # https://hub.docker.com/_/wordpress
+  wordpress:
+    image: wordpress:6-php8.3-apache
+    container_name: ${WORDPRESS_CONTAINER_NAME:-wordpress}
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8100}:80"
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: user01
+      WORDPRESS_DB_PASSWORD: passw0rd
+      WORDPRESS_DB_NAME: db01
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_REDIS_HOST', 'redis');
+        define('WP_REDIS_PORT', 6379);
+    volumes:
+      - wordpress-data:/var/www/html
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+      - data-network
+
+  mariadb:
+    image: mariadb:11.8
+    container_name: wordpress-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: db01
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: wordpress-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - data-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  wordpress-data:
+  mariadb-data:
+  redis-data:

@@ -1,0 +1,60 @@
+services:
+  # Django CMS - Web Application
+  web:
+    image: divio/djangocms-tutorial:latest
+    container_name: ${DJANGO_CMS_WEB_CONTAINER:-django-cms-web}
+    restart: unless-stopped
+    ports:
+      - "${DJANGO_CMS_WEB_PORT:-8000}:80"
+    environment:
+      # Database Configuration
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-djangocms}
+
+      # Django Settings
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production-use-random-50-chars}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+
+      # Django CMS Settings
+      CMS_LANGUAGES_MAIN: ${CMS_LANGUAGES_MAIN:-en}
+    volumes:
+      - ${DJANGO_CMS_DATA_VOLUME:-django-cms-data}:/data
+      - ${DJANGO_CMS_MEDIA_VOLUME:-django-cms-media}:/app/media
+      - ${DJANGO_CMS_STATIC_VOLUME:-django-cms-static}:/app/static
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+      - db-network
+
+  # PostgreSQL - Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${POSTGRES_CONTAINER_NAME:-django-cms-postgres}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-djangocms}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - ${POSTGRES_DATA_VOLUME:-postgres-data}:/var/lib/postgresql/data
+    networks:
+      - db-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
+  db-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  django-cms-data:
+  django-cms-media:
+  django-cms-static:

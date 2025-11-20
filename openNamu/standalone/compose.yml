@@ -1,0 +1,66 @@
+services:
+  # openNAMU - Korean Wiki Software
+  opennamu:
+    image: namu/opennamu:latest
+    container_name: ${OPENNAMU_CONTAINER_NAME:-opennamu}
+    restart: unless-stopped
+    ports:
+      - "${OPENNAMU_PORT:-8330}:3000"
+    environment:
+      # Language Settings
+      LANGUAGE: ${LANGUAGE:-ko_KR}
+
+      # Database Configuration
+      DB_TYPE: ${DB_TYPE:-mysql}
+      DB_HOST: ${DB_HOST:-mariadb}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-opennamu}
+      DB_USER: ${DB_USER:-opennamu}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+
+      # Admin Settings (optional)
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+
+      # Wiki Settings
+      WIKI_NAME: ${WIKI_NAME:-openNAMU Wiki}
+      WIKI_SKIN: ${WIKI_SKIN:-default}
+    volumes:
+      - ${OPENNAMU_DATA_VOLUME:-opennamu-data}:/app/data
+      - ${OPENNAMU_UPLOAD_VOLUME:-opennamu-uploads}:/app/route/upload
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - app-network
+      - db-network
+
+  # MariaDB - Database
+  mariadb:
+    image: mariadb:11.8
+    container_name: ${MARIADB_CONTAINER_NAME:-opennamu-mariadb}
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-opennamu}
+      MYSQL_USER: ${MYSQL_USER:-opennamu}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-password}
+    volumes:
+      - ${MARIADB_DATA_VOLUME:-mariadb-data}:/var/lib/mysql
+    networks:
+      - db-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
+  db-network:
+    driver: bridge
+
+volumes:
+  opennamu-data:
+  opennamu-uploads:
+  mariadb-data:

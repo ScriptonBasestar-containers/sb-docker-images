@@ -1,0 +1,37 @@
+services:
+  squid:
+    image: ${SQUID_IMAGE:-scriptonbasestar/sb-docker-squid:latest}
+    container_name: ${SQUID_CONTAINER_NAME:-squid}
+    restart: unless-stopped
+    ports:
+      - "${SQUID_PORT:-3128}:3128"      # HTTP Proxy
+      - "${SQUID_ICP_PORT:-3129}:3129"  # ICP (optional)
+    environment:
+      TZ: ${TZ:-Asia/Seoul}
+    volumes:
+      # Cache storage
+      - squid-cache:/var/spool/squid
+      # Custom configuration
+      - squid-config:/etc/squid/conf.d
+      # Logs (optional)
+      - squid-logs:/var/log/squid
+    networks:
+      - proxy-network
+    healthcheck:
+      test: ["CMD-SHELL", "squidclient -h localhost http://www.google.com/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  proxy-network:
+    driver: bridge
+
+volumes:
+  squid-cache:
+    driver: local
+  squid-config:
+    driver: local
+  squid-logs:
+    driver: local

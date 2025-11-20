@@ -1,0 +1,24 @@
+services:
+  memcached:
+    image: memcached:${MEMCACHED_TAG:-1.6-alpine}
+    container_name: ${MEMCACHED_CONTAINER_NAME:-memcached}
+    restart: unless-stopped
+    ports:
+      - "${MEMCACHED_PORT:-11211}:11211"
+    command: >
+      memcached
+      -m ${MEMCACHED_MEMORY:-64}
+      -c ${MEMCACHED_MAX_CONNECTIONS:-1024}
+      -I ${MEMCACHED_MAX_ITEM_SIZE:-1m}
+      -v
+    networks:
+      - cache-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "11211"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+networks:
+  cache-network:
+    driver: bridge

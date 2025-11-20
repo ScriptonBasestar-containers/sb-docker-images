@@ -1,0 +1,188 @@
+services:
+  # PostgreSQL - Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ${POSTGRES_CONTAINER_NAME:-mastodon-postgres}
+    restart: unless-stopped
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_USER: ${POSTGRES_USER:-mastodon}
+      POSTGRES_DB: ${POSTGRES_DB:-mastodon_production}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mastodon_password}
+    volumes:
+      - ${POSTGRES_DATA_VOLUME:-postgres-data}:/var/lib/postgresql/data
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mastodon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis - Cache and Session Storage
+  redis:
+    image: redis:7-alpine
+    container_name: ${REDIS_CONTAINER_NAME:-mastodon-redis}
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - ${REDIS_DATA_VOLUME:-redis-data}:/data
+    networks:
+      - internal_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Mastodon Web - Rails Application
+  web:
+    image: tootsuite/mastodon:v4.2
+    container_name: ${MASTODON_WEB_CONTAINER:-mastodon-web}
+    restart: unless-stopped
+    command: bash -c "rm -f /mastodon/tmp/pids/server.pid; bundle exec rails s -p 3000"
+    ports:
+      - "${MASTODON_WEB_PORT:-8500}:3000"
+    environment:
+      # Basic Configuration
+      LOCAL_DOMAIN: ${LOCAL_DOMAIN:-localhost:8500}
+      SINGLE_USER_MODE: ${SINGLE_USER_MODE:-false}
+
+      # PostgreSQL Configuration
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-mastodon}
+      DB_PASS: ${DB_PASS:-mastodon_password}
+      DB_NAME: ${DB_NAME:-mastodon_production}
+
+      # Redis Configuration
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+
+      # Secrets (generate with: docker run --rm tootsuite/mastodon bundle exec rake secret)
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-changeme}
+      OTP_SECRET: ${OTP_SECRET:-changeme}
+
+      # VAPID keys (generate with: docker run --rm tootsuite/mastodon bundle exec rake mastodon:webpush:generate_vapid_key)
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
+
+      # Storage
+      S3_ENABLED: ${S3_ENABLED:-false}
+
+      # SMTP Settings (optional)
+      SMTP_SERVER: ${SMTP_SERVER:-smtp.mailgun.org}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_LOGIN: ${SMTP_LOGIN}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM_ADDRESS: ${SMTP_FROM_ADDRESS:-notifications@localhost}
+
+      # Rails Environment
+      RAILS_ENV: production
+      NODE_ENV: production
+    volumes:
+      - ${MASTODON_PUBLIC_SYSTEM:-mastodon-public-system}:/mastodon/public/system
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - external_network
+      - internal_network
+
+  # Mastodon Streaming - WebSocket Server
+  streaming:
+    image: tootsuite/mastodon:v4.2
+    container_name: ${MASTODON_STREAMING_CONTAINER:-mastodon-streaming}
+    restart: unless-stopped
+    command: node ./streaming
+    ports:
+      - "${MASTODON_STREAMING_PORT:-8501}:4000"
+    environment:
+      # PostgreSQL Configuration
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-mastodon}
+      DB_PASS: ${DB_PASS:-mastodon_password}
+      DB_NAME: ${DB_NAME:-mastodon_production}
+
+      # Redis Configuration
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+
+      # Node Environment
+      NODE_ENV: production
+      PORT: 4000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - external_network
+      - internal_network
+
+  # Mastodon Sidekiq - Background Job Processor
+  sidekiq:
+    image: tootsuite/mastodon:v4.2
+    container_name: ${MASTODON_SIDEKIQ_CONTAINER:-mastodon-sidekiq}
+    restart: unless-stopped
+    command: bundle exec sidekiq
+    environment:
+      # Basic Configuration
+      LOCAL_DOMAIN: ${LOCAL_DOMAIN:-localhost:8500}
+
+      # PostgreSQL Configuration
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-mastodon}
+      DB_PASS: ${DB_PASS:-mastodon_password}
+      DB_NAME: ${DB_NAME:-mastodon_production}
+
+      # Redis Configuration
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+
+      # Secrets
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-changeme}
+      OTP_SECRET: ${OTP_SECRET:-changeme}
+
+      # VAPID keys
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY}
+
+      # Storage
+      S3_ENABLED: ${S3_ENABLED:-false}
+
+      # SMTP Settings
+      SMTP_SERVER: ${SMTP_SERVER:-smtp.mailgun.org}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_LOGIN: ${SMTP_LOGIN}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM_ADDRESS: ${SMTP_FROM_ADDRESS:-notifications@localhost}
+
+      # Rails Environment
+      RAILS_ENV: production
+    volumes:
+      - ${MASTODON_PUBLIC_SYSTEM:-mastodon-public-system}:/mastodon/public/system
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - external_network
+      - internal_network
+
+networks:
+  external_network:
+    driver: bridge
+  internal_network:
+    driver: bridge
+    internal: true
+
+volumes:
+  postgres-data:
+  redis-data:
+  mastodon-public-system:

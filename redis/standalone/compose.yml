@@ -1,0 +1,30 @@
+services:
+  redis:
+    image: redis:${REDIS_TAG:-7-alpine}
+    container_name: ${REDIS_CONTAINER_NAME:-redis}
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: >
+      redis-server
+      --appendonly ${REDIS_AOF:-yes}
+      --requirepass ${REDIS_PASSWORD:-change-me-strong-password}
+      --maxmemory ${REDIS_MAX_MEMORY:-256mb}
+      --maxmemory-policy ${REDIS_MAX_MEMORY_POLICY:-allkeys-lru}
+    volumes:
+      - redis-data:/data
+    networks:
+      - cache-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-change-me-strong-password}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+networks:
+  cache-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local
