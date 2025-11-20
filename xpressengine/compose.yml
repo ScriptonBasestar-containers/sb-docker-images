@@ -126,7 +126,7 @@ services:
     container_name: redis
     restart: always
     ports:
-      - 6379:6379
+      - 6381:6379
     command: redis-server --requirepass password
     volumes:
       - redis:/data

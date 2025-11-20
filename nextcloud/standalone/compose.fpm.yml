@@ -21,7 +21,7 @@ services:
     container_name: redis
     restart: always
     ports:
-      - 6379:6379
+      - 6380:6379
     command: redis-server --requirepass password
     volumes:
       - redis:/data
@@ -37,7 +37,7 @@ services:
   nextcloud:
     image: nextcloud:29
     ports:
-      - 8080:80
+      - 8210:80
     depends_on:
       - postgres
       - redis

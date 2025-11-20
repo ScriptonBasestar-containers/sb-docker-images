@@ -4,7 +4,7 @@ services:
     image: nextcloud:29
     # image: test1
     ports:
-      - 8080:80
+      - 8210:80
     environment:
       # DEBUG: true
       # NEXTCLOUD_DEBUG_MODE: true

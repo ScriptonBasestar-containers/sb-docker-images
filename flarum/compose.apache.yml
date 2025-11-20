@@ -6,7 +6,7 @@ services:
     image: flarum-apache
     container_name: flarum
     ports:
-      - 8080:80
+      - 8140:80
     environment:
       MYSQL_USER: user01
       MYSQL_PASSWORD: passw0rd
@@ -21,7 +21,7 @@ services:
       LOCAL: "true"
 
       FLARUM_TITLE: "Flarum Ttitle"
-      FLARUM_URL: "http://localhost:8080"
+      FLARUM_URL: "http://localhost:8140"
       FLARUM_ADMIN_USER: "a01"
       FLARUM_ADMIN_PASSWORD: "passw0rd"
       FLARUM_ADMIN_EMAIL: "a01@a.com"
