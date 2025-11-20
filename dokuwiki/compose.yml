@@ -1,0 +1,26 @@
+services:
+  # DokuWiki - Simple to use and highly versatile Open Source wiki software
+  # https://hub.docker.com/r/dokuwiki/dokuwiki
+  dokuwiki:
+    image: dokuwiki/dokuwiki:stable
+    container_name: ${DOKUWIKI_CONTAINER_NAME:-dokuwiki}
+    restart: unless-stopped
+    ports:
+      - "${DOKUWIKI_PORT:-8130}:8080"
+    environment:
+      - DOKUWIKI_ADMIN_USER=admin
+      - DOKUWIKI_ADMIN_PASS=passw0rd
+      - DOKUWIKI_ADMIN_NAME=Admin
+      - DOKUWIKI_ADMIN_EMAIL=admin@example.com
+      - DOKUWIKI_WIKI_TITLE=My DokuWiki
+    volumes:
+      - dokuwiki-storage:/dokuwiki/storage
+    networks:
+      - wiki-network
+
+networks:
+  wiki-network:
+    driver: bridge
+
+volumes:
+  dokuwiki-storage:
