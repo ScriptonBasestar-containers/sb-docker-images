@@ -45,15 +45,99 @@
 - **Home Assistant**: host 네트워크 모드 (포트 충돌 없음)
 - **Kratos**: 전용 포트 사용 (4433, 4434, 4455)
 
+## 주요 기능
+
+### 🔧 자동화 스크립트
+프로젝트 품질 검증을 위한 자동화 도구 제공:
+
+```bash
+# 포트 충돌 감지
+./scripts/check-port-conflicts.sh
+
+# Compose 파일 검증
+./scripts/validate-compose.sh
+
+# 환경변수 템플릿 테스트
+./scripts/test-env-examples.sh
+
+# Health check 검증
+./scripts/verify-health-checks.sh
+```
+
+상세 사용법: [`scripts/README.md`](./scripts/README.md)
+
+### 📝 환경변수 템플릿
+모든 프로젝트에 `.env.example` 파일 제공:
+- 64개 프로젝트 100% 커버리지
+- 상세한 설명과 기본값 포함
+- 프로덕션 배포 시 필수 설정 가이드
+
+### 🚀 Standalone 구성
+프로덕션 준비된 독립 실행 구성 (23개 프로젝트):
+- 완전한 스택 (DB, Cache, Application)
+- Health check 설정
+- 자동 재시작 정책
+- 상세한 README 포함
+
+위치: `<project>/standalone/`
+
+### 🔌 포트 할당 가이드
+프로젝트 간 포트 충돌 방지:
+- 체계적인 포트 범위 할당
+- 충돌 해결 계획 문서화
+- 자동 충돌 감지 스크립트
+
+문서: [`PORT_GUIDE.md`](./PORT_GUIDE.md) | [`docs/PORT_GUIDE.md`](./docs/PORT_GUIDE.md)
+
 ## 사용법
 
-### 테스트개발
+### 빠른 시작
 
-make 명령 사용
-- prepare: 소스받기, 도커 이미지 받기
-- setup: 의존성 컨테이너 실행 등
-- docker-*: 도커 이미지를 직업 빌드해서 쓰는 경우
-- server-*: 도커 이미지 받은걸로 실행시키는 경우
+1. **프로젝트 선택 및 이동**
+```bash
+cd discourse  # 또는 원하는 프로젝트
+```
+
+2. **환경변수 설정**
+```bash
+cp .env.example .env
+# .env 파일 수정
+```
+
+3. **서비스 시작**
+```bash
+# Makefile이 있는 경우
+make up
+
+# 또는 Docker Compose 직접 사용
+docker compose up -d
+```
+
+4. **로그 확인**
+```bash
+make logs  # 또는
+docker compose logs -f
+```
+
+### Standalone 구성 사용
+
+완전한 프로덕션 스택이 필요한 경우:
+
+```bash
+cd nextcloud/standalone
+cp .env.example .env
+docker compose up -d
+```
+
+### Makefile 명령어
+
+대부분의 프로젝트에서 사용 가능:
+- `make help` - 사용 가능한 명령어 목록
+- `make up` - 서비스 시작
+- `make down` - 서비스 중지
+- `make logs` - 로그 확인
+- `make ps` - 컨테이너 상태
+- `make clean` - 리소스 정리
 
 ### Docker Compose 파일
 - **표준 네이밍**: `compose.yml` (Docker Compose V2 권장)
