@@ -49,6 +49,40 @@ services:
       - code-network
 
 
+  mariadb:
+    image: mariadb:11.8
+    container_name: nextcloud-mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: passw0rd
+      MYSQL_DATABASE: db01
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - db-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:8.2-alpine
+    container_name: nextcloud-redis
+    restart: always
+    command: redis-server --requirepass passw0rd
+    volumes:
+      - redis:/data
+    networks:
+      - db-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
 # pre-installation Executed before the Nextcloud is installed/initiated
 # post-installation Executed after the Nextcloud is installed/initiated
 # pre-upgrade Executed before the Nextcloud is upgraded
@@ -63,6 +97,7 @@ networks:
 
 volumes:
   mariadb:
+  redis:
   nxc_root:
   nxc_apps:
   # nxc_config:

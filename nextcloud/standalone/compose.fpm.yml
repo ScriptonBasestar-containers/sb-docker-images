@@ -78,6 +78,10 @@ services:
 # post-upgrade Executed after the Nextcloud is upgraded
 # before-starting Executed before the Nextcloud starts
 
+networks:
+  db-network:
+    driver: bridge
+
 volumes:
   postgres:
   redis:
