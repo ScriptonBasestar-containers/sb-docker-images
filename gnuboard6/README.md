@@ -1,140 +1,352 @@
-# Gnuboard6 - 한국형 CMS (Python/Django)
+# 그누보드6 (Gnuboard 6)
 
-**Gnuboard6**는 Python/Django 기반의 한국형 CMS입니다. 그누보드 5의 차세대 버전으로 개발 중입니다.
+그누보드6 Python 기반 차세대 게시판 시스템
 
-> **⚠️ 개발 중**: Gnuboard6는 현재 개발 단계이며 프로덕션 사용은 권장하지 않습니다.
+> 💡 **Quick Start**: This project does not have a standalone setup. Use the basic setup below for development and testing.
 
-## 주요 기능
+## 개요
 
-- **Python/Django 기반**: 현대적인 웹 프레임워크
-- **한국형 게시판**: 그누보드 5의 기능 계승
-- **REST API**: RESTful API 제공
-- **관리자 패널**: Django Admin 활용
-- **MySQL/MariaDB**: 데이터베이스 지원
+그누보드6는 한국에서 가장 인기 있는 그누보드5의 후속 버전으로, Python(Django/FastAPI)으로 완전히 재작성된 차세대 게시판 시스템입니다:
+- 🐍 Python/Django/FastAPI 기반
+- 🚀 향상된 성능과 확장성
+- 🎨 모던한 아키텍처
+- 📱 RESTful API 지원
+- 🔒 강화된 보안
+- 🌐 비동기 처리 지원
+- 📊 향상된 데이터 모델
 
-## 시스템 요구사항
+기존 PHP 기반에서 Python으로 전환하여 더 나은 성능과 확장성을 제공합니다.
 
-| 항목 | 사양 |
-|------|------|
-| **메모리** | 512MB 최소, 1GB 권장 |
-| **CPU** | 1코어 |
-| **스토리지** | 5GB+ |
-| **Database** | MariaDB 11+ / MySQL 8+ |
-| **Python** | 3.9+ |
+## Deployment Options
 
-## Quick Start
+### 🔧 Basic Setup (For Development)
 
-### 1. 서비스 시작
+**For development and testing only.** Gnuboard6 does not have a standalone configuration.
+
+## Quick Start (Basic Setup)
 
 ```bash
-docker compose up -d
+# 그누보드6 소스 코드 다운로드
+make setup
+
+# Docker 이미지 빌드
+make build_debian
+
+# 컨테이너 시작
+docker-compose up -d
+
+# 웹 브라우저로 접속
+# http://localhost:8210
+
+# 데이터베이스 마이그레이션
+docker-compose exec gnuboard6 python manage.py migrate
+
+# 관리자 계정 생성
+docker-compose exec gnuboard6 python manage.py createsuperuser
 ```
 
-### 2. 웹 UI 접속
+## 서비스 구성
 
-브라우저에서 http://localhost:8080 접속
+compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
-### 3. 초기 설정
+- **gnuboard6**: 그누보드6 애플리케이션 (포트 8080, 권장: 8210)
+- **mariadb**: MariaDB 11.8 데이터베이스
+- **phpmyadmin**: 데이터베이스 관리 (선택사항, 포트 8211)
 
-Django 마이그레이션 및 관리자 생성:
+## Default Configuration
+
+**Default port:** 8080 (⚠️ conflicts with other services)
+
+**Recommended port:** 8210 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+
+**Container names:** gnuboard6, mariadb, phpmyadmin
+
+Environment variables:
+
+```bash
+DB_ENGINE=django.db.backends.mysql
+DB_NAME=gnuboard6
+DB_USER=gnuboard
+DB_PASSWORD=passw0rd
+DB_HOST=mariadb
+DB_PORT=3306
+SECRET_KEY=change-me-in-production
+DEBUG=true
+ALLOWED_HOSTS=localhost,127.0.0.1
+```
+
+## Port Information
+
+| Port | Service | Purpose |
+|------|---------|---------|
+| 8080 | gnuboard6 | Gnuboard6 web application (current) |
+| 8210 | gnuboard6 | Gnuboard6 web application (recommended) |
+| 8211 | phpmyadmin | Database management (optional) |
+
+**Port conflicts:** Current port 8080 may conflict. Recommended to change to 8210.
+
+**How to change port:**
+```bash
+# Edit docker-compose.yml
+sed -i 's/"8080:8000"/"8210:8000"/' docker-compose.yml
+```
+
+See [PORT_GUIDE.md](../PORT_GUIDE.md) for details.
+
+## 환경 변수
+
+compose.yml에서 설정:
+
+```yaml
+environment:
+  # 데이터베이스 설정
+  - DB_ENGINE=django.db.backends.mysql
+  - DB_NAME=gnuboard6
+  - DB_USER=gnuboard
+  - DB_PASSWORD=passw0rd
+  - DB_HOST=mariadb
+  - DB_PORT=3306
+
+  # Django 설정
+  - SECRET_KEY=change-me-in-production
+  - DEBUG=true
+  - ALLOWED_HOSTS=localhost,127.0.0.1
+```
+
+## 디렉토리 구조
+
+```
+gnuboard6/
+├── docker-compose.yml           # Docker Compose 설정
+├── gnuboard6-debian.dockerfile  # Dockerfile
+├── Makefile                     # 빌드 스크립트
+├── setup_debian.sh              # 설정 스크립트
+├── README.md                    # 이 문서
+└── app/                         # 그누보드6 소스 (클론됨)
+    ├── main.py
+    ├── requirements.txt
+    └── ...
+```
+
+## 설치 방법
+
+### 1. 그누보드6 다운로드
+
+```bash
+# Makefile을 사용한 자동 설치
+make setup
+
+# 또는 수동 설치
+git clone https://github.com/gnuboard/g6.git --depth 1 app
+```
+
+### 2. Docker 이미지 빌드
+
+```bash
+make build_debian
+# 또는
+docker build -f gnuboard6-debian.dockerfile -t gnuboard6 .
+```
+
+### 3. 컨테이너 실행
+
+```bash
+docker-compose up -d
+```
+
+### 4. 데이터베이스 초기화
 
 ```bash
 # 마이그레이션 실행
-docker exec gnuboard6 python manage.py migrate
+docker-compose exec gnuboard6 python manage.py migrate
 
-# 슈퍼유저 생성
-docker exec -it gnuboard6 python manage.py createsuperuser
+# 관리자 계정 생성
+docker-compose exec gnuboard6 python manage.py createsuperuser
 ```
 
-## 환경 설정
+## 사용법
 
-### 주요 환경 변수
+### 관리자 페이지
 
-```yaml
-services:
-  gnuboard6:
-    environment:
-      # 데이터베이스
-      - DB_ENGINE=django.db.backends.mysql
-      - DB_NAME=gnuboard6
-      - DB_USER=gnuboard
-      - DB_PASSWORD=your-password
-      - DB_HOST=mariadb
-      - DB_PORT=3306
-
-      # Django 설정
-      - SECRET_KEY=your-secret-key-change-in-production
-      - DEBUG=false  # 프로덕션에서는 false
-      - ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+```
+URL: http://localhost:8210/admin
+ID: createsuperuser 명령으로 생성한 계정
+PW: createsuperuser 명령으로 설정한 비밀번호
 ```
 
-> **⚠️ 보안 경고**: 프로덕션 환경에서는 반드시:
-> 1. SECRET_KEY 변경
-> 2. DEBUG=false 설정
-> 3. ALLOWED_HOSTS 설정
-> 4. 데이터베이스 비밀번호 변경
+### 메인 페이지
 
-## 데이터베이스 관리
+```
+URL: http://localhost:8210
+```
 
-### Django 마이그레이션
+### Python 쉘 접속
 
 ```bash
-# 마이그레이션 생성
-docker exec gnuboard6 python manage.py makemigrations
-
-# 마이그레이션 적용
-docker exec gnuboard6 python manage.py migrate
-
-# 마이그레이션 상태 확인
-docker exec gnuboard6 python manage.py showmigrations
-```
-
-### 데이터베이스 백업
-
-```bash
-# MariaDB 백업
-docker exec gnuboard6-mariadb mysqldump -u gnuboard -ppassw0rd gnuboard6 | gzip > gnuboard6-backup-$(date +%Y%m%d).sql.gz
-```
-
-### 데이터베이스 복원
-
-```bash
-# 백업 복원
-gunzip < gnuboard6-backup-YYYYMMDD.sql.gz | docker exec -i gnuboard6-mariadb mysql -u gnuboard -ppassw0rd gnuboard6
-```
-
-## Django 관리
-
-### 관리자 페널
-
-http://localhost:8080/admin 접속
-
-### 슈퍼유저 관리
-
-```bash
-# 슈퍼유저 생성
-docker exec -it gnuboard6 python manage.py createsuperuser
-
-# 비밀번호 변경
-docker exec -it gnuboard6 python manage.py changepassword username
+docker-compose exec gnuboard6 python manage.py shell
 ```
 
 ### 정적 파일 수집
 
 ```bash
-# 정적 파일 수집 (프로덕션 배포 시)
-docker exec gnuboard6 python manage.py collectstatic --noinput
+docker-compose exec gnuboard6 python manage.py collectstatic --noinput
 ```
 
-### Django Shell
+## 데이터베이스 관리
+
+### phpMyAdmin 접속
+
+```
+URL: http://localhost:8211
+서버: mariadb
+사용자: root
+비밀번호: rootpass
+```
+
+### 데이터베이스 백업
 
 ```bash
-# Django Shell 실행
-docker exec -it gnuboard6 python manage.py shell
+# 백업
+docker-compose exec mariadb mysqldump -u root -prootpass gnuboard6 > backup.sql
 
-# 예제: 사용자 목록 조회
->>> from django.contrib.auth.models import User
->>> User.objects.all()
+# 복원
+docker-compose exec -T mariadb mysql -u root -prootpass gnuboard6 < backup.sql
+```
+
+### 마이그레이션 관리
+
+```bash
+# 마이그레이션 생성
+docker-compose exec gnuboard6 python manage.py makemigrations
+
+# 마이그레이션 적용
+docker-compose exec gnuboard6 python manage.py migrate
+
+# 마이그레이션 상태 확인
+docker-compose exec gnuboard6 python manage.py showmigrations
+```
+
+## 볼륨
+
+```yaml
+volumes:
+  - gnuboard6-media:/app/media    # 업로드 파일
+  - gnuboard6-static:/app/static  # 정적 파일
+  - mariadb-data:/var/lib/mysql   # 데이터베이스
+```
+
+## 네트워크
+
+```yaml
+networks:
+  - app-network  # 애플리케이션 레이어
+  - db-network   # 데이터베이스 레이어
+```
+
+## 문제 해결
+
+### 컨테이너가 시작되지 않음
+
+```bash
+# 로그 확인
+docker-compose logs -f gnuboard6
+
+# 컨테이너 재시작
+docker-compose restart gnuboard6
+```
+
+### 데이터베이스 연결 실패
+
+```bash
+# MariaDB 컨테이너 상태 확인
+docker-compose ps mariadb
+
+# 헬스체크 확인
+docker-compose exec mariadb healthcheck.sh --connect --innodb_initialized
+
+# 재시작
+docker-compose restart mariadb
+
+# 설치 시 DB 정보 확인:
+# Host: mariadb (localhost 아님!)
+# Database: gnuboard6
+# User: gnuboard
+# Password: passw0rd
+```
+
+### 정적 파일이 로드되지 않음
+
+```bash
+# 정적 파일 수집
+docker-compose exec gnuboard6 python manage.py collectstatic --noinput
+
+# 권한 확인
+docker-compose exec gnuboard6 ls -la /app/static
+```
+
+### 미디어 파일 업로드 실패
+
+```bash
+# 미디어 디렉토리 권한 확인
+docker-compose exec gnuboard6 mkdir -p /app/media
+docker-compose exec gnuboard6 chmod -R 755 /app/media
+```
+
+### 한글이 깨짐
+
+```bash
+# DB charset 확인
+docker-compose exec mariadb mysql -u root -prootpass -e "SHOW VARIABLES LIKE 'character%';"
+
+# utf8mb4로 변경
+docker-compose exec mariadb mysql -u root -prootpass gnuboard6 -e "
+  ALTER DATABASE gnuboard6 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+"
+```
+
+## 포트 변경 방법
+
+PORT_GUIDE.md의 표준 포트(8210)로 변경:
+
+```yaml
+# docker-compose.yml 수정
+services:
+  gnuboard6:
+    ports:
+      - "8210:8000"  # 기존 8080:8000에서 변경
+```
+
+## 보안 설정
+
+### 1. SECRET_KEY 변경
+
+프로덕션에서는 반드시 강력한 SECRET_KEY 사용:
+
+```yaml
+environment:
+  - SECRET_KEY=강력하고긴랜덤문자열
+```
+
+### 2. DEBUG 모드 비활성화
+
+```yaml
+environment:
+  - DEBUG=false
+```
+
+### 3. ALLOWED_HOSTS 설정
+
+```yaml
+environment:
+  - ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+```
+
+### 4. 데이터베이스 비밀번호 변경
+
+```yaml
+environment:
+  - MYSQL_ROOT_PASSWORD=강력한비밀번호
+  - DB_PASSWORD=강력한비밀번호
 ```
 
 ## 개발 환경
@@ -142,184 +354,72 @@ docker exec -it gnuboard6 python manage.py shell
 ### 로그 확인
 
 ```bash
-# 애플리케이션 로그
-docker logs -f gnuboard6
-
-# 데이터베이스 로그
-docker logs -f gnuboard6-mariadb
+docker-compose logs -f gnuboard6
 ```
 
-### 컨테이너 재시작
+### 컨테이너 내부 접속
 
 ```bash
-# Gnuboard6만 재시작
-docker compose restart gnuboard6
-
-# 전체 재시작
-docker compose restart
+docker-compose exec gnuboard6 bash
 ```
 
-### 코드 수정 반영
+### 의존성 추가
 
 ```bash
-# DEBUG=true 일 때는 자동 반영
-# 프로덕션에서는 재시작 필요
-docker compose restart gnuboard6
+# requirements.txt 수정 후
+docker-compose exec gnuboard6 pip install -r requirements.txt
 ```
 
 ## 프로덕션 배포
 
-### 1. 환경 변수 설정
-
-`.env` 파일 생성:
-
-```env
-SECRET_KEY=your-very-long-random-secret-key-here
-DEBUG=false
-ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
-DB_PASSWORD=strong-database-password
-MYSQL_ROOT_PASSWORD=strong-root-password
-```
-
-### 2. compose.yml 수정
+### 1. 환경 변수 수정
 
 ```yaml
-services:
-  gnuboard6:
-    env_file:
-      - .env
-    environment:
-      - DEBUG=false
+environment:
+  - DEBUG=false
+  - SECRET_KEY=강력한시크릿키
+  - ALLOWED_HOSTS=yourdomain.com
+  - DB_PASSWORD=강력한비밀번호
 ```
 
-### 3. 정적 파일 처리
+### 2. HTTPS 설정
+
+Nginx 리버스 프록시 사용 권장
+
+### 3. 정적 파일 서빙
 
 ```bash
-docker exec gnuboard6 python manage.py collectstatic --noinput
+docker-compose exec gnuboard6 python manage.py collectstatic --noinput
 ```
 
-### 4. HTTPS 설정 (Nginx)
+## 기술 스택
 
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name yourdomain.com;
-
-    ssl_certificate /etc/ssl/certs/yourdomain.com.crt;
-    ssl_certificate_key /etc/ssl/private/yourdomain.com.key;
-
-    client_max_body_size 20M;
-
-    # 정적 파일
-    location /static/ {
-        alias /path/to/static/;
-        expires 30d;
-    }
-
-    # 미디어 파일
-    location /media/ {
-        alias /path/to/media/;
-        expires 30d;
-    }
-
-    # 애플리케이션
-    location / {
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-
-## 문제 해결
-
-### 데이터베이스 연결 실패
-
-```bash
-# MariaDB 상태 확인
-docker exec gnuboard6-mariadb healthcheck.sh --connect
-
-# 로그 확인
-docker logs gnuboard6-mariadb
-
-# 재시작
-docker compose restart mariadb
-```
-
-### 마이그레이션 오류
-
-```bash
-# 마이그레이션 리셋 (주의: 데이터 손실!)
-docker exec gnuboard6 python manage.py migrate --fake-initial
-
-# 또는 데이터베이스 재생성
-docker compose down -v
-docker compose up -d
-docker exec gnuboard6 python manage.py migrate
-```
-
-### 정적 파일 404 에러
-
-```bash
-# 정적 파일 재수집
-docker exec gnuboard6 python manage.py collectstatic --noinput --clear
-
-# 볼륨 확인
-docker volume inspect gnuboard6_gnuboard6-static
-```
-
-## Makefile 명령어
-
-```bash
-make up       # 서비스 시작
-make down     # 서비스 중지
-make logs     # 로그 확인
-make restart  # 재시작
-make clean    # 데이터 삭제 (주의!)
-```
+- **Python**: 3.9+
+- **Framework**: Django / FastAPI (uvicorn)
+- **Database**: MariaDB 11.8
+- **Server**: Uvicorn (ASGI)
 
 ## 참고 자료
 
-### 공식
-- [Gnuboard6 GitHub](https://github.com/gnuboard/g6)
-- [Django Documentation](https://docs.djangoproject.com/)
-- [MariaDB Documentation](https://mariadb.com/kb/en/documentation/)
-
-### 커뮤니티
-- [그누보드 공식 사이트](https://sir.kr/)
-- [그누보드 커뮤니티](https://sir.kr/bbs/gnuboard5)
-
-## 주의사항
-
-### 개발 상태
-
-Gnuboard6는 **개발 중**입니다:
-- API 변경 가능성
-- 기능 불완전
-- 프로덕션 사용 비권장
-
-### 그누보드 5 대안
-
-프로덕션 사용이 필요하다면:
-- **Gnuboard5**: 안정적인 PHP 기반 버전
-- 위치: `../gnuboard5/`
-
-## 개발 로드맵
-
-Gnuboard6 목표:
-- Python/Django 기반 현대화
-- REST API 우선 설계
-- 모바일 친화적 UI
-- 클라우드 네이티브 아키텍처
-
-## 라이선스
-
-Gnuboard6는 GPL 라이선스로 배포됩니다.
+- [그누보드6 GitHub](https://github.com/gnuboard/g6)
+- [그누보드 공식 사이트](https://www.gnuboard.com/)
+- [그누보드 커뮤니티](https://sir.kr/)
+- [Django 문서](https://docs.djangoproject.com/)
+- [FastAPI 문서](https://fastapi.tiangolo.com/)
 
 ## 관련 프로젝트
 
-- **Gnuboard5**: PHP 기반 안정 버전
-- **Django CMS**: Django 기반 CMS
-- **Wagtail**: Django 기반 현대적 CMS
+- [gnuboard5](../gnuboard5/README.md) - 그누보드5 (PHP 버전)
+- [xpressengine](../xpressengine/README.md) - XE
+- [tsboard](../tsboard/README.md) - TypeScript 게시판
+
+## 라이선스
+
+그누보드6는 GPL 라이선스를 따릅니다.
+
+## 주의사항
+
+- 그누보드6는 현재 개발 중인 프로젝트입니다.
+- 프로덕션 사용 전 충분한 테스트가 필요합니다.
+- 그누보드5와는 호환되지 않으므로 별도 설치가 필요합니다.
+- Python/Django 환경에서 동작하므로 기존 PHP 플러그인은 사용할 수 없습니다.

@@ -1,98 +1,616 @@
-# Devpi Docker Container
+# DevPI - Python Package Index Server
 
-- by Source
-- by Pypi
+> 💡 **Quick Start**: This project does not have a standalone setup. Use the basic setup below for development and testing.
 
-## 특징
+## 개요
 
-- Python 3.12 기반
-- 옵셔널 설치기능(ui, constrained, findlinks, jenkins, lockdown)
+DevPI는 Python 패키지를 위한 강력한 프라이빗 패키지 인덱스 서버입니다:
 
-## Dev
+- 📦 **PyPI 미러링**: 외부 PyPI 패키지 캐싱 및 프록시
+- 🌐 **웹 인터페이스**: devpi-web으로 패키지 검색 및 브라우징
+- 🔌 **플러그인 시스템**: 5가지 옵셔널 플러그인 지원
+- 🐍 **Python 3.12**: 최신 Python 3.12 slim 이미지 기반
+- 📤 **패키지 업로드**: 팀 내부 Python 패키지 관리
+- 🔐 **보안**: 비 root 사용자로 안전한 실행
+- ⚡ **빠른 캐싱**: 네트워크 대역폭 절약 및 속도 향상
+- 🔧 **유연한 빌드**: PyPI 또는 소스에서 빌드 가능
+- 💊 **헬스체크**: 자동 상태 모니터링
+- 🛠️ **CI/CD 통합**: Jenkins, GitLab CI, GitHub Actions 지원
 
-### 1. Prepare & Clean
+## Deployment Options
 
-소스코드 받기 등 전체적으로 한번하는 작업
+### 🔧 Basic Setup (For Development)
 
+**For development and testing only.**
+
+## Default Configuration
+
+**Default port:** 3141 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+
+**Container name:** devpi
+
+Environment variables:
 ```bash
-# devpi 저장소 clone 및 환경 준비
-make prepare
-make clean
+DEVPI_HOST=0.0.0.0                    # Server bind address
+DEVPI_PORT=3141                       # Server port
+# DEVPI_WEB_THEME=semantic-ui         # Web theme (optional)
 ```
 
-### 2. Build & Push
-
-두개 명령어 패턴이 다른것은 실수 아님
+Build-time arguments:
 ```bash
-make pypi-build
-make source build
+PORT=3141                             # Server port
+INSTALL_WEB=true                      # Web interface
+INSTALL_CONSTRAINED=false             # Constrained plugin
+INSTALL_FINDLINKS=false               # Findlinks plugin
+INSTALL_JENKINS=false                 # Jenkins plugin
+INSTALL_LOCKDOWN=false                # Lockdown plugin
 ```
 
-### 3. Server
+## Port Information
 
-```bash
-# devpi 서버 시작
-make setup
-make server-up
-make server-logs
-make server-enter
-make server-down
-make teardown
+| Port | Service | Purpose |
+|------|---------|---------|
+| 3141 | HTTP | DevPI web interface and API |
 
-# Docker Compose 사용 (기본 설정)
-docker-compose up -d
+**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
 
-# Docker Compose로 특정 플러그인 활성화
-INSTALL_CONSTRAINED=true INSTALL_JENKINS=true docker-compose up --build -d
-```
+> **Note:** DevPI's traditional port number 3141 is an approximation of π (pi).
 
-## 접속 정보
+### 볼륨
 
-- **Server URL**: http://localhost:3141
-- **Web Interface**: http://localhost:3141 (devpi-web 포함)
-- **데이터 디렉토리**: `./devpi_data`
-- **로그 디렉토리**: `./logs`
-
-## 웹 인터페이스 기능
-
-- 📦 패키지 검색 및 브라우징
-- 🔍 고급 검색 기능
-- 📊 패키지 통계 및 메타데이터 확인
-- 📋 인덱스 관리
-- 🎨 Semantic UI 테마로 현대적인 디자인
-
-## 사용 가능한 플러그인
-
-### 🌐 devpi-web (기본 포함)
-- 웹 인터페이스 제공
-- 패키지 검색 및 브라우징
-
-### 🔒 devpi-constrained
-- 의존성 제약 조건 관리
-- 버전 제한 및 호환성 검사
-
-### 🔗 devpi-findlinks
-- findlinks 지원으로 외부 패키지 링크 관리
-- 커스텀 패키지 저장소 연동
-
-### 🏗️ devpi-jenkins
-- Jenkins CI/CD 시스템과의 통합
-- 자동화된 빌드 및 배포 지원
-
-### 🛡️ devpi-lockdown
-- 보안 강화 기능
-- 액세스 제어 및 권한 관리
+- `/app/data`: DevPI 서버 데이터 (패키지, 인덱스, 설정)
+- `/app/logs`: 서버 로그 파일
 
 ## 환경 변수
 
-### 서버 설정
-- `DEVPI_HOST`: 서버 호스트 (기본값: 0.0.0.0)
-- `DEVPI_PORT`: 서버 포트 (기본값: 3141)
-- `DEVPI_WEB_THEME`: 웹 테마 (기본값: semantic-ui)
+### 빌드 시 변수 (ARG)
 
-### 플러그인 제어 (빌드 시)
-- `INSTALL_WEB`: devpi-web 설치 (기본값: true)
-- `INSTALL_CONSTRAINED`: devpi-constrained 설치 (기본값: false)
-- `INSTALL_FINDLINKS`: devpi-findlinks 설치 (기본값: false)
-- `INSTALL_JENKINS`: devpi-jenkins 설치 (기본값: false)
-- `INSTALL_LOCKDOWN`: devpi-lockdown 설치 (기본값: false)
+```dockerfile
+ARG PORT=3141                     # 서버 포트
+ARG INSTALL_WEB=true              # 웹 인터페이스
+ARG INSTALL_CONSTRAINED=false     # 제약 조건 플러그인
+ARG INSTALL_FINDLINKS=false       # Findlinks 플러그인
+ARG INSTALL_JENKINS=false         # Jenkins 플러그인
+ARG INSTALL_LOCKDOWN=false        # Lockdown 플러그인
+```
+
+### 런타임 변수 (ENV)
+
+compose.yml에서 설정:
+
+```yaml
+environment:
+  - DEVPI_HOST=0.0.0.0           # 서버 바인드 주소
+  - DEVPI_PORT=3141              # 서버 포트
+  # - DEVPI_WEB_THEME=semantic-ui  # 웹 테마 (선택사항)
+```
+
+## 디렉토리 구조
+
+```
+devpi/
+├── compose.yml              # Docker Compose 설정
+├── Makefile                 # 메인 빌드 스크립트
+├── Makefile.pypi.mk         # PyPI 빌드 스크립트
+├── Makefile.source.mk       # 소스 빌드 스크립트
+├── .env.sample              # 환경 변수 예제
+├── pypi/
+│   └── Dockerfile           # PyPI 기반 이미지
+├── source/
+│   └── Dockerfile           # 소스 기반 이미지
+├── files/
+│   └── entrypoint.sh        # 엔트리포인트 스크립트
+├── devpi_data/              # 서버 데이터 (자동 생성)
+└── logs/                    # 로그 파일 (자동 생성)
+```
+
+## 사용법
+
+### 1. 초기 설정
+
+DevPI 서버는 첫 실행 시 자동으로 초기화됩니다:
+
+```bash
+# 서버 시작
+docker compose up -d
+
+# 초기화 로그 확인
+docker compose logs -f
+
+# 컨테이너 접속
+docker compose exec devpi bash
+```
+
+### 2. 클라이언트 설정
+
+#### devpi 클라이언트 설치
+
+```bash
+# 로컬 머신에 설치
+pip install devpi-client
+```
+
+#### 서버 설정
+
+```bash
+# devpi 서버 URL 설정
+devpi use http://localhost:3141
+
+# root 사용자로 로그인 (초기 비밀번호 없음)
+devpi login root --password=''
+
+# 비밀번호 설정
+devpi user -m root password=yourpassword
+
+# 인덱스 생성
+devpi index -c dev bases=root/pypi
+devpi use dev
+```
+
+### 3. 패키지 업로드
+
+```bash
+# 인덱스 선택
+devpi use http://localhost:3141/root/dev
+
+# 로그인
+devpi login root
+
+# 패키지 업로드
+devpi upload
+
+# 또는 setup.py 사용
+python setup.py sdist bdist_wheel
+devpi upload --from-dir dist/
+```
+
+### 4. 패키지 설치
+
+```bash
+# pip 설정
+pip install --index-url http://localhost:3141/root/dev/+simple/ mypackage
+
+# pip.conf에 설정 (영구적)
+# ~/.pip/pip.conf 또는 프로젝트 루트/pip.conf
+[global]
+index-url = http://localhost:3141/root/dev/+simple/
+
+# requirements.txt에서 설치
+pip install -r requirements.txt
+```
+
+### 5. PyPI 미러 사용
+
+```bash
+# PyPI 캐시로 사용
+pip install --index-url http://localhost:3141/root/pypi/+simple/ requests
+
+# 인덱스 정보 확인
+devpi use http://localhost:3141
+devpi index root/pypi
+```
+
+### 6. 웹 인터페이스
+
+웹 브라우저에서 http://localhost:3141 접속:
+
+- 패키지 검색 및 브라우징
+- 인덱스 관리
+- 패키지 메타데이터 확인
+- 통계 및 다운로드 기록
+
+## 플러그인 상세
+
+### devpi-web (기본 포함)
+
+웹 인터페이스 제공:
+
+```bash
+# 기본적으로 활성화됨
+docker compose up -d
+```
+
+기능:
+- 패키지 검색 및 브라우징
+- 메타데이터 확인
+- 다운로드 통계
+- Semantic UI 테마
+
+### devpi-constrained
+
+의존성 제약 조건 관리:
+
+```bash
+# 빌드 시 활성화
+INSTALL_CONSTRAINED=true docker compose up --build -d
+```
+
+사용 예:
+```bash
+# 제약 파일 업로드
+devpi upload --with-constraints constraints.txt
+```
+
+### devpi-findlinks
+
+외부 패키지 링크 관리:
+
+```bash
+# 빌드 시 활성화
+INSTALL_FINDLINKS=true docker compose up --build -d
+```
+
+### devpi-jenkins
+
+Jenkins CI/CD 통합:
+
+```bash
+# 빌드 시 활성화
+INSTALL_JENKINS=true docker compose up --build -d
+```
+
+Jenkins에서 사용:
+- 빌드 아티팩트 자동 업로드
+- 테스트 결과 통합
+- 릴리즈 자동화
+
+### devpi-lockdown
+
+보안 및 권한 관리:
+
+```bash
+# 빌드 시 활성화
+INSTALL_LOCKDOWN=true docker compose up --build -d
+```
+
+기능:
+- 업로드 권한 제어
+- 다운로드 제한
+- IP 화이트리스트
+
+## 빌드 방식
+
+### 1. PyPI에서 빌드 (권장)
+
+PyPI에서 안정적인 릴리즈 설치:
+
+```bash
+# Makefile 사용
+make pypi-build
+
+# 또는 직접 빌드
+docker build -t devpi/server:latest -f pypi/Dockerfile .
+```
+
+### 2. 소스에서 빌드
+
+최신 개발 버전 설치:
+
+```bash
+# 저장소 클론
+make prepare
+
+# 빌드
+make source build
+
+# 정리
+make clean
+```
+
+## 문제 해결
+
+### 초기화 실패
+
+```bash
+# 데이터 디렉토리 삭제 후 재시작
+docker compose down
+sudo rm -rf devpi_data
+docker compose up -d
+```
+
+### 권한 오류
+
+```bash
+# 볼륨 디렉토리 권한 설정
+sudo chown -R 999:999 devpi_data logs
+
+# 또는 컨테이너 내부에서
+docker compose exec devpi chown -R devpi:devpi /app/data /app/logs
+```
+
+### 패키지 업로드 실패
+
+```bash
+# 로그인 상태 확인
+devpi use
+devpi login root
+
+# 인덱스 권한 확인
+devpi index root/dev
+```
+
+### 웹 인터페이스 접속 불가
+
+```bash
+# devpi-web 설치 확인
+docker compose exec devpi pip list | grep devpi-web
+
+# 재빌드 (web 활성화)
+INSTALL_WEB=true docker compose up --build -d
+```
+
+### 포트 충돌
+
+```yaml
+# compose.yml 수정
+ports:
+  - "8610:3141"  # 8610 사용 (PORT_GUIDE.md 참조)
+```
+
+또는:
+
+```bash
+# 환경 변수로 변경
+DEVPI_PORT=8610 docker compose up -d
+```
+
+### 메모리 부족
+
+```yaml
+# compose.yml에 리소스 제한 추가
+services:
+  devpi:
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
+```
+
+## 고급 사용법
+
+### 1. 멀티 인덱스 설정
+
+```bash
+# 개발 인덱스
+devpi index -c dev bases=root/pypi
+
+# 프로덕션 인덱스
+devpi index -c prod bases=root/pypi
+
+# 테스트 인덱스
+devpi index -c test bases=root/dev
+```
+
+### 2. 사용자 관리
+
+```bash
+# 새 사용자 생성
+devpi user -c alice password=secret email=alice@example.com
+
+# 사용자 권한 부여
+devpi index root/dev acl_upload=alice
+
+# 사용자로 로그인
+devpi login alice --password=secret
+```
+
+### 3. 복제 및 미러링
+
+```bash
+# 다른 devpi 서버로부터 복제
+devpi index -c mirror bases=http://other-devpi:3141/root/dev
+```
+
+### 4. 백업 및 복원
+
+```bash
+# 백업
+tar -czf devpi-backup-$(date +%Y%m%d).tar.gz devpi_data/
+
+# 복원
+docker compose down
+tar -xzf devpi-backup-20240101.tar.gz
+docker compose up -d
+```
+
+### 5. Nginx 리버스 프록시
+
+```nginx
+# nginx.conf
+server {
+    listen 80;
+    server_name pypi.example.com;
+
+    location / {
+        proxy_pass http://localhost:3141;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+### 6. 토큰 인증
+
+```bash
+# API 토큰 생성
+devpi login root
+devpi index root/dev
+
+# 토큰으로 업로드
+devpi upload --token=<your-token>
+```
+
+## CI/CD 통합
+
+### GitHub Actions 예제
+
+```yaml
+# .github/workflows/publish.yml
+name: Publish to DevPI
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install devpi-client
+        run: pip install devpi-client
+
+      - name: Upload to DevPI
+        env:
+          DEVPI_USER: ${{ secrets.DEVPI_USER }}
+          DEVPI_PASSWORD: ${{ secrets.DEVPI_PASSWORD }}
+        run: |
+          devpi use http://devpi.example.com:3141
+          devpi login $DEVPI_USER --password=$DEVPI_PASSWORD
+          devpi use root/dev
+          python setup.py sdist bdist_wheel
+          devpi upload --from-dir dist/
+```
+
+### GitLab CI 예제
+
+```yaml
+# .gitlab-ci.yml
+publish:
+  stage: deploy
+  image: python:3.12
+  script:
+    - pip install devpi-client
+    - devpi use http://devpi.example.com:3141
+    - devpi login $DEVPI_USER --password=$DEVPI_PASSWORD
+    - devpi use root/prod
+    - python setup.py sdist bdist_wheel
+    - devpi upload --from-dir dist/
+  only:
+    - tags
+```
+
+### Jenkins Pipeline
+
+```groovy
+// Jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'python setup.py sdist bdist_wheel'
+            }
+        }
+
+        stage('Upload') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'devpi-credentials',
+                    usernameVariable: 'DEVPI_USER',
+                    passwordVariable: 'DEVPI_PASSWORD'
+                )]) {
+                    sh '''
+                        pip install devpi-client
+                        devpi use http://localhost:3141
+                        devpi login $DEVPI_USER --password=$DEVPI_PASSWORD
+                        devpi use root/dev
+                        devpi upload --from-dir dist/
+                    '''
+                }
+            }
+        }
+    }
+}
+```
+
+## 성능 최적화
+
+### 1. 캐시 설정
+
+```bash
+# 컨테이너 접속
+docker compose exec devpi bash
+
+# 인덱스 설정 조정
+devpi index root/pypi mirror_cache_expiry=3600
+```
+
+### 2. 리소스 제한
+
+```yaml
+# compose.yml
+services:
+  devpi:
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+```
+
+### 3. 볼륨 성능
+
+```yaml
+# SSD 사용 권장
+volumes:
+  - type: bind
+    source: /fast/ssd/devpi_data
+    target: /app/data
+```
+
+## 보안 권장사항
+
+1. **초기 비밀번호 변경**: root 사용자 비밀번호 즉시 설정
+2. **HTTPS 사용**: Nginx/Traefik으로 SSL/TLS 적용
+3. **방화벽 설정**: 필요한 IP만 접근 허용
+4. **정기 백업**: 데이터 손실 방지
+5. **업데이트**: 정기적인 devpi 및 플러그인 업데이트
+6. **토큰 사용**: 비밀번호 대신 API 토큰 사용
+
+## Makefile 명령어
+
+```bash
+make help              # 사용 가능한 명령어 목록
+make prepare           # devpi 저장소 클론
+make clean             # 클론된 저장소 정리
+make pypi-build        # PyPI에서 빌드
+make source build      # 소스에서 빌드
+make server-up         # 서버 시작
+make server-down       # 서버 중지
+make server-logs       # 로그 확인
+make server-enter      # 컨테이너 접속
+```
+
+## 참고 자료
+
+- [DevPI 공식 문서](https://devpi.net/docs/devpi/devpi/stable/+doc/index.html)
+- [DevPI GitHub](https://github.com/devpi/devpi)
+- [devpi-web](https://github.com/devpi/devpi-web)
+- [devpi-client 문서](https://devpi.net/docs/devpi/devpi/stable/+doc/userman/devpi_um_installation.html)
+- [Python 패키징 가이드](https://packaging.python.org/)
+
+## 관련 프로젝트
+
+- [jenkins](../jenkins/README.md) - Jenkins CI/CD 서버
+- [jupyter](../jupyter/README.md) - Jupyter Notebook
+- [jupyter2](../jupyter2/README.md) - Jupyter Lab
+
+## 라이선스
+
+DevPI는 MIT 라이선스를 따릅니다.

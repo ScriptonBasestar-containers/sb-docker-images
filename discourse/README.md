@@ -1,480 +1,353 @@
-# Discourse - Modern Forum Platform
+# Discourse
 
-**Discourse**는 현대적인 오픈소스 토론 플랫폼입니다. 전통적인 포럼을 대체하는 차세대 커뮤니티 소프트웨어입니다.
+> 💡 **Quick Start**: For production deployment with PostgreSQL and Redis, use the [standalone setup](standalone/README.md) - it includes all services and comprehensive documentation!
 
-## 주요 기능
+## 개요
 
-- **현대적 UI**: 반응형 디자인, 실시간 업데이트
-- **강력한 검색**: 전문 검색 엔진 (ElasticSearch 선택)
-- **알림 시스템**: 이메일, 웹 푸시, 모바일 푸시
-- **멀티미디어**: 이미지/비디오 임베딩, Emoji, GIF
-- **권한 관리**: 세밀한 사용자/그룹 권한
-- **모바일 앱**: iOS/Android 네이티브 앱
-- **플러그인**: 풍부한 플러그인 생태계
-- **국제화**: 30+ 언어 지원
+Discourse는 Ruby on Rails로 작성된 현대적인 커뮤니티 토론 플랫폼입니다. Stack Overflow, Reddit, 전통적인 포럼의 장점을 결합한 차세대 인터넷 포럼 소프트웨어입니다:
+- 🎨 현대적이고 반응형인 디자인
+- 🔔 실시간 알림 및 업데이트
+- 🔍 강력한 검색 및 필터링
+- 🔐 소셜 로그인 지원
+- ✍️ 마크다운 기반 에디터
+- 📱 모바일 앱 지원
+- 🔌 플러그인 시스템
+- 🌐 다국어 지원
 
-## Quick Start
+## Deployment Options
 
-### 1. 서비스 시작
+### ✅ Standalone (Recommended for Production)
 
-```bash
-docker compose up -d
-```
-
-### 2. 웹 UI 접속
-
-브라우저에서 http://localhost:8080 접속
-
-> **참고**: 초기 설정 마법사가 자동으로 시작됩니다.
-
-### 3. 관리자 계정 생성
-
-초기 설정 시 관리자 계정을 생성합니다.
-
-## 시스템 요구사항
-
-| 항목 | 최소 | 권장 |
-|------|------|------|
-| **메모리** | 1GB | 2GB+ |
-| **CPU** | 1코어 | 2코어+ |
-| **스토리지** | 10GB | 50GB+ |
-| **Database** | PostgreSQL 12+ | PostgreSQL 16 |
-
-## 아키텍처
-
-Discourse는 Ruby on Rails 기반이며 다음 구성요소로 이루어집니다:
-
-```
-┌─────────────────────────────────────────┐
-│         Discourse Rails App              │
-│  (Web Server + API + Background Jobs)   │
-└────────────┬──────────────┬─────────────┘
-             │              │
-    ┌────────▼─────┐  ┌────▼──────────┐
-    │  PostgreSQL  │  │     Redis     │
-    │  (Database)  │  │  (Cache/Jobs) │
-    └──────────────┘  └───────────────┘
-```
-
-## 환경 설정
-
-### 주요 환경 변수
-
-```yaml
-services:
-  discourse:
-    environment:
-      # 호스트명 (필수)
-      DISCOURSE_HOSTNAME: 'forum.example.com'
-
-      # 관리자 이메일
-      DISCOURSE_DEVELOPER_EMAILS: 'admin@example.com'
-
-      # PostgreSQL
-      DISCOURSE_DB_HOST: postgres
-      DISCOURSE_DB_NAME: discourse
-      DISCOURSE_DB_USERNAME: discourse
-      DISCOURSE_DB_PASSWORD: your-password
-
-      # Redis
-      DISCOURSE_REDIS_HOST: redis
-      DISCOURSE_REDIS_PASSWORD: redis-password
-      DISCOURSE_REDIS_PORT: 6379
-
-      # 환경 (production/development)
-      RAILS_ENV: production
-```
-
-## 플러그인 설치
-
-### 공식 플러그인
-
-Discourse는 다양한 공식 플러그인을 제공합니다:
-
-- **discourse-solved**: 해결된 질문 표시
-- **discourse-voting**: 투표 기능
-- **discourse-calendar**: 이벤트 캘린더
-- **discourse-chat**: 실시간 채팅
-- **discourse-assign**: 주제 할당
-- **discourse-checklist**: 체크리스트
-
-### 플러그인 설치 방법
-
-#### 1. Git으로 플러그인 추가
+Complete production-ready setup with all dependencies included:
 
 ```bash
-# 컨테이너 접속
+cd standalone/
+make up  # or: docker compose up -d
+```
+
+**What's included:**
+- ✅ Discourse (discourse/base:2.0.20241119-0129)
+- ✅ PostgreSQL 15 with health check
+- ✅ Redis 7 for cache and sessions
+- ✅ Network isolation (app-network, data-network)
+- ✅ Standardized Makefile with helpful commands
+- ✅ Environment variable configuration (.env.example)
+
+**Access:** http://localhost:8230
+
+📚 **See [standalone/README.md](standalone/README.md) for complete setup guide, SMTP configuration, and production deployment checklist.**
+
+---
+
+### 🔧 Development Setup (Buildbox Integration)
+
+**For development and testing only.** Uses shared buildbox infrastructure services.
+
+## 빠른 시작
+
+```bash
+# 1. Discourse 소스코드 클론 (최초 1회만)
+make prepare
+
+# 2. 데이터베이스 및 Redis 서비스 시작
+# buildbox의 postgres와 redis 서비스 필요
+make up
+
+# 3. 브라우저에서 접속
+# http://localhost:3000 (Rails 서버)
+# http://localhost:8080 (HTTP)
+# http://localhost:8443 (HTTPS)
+```
+
+## 서비스 구성
+
+compose.yml에는 다음 서비스들이 포함되어 있습니다:
+
+- **discourse**: Discourse Rails 애플리케이션
+  - Rails 서버 (프로덕션 모드)
+  - 자동 데이터베이스 마이그레이션
+  - 자산 프리컴파일
+
+- **postgres**: PostgreSQL 데이터베이스 (외부 서비스)
+  - buildbox/compose/compose.postgres.yml 사용
+  - 사용자 데이터 및 게시물 저장
+
+- **redis**: Redis 캐시 서버 (외부 서비스)
+  - buildbox/compose/compose.redis.yml 사용
+  - 세션 관리 및 캐싱
+
+## Port Information
+
+**Development Setup (This Directory):**
+
+| Port | Service | Purpose |
+|------|---------|---------|
+| 8080 | discourse | Discourse website HTTP |
+| 8443 | discourse | Discourse website HTTPS |
+| 3000 | discourse | Rails server |
+
+> ⚠️ **Port Conflict Warning**: Currently using port 8080.
+>
+> 💡 **Recommended**: For production, use **[standalone setup](standalone/README.md)** (port 8230)
+>
+> **Change port in development** (if needed):
+> ```bash
+> # Modify compose.yml file
+> sed -i 's/8080:80/different-port:80/' compose.yml
+> ```
+
+**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+
+## 환경 변수
+
+### 로케일 설정
+
+```bash
+LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
+LANGUAGE=en_US.UTF-8
+```
+
+### Rails 설정
+
+```bash
+RAILS_ENV=production
+```
+
+### Discourse 설정
+
+```bash
+DISCOURSE_HOSTNAME=test1.polypia.net
+DISCOURSE_DEVELOPER_EMAILS=    # 개발자 이메일 주소
+```
+
+### 데이터베이스 설정
+
+```bash
+DISCOURSE_DB_HOST=postgres
+DISCOURSE_DB_PORT=5432
+DISCOURSE_DB_NAME=db01
+DISCOURSE_DB_USERNAME=user01
+DISCOURSE_DB_PASSWORD=passw0rd
+```
+
+### Redis 설정
+
+```bash
+DISCOURSE_REDIS_HOST=redis
+DISCOURSE_REDIS_PORT=6379
+DISCOURSE_REDIS_DB=0
+DISCOURSE_REDIS_PASSWORD=passw0rd
+DISCOURSE_REDIS_USE_SSL=false
+```
+
+## 사용 가능한 명령어
+
+### Makefile 명령어
+
+이 프로젝트는 간편한 관리를 위한 Makefile을 제공합니다:
+
+```bash
+make help          # 사용 가능한 명령어 보기
+make prepare       # Discourse 소스코드 클론
+make up            # 서비스 시작
+make down          # 서비스 중지
+make restart       # 서비스 재시작
+make logs          # 로그 보기
+make ps            # 실행 중인 컨테이너 확인
+make shell         # Discourse 컨테이너 접속
+make clean         # 모든 데이터 삭제 (주의!)
+```
+
+### 빌드 관리
+
+```bash
+# 기존 이미지 삭제
+make build-clear
+
+# 베이스 이미지 빌드
+make build-base
+
+# 애플리케이션 이미지 빌드
+make build-app
+```
+
+**참고**: 이전의 `make server-up`, `make server-down`, `make server-enter` 명령어는 표준 명령어인 `make up`, `make down`, `make shell`로 변경되었습니다.
+
+## 사용법
+
+### 초기 관리자 계정 생성
+
+```bash
+# 컨테이너 내부로 진입
 docker exec -it discourse_dev bash
 
-# plugins 디렉토리로 이동
+# Rails 콘솔 실행
+rails console
+
+# 관리자 계정 생성
+User.create!(
+  username: 'admin',
+  email: 'admin@example.com',
+  password: 'password123',
+  active: true,
+  approved: true,
+  admin: true,
+  moderator: true
+)
+```
+
+### 데이터베이스 마이그레이션
+
+```bash
+# 컨테이너 내부에서
+bundle exec rake db:migrate
+
+# 또는 외부에서
+docker exec discourse_dev bundle exec rake db:migrate
+```
+
+### 자산 프리컴파일
+
+```bash
+# 컨테이너 내부에서
+bin/rails assets:precompile
+
+# 또는 외부에서
+docker exec discourse_dev bin/rails assets:precompile
+```
+
+### 플러그인 설치
+
+```bash
+# 컨테이너 내부로 진입
+docker exec -it discourse_dev bash
+
+# 플러그인 디렉토리로 이동
 cd /var/www/discourse/plugins
 
-# 플러그인 클론
-git clone https://github.com/discourse/discourse-solved.git
+# Git으로 플러그인 클론
+git clone https://github.com/discourse/discourse-plugin-name.git
 
-# 번들 설치
+# 자산 프리컴파일 및 재시작
 cd /var/www/discourse
-bundle install
-
-# 마이그레이션
-RAILS_ENV=production rake db:migrate
-
-# 에셋 빌드
-RAILS_ENV=production rake assets:precompile
-
-# 재시작
+bin/rails assets:precompile
 exit
-docker compose restart discourse
+
+# 컨테이너 재시작
+docker restart discourse_dev
 ```
-
-#### 2. Dockerfile로 플러그인 포함
-
-```dockerfile
-FROM discourse/app:latest
-
-# 플러그인 설치
-RUN cd /var/www/discourse/plugins && \
-    git clone https://github.com/discourse/discourse-solved.git && \
-    git clone https://github.com/discourse/discourse-voting.git
-
-# 의존성 설치
-RUN cd /var/www/discourse && \
-    bundle install && \
-    RAILS_ENV=production rake db:migrate && \
-    RAILS_ENV=production rake assets:precompile
-```
-
-## 이메일 설정
-
-Discourse는 이메일 알림이 필수입니다.
-
-### SMTP 설정
-
-```yaml
-services:
-  discourse:
-    environment:
-      DISCOURSE_SMTP_ADDRESS: smtp.gmail.com
-      DISCOURSE_SMTP_PORT: 587
-      DISCOURSE_SMTP_USER_NAME: your-email@gmail.com
-      DISCOURSE_SMTP_PASSWORD: your-app-password
-      DISCOURSE_SMTP_ENABLE_START_TLS: 'true'
-      DISCOURSE_SMTP_DOMAIN: gmail.com
-      DISCOURSE_SMTP_AUTHENTICATION: login
-```
-
-### 이메일 테스트
-
-```bash
-docker exec -it discourse_dev bash
-cd /var/www/discourse
-RAILS_ENV=production rails c
-
-# Rails 콘솔에서
-Email::Sender.new('test subject', 'test body').send(to: 'admin@example.com')
-```
-
-## 백업 및 복원
-
-### 자동 백업 설정
-
-Admin → Backups → Settings:
-- Enable automatic backups: ✅
-- Backup frequency: Every day
-- Maximum backups: 7
-
-### 수동 백업
-
-```bash
-# Rails 콘솔 접속
-docker exec -it discourse_dev bash
-cd /var/www/discourse
-RAILS_ENV=production rails c
-
-# 백업 생성
-Backup.create!(user_id: 1)
-
-# 백업 파일 위치
-# /var/www/discourse/public/backups/default/
-```
-
-### PostgreSQL 백업
-
-```bash
-docker exec postgres pg_dump -U discourse discourse | gzip > discourse-backup-$(date +%Y%m%d).sql.gz
-```
-
-### 복원
-
-```bash
-# 백업 파일을 컨테이너로 복사
-docker cp discourse-backup.sql.gz discourse_dev:/tmp/
-
-# 데이터베이스 복원
-docker exec -i postgres psql -U discourse discourse < /tmp/discourse-backup.sql
-```
-
-## 성능 최적화
-
-### Redis 캐싱
-
-이미 기본으로 설정됨. Redis가 다음 용도로 사용됩니다:
-- 세션 스토리지
-- 캐시
-- 백그라운드 작업 큐 (Sidekiq)
-
-### PostgreSQL 최적화
-
-```sql
--- PostgreSQL 설정 최적화
-ALTER SYSTEM SET shared_buffers = '256MB';
-ALTER SYSTEM SET effective_cache_size = '1GB';
-ALTER SYSTEM SET maintenance_work_mem = '64MB';
-ALTER SYSTEM SET checkpoint_completion_target = 0.9;
-ALTER SYSTEM SET wal_buffers = '16MB';
-ALTER SYSTEM SET default_statistics_target = 100;
-ALTER SYSTEM SET random_page_cost = 1.1;
-
--- 설정 재로드
-SELECT pg_reload_conf();
-```
-
-### Precompile Assets
-
-```bash
-docker exec discourse_dev bash -c "cd /var/www/discourse && RAILS_ENV=production rake assets:precompile"
-```
-
-## 업그레이드
-
-### 1. 백업 (필수)
-
-위 백업 섹션 참조
-
-### 2. 이미지 업데이트
-
-```bash
-docker compose pull discourse
-docker compose up -d discourse
-```
-
-### 3. 마이그레이션 실행
-
-```bash
-docker exec discourse_dev bash -c "cd /var/www/discourse && RAILS_ENV=production rake db:migrate"
-```
-
-### 4. 에셋 재컴파일
-
-```bash
-docker exec discourse_dev bash -c "cd /var/www/discourse && RAILS_ENV=production rake assets:precompile"
-```
-
-### 5. 재시작
-
-```bash
-docker compose restart discourse
-```
-
-## 보안 설정
-
-### HTTPS 설정 (Nginx 리버스 프록시)
-
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name forum.example.com;
-
-    ssl_certificate /etc/ssl/certs/forum.example.com.crt;
-    ssl_certificate_key /etc/ssl/private/forum.example.com.key;
-
-    client_max_body_size 20M;
-
-    location / {
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # WebSocket 지원
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}
-```
-
-### Rate Limiting
-
-Admin → Settings → Security:
-- Max requests per minute: 20
-- Max topics per day: 20
-- Max private messages per day: 20
-
-### 2FA 강제
-
-Admin → Settings → Security:
-- Enforce second factor authentication: ✅
 
 ## 문제 해결
 
-### 데이터베이스 연결 실패
+### 데이터베이스 연결 오류
 
 ```bash
-# PostgreSQL 상태 확인
-docker exec postgres pg_isready -U discourse
+# PostgreSQL 서비스 확인
+docker ps | grep postgres
 
-# 로그 확인
+# buildbox postgres 서비스 시작
+cd ../buildbox
+docker-compose -f compose/compose.postgres.yml up -d
+
+# Discourse 재시작
+cd ../discourse
+make server-down
+make server-up
+```
+
+### Redis 연결 오류
+
+```bash
+# Redis 서비스 확인
+docker ps | grep redis
+
+# buildbox redis 서비스 시작
+cd ../buildbox
+docker-compose -f compose/compose.redis.yml up -d
+
+# Discourse 재시작
+cd ../discourse
+make server-down
+make server-up
+```
+
+### 자산 프리컴파일 실패
+
+```bash
+# 자산 삭제 및 재컴파일
+docker exec discourse_dev bash -c "cd /var/www/discourse && rm -rf public/assets && bin/rails assets:precompile"
+
+# 컨테이너 재시작
+docker restart discourse_dev
+```
+
+### 마이그레이션 실패
+
+```bash
+# 데이터베이스 상태 확인
+docker exec discourse_dev bundle exec rake db:migrate:status
+
+# 특정 마이그레이션으로 롤백
+docker exec discourse_dev bundle exec rake db:migrate:down VERSION=<version>
+
+# 다시 마이그레이션
+docker exec discourse_dev bundle exec rake db:migrate
+```
+
+### 로그 확인
+
+```bash
+# 컨테이너 로그
 docker logs discourse_dev
 
-# 데이터베이스 재시작
-docker compose restart postgres
+# 실시간 로그
+docker logs -f discourse_dev
+
+# Rails 로그 (컨테이너 내부)
+docker exec discourse_dev tail -f /var/www/discourse/log/production.log
 ```
 
-### Redis 연결 실패
+## 디렉토리 구조
 
-```bash
-# Redis 상태 확인
-docker exec redis redis-cli ping
-
-# Redis 재시작
-docker compose restart redis
 ```
-
-### 에셋 로드 실패
-
-```bash
-# 에셋 재컴파일
-docker exec discourse_dev bash -c "cd /var/www/discourse && RAILS_ENV=production rake assets:precompile"
-
-# 캐시 정리
-docker exec discourse_dev bash -c "cd /var/www/discourse && RAILS_ENV=production rake tmp:cache:clear"
+discourse/
+├── compose.yml           # Docker Compose 설정
+├── Makefile             # 편의 명령어
+├── README.md            # 이 문서
+├── entrypoint.sh        # 컨테이너 진입점 스크립트
+├── image/               # Docker 이미지 빌드 파일
+│   ├── base/           # 베이스 이미지
+│   └── discourse_app/  # Discourse 애플리케이션 이미지
+├── discourse/           # Discourse 소스코드 (make prepare로 생성)
+└── discourse_docker/    # Discourse Docker 설정 (make prepare로 생성)
 ```
-
-### 마이그레이션 오류
-
-```bash
-# 마이그레이션 상태 확인
-docker exec discourse_dev bash -c "cd /var/www/discourse && RAILS_ENV=production rake db:migrate:status"
-
-# 마이그레이션 재실행
-docker exec discourse_dev bash -c "cd /var/www/discourse && RAILS_ENV=production rake db:migrate"
-```
-
-## 관리자 도구
-
-### Rails 콘솔
-
-```bash
-docker exec -it discourse_dev bash
-cd /var/www/discourse
-RAILS_ENV=production rails c
-
-# 사용자 관리
-User.find_by_email('user@example.com').admin = true
-User.find_by_email('user@example.com').save
-
-# 통계
-User.count
-Topic.count
-Post.count
-```
-
-### Rake 태스크
-
-```bash
-# 이메일 재전송
-rake emails:test
-
-# 사용자 통계 재계산
-rake users:recalculate_trust_level
-
-# 검색 인덱스 재구축
-rake search:reindex
-
-# 아바tar 재생성
-rake avatars:refresh
-```
-
-## 커뮤니티 가이드
-
-### 카테고리 구성
-
-카테고리는 주제를 조직하는 핵심입니다:
-
-1. Admin → Categories → New Category
-2. 이름, 색상, 아이콘 설정
-3. 권한 설정 (공개/비공개)
-4. 하위 카테고리 생성 가능
-
-### 사용자 그룹
-
-1. Admin → Groups → New Group
-2. 그룹 이름, 권한 설정
-3. 사용자 추가
-4. 카테고리별 그룹 권한 설정
-
-### 신뢰 레벨
-
-Discourse는 5단계 신뢰 레벨 시스템:
-
-- **TL0 (New)**: 신규 사용자
-- **TL1 (Basic)**: 읽기/좋아요 일정 수준 도달
-- **TL2 (Member)**: 정기적으로 방문, 좋아요 받음
-- **TL3 (Regular)**: 활발한 참여, 높은 신뢰도
-- **TL4 (Leader)**: 최고 레벨 (수동 승급)
 
 ## 참고 자료
 
-### 공식 문서
-- [Discourse 공식 사이트](https://www.discourse.org/)
-- [Discourse Meta](https://meta.discourse.org/) - 공식 커뮤니티
-- [Developer Documentation](https://docs.discourse.org/)
-- [Admin Guide](https://meta.discourse.org/docs?category=6)
+- [Discourse 공식 GitHub](https://github.com/discourse/discourse)
+- [Discourse 공식 Docker 저장소](https://github.com/discourse/discourse_docker)
+- [Discourse 공식 문서](https://docs.discourse.org/)
+- [Discourse Meta (공식 커뮤니티)](https://meta.discourse.org/)
+- [Discourse Plugin 개발 가이드](https://meta.discourse.org/c/dev/7)
 
-### Docker 관련
-- [Official Docker Repository](https://github.com/discourse/discourse_docker)
-- [Docker Hub](https://hub.docker.com/r/discourse/discourse_test)
+## 기술 스택
 
-### 플러그인
-- [Official Plugins](https://github.com/discourse?q=discourse-plugin)
-- [Plugin Directory](https://meta.discourse.org/c/plugin)
-
-### 커뮤니티
-- [Discourse Meta](https://meta.discourse.org/)
-- [GitHub Issues](https://github.com/discourse/discourse/issues)
+- **Backend**: Ruby 3.x, Ruby on Rails 7.x
+- **Frontend**: Ember.js
+- **Database**: PostgreSQL
+- **Cache**: Redis
+- **Search**: PostgreSQL Full-Text Search
+- **Container**: Docker, Docker Compose
 
 ## 주의사항
 
-### 공식 권장 방법
-
-Discourse 공식 문서는 `discourse_docker`를 권장합니다:
-- https://github.com/discourse/discourse_docker
-
-이 저장소의 구성은 개발/테스트 목적입니다.
-
-### 프로덕션 배포
-
-프로덕션 배포 시:
-1. **공식 discourse_docker** 사용 권장
-2. 또는 플러그인이 필요한 경우:
-   - 오피셜 이미지 사용
-   - 볼륨에 플러그인 마운트
-   - 인스턴스 시작 시 마이그레이션 실행
+1. **프로덕션 환경**: 현재 설정은 개발/테스트용입니다. 프로덕션 환경에서는 추가 보안 설정이 필요합니다.
+2. **이메일 설정**: SMTP 설정을 추가해야 이메일 알림이 작동합니다.
+3. **도메인 설정**: `DISCOURSE_HOSTNAME`을 실제 도메인으로 변경해야 합니다.
+4. **SSL 인증서**: HTTPS를 사용하려면 SSL 인증서를 설정해야 합니다.
+5. **백업**: 정기적인 데이터베이스 백업을 권장합니다.
 
 ## 라이선스
 
 Discourse는 GPLv2 라이선스로 배포됩니다.
-
-## 관련 프로젝트
-
-- **Flarum**: PHP 기반 경량 포럼
-- **NodeBB**: Node.js 기반 포럼
-- **Misago**: Django 기반 포럼
-- **phpBB**: 전통적인 PHP 포럼
-
-## Source
-
-- https://github.com/discourse/discourse.git
-- https://github.com/discourse/discourse_docker.git

@@ -1,112 +1,225 @@
-# Nextcloud - Self-Hosted File Sync and Share
+# Nextcloud
 
-**Nextcloud**는 자체 호스팅 파일 동기화 및 공유 플랫폼입니다. Dropbox, Google Drive의 오픈소스 대안입니다.
+> 💡 **Quick Start**: For production deployment with PostgreSQL/MariaDB and Redis, use the [standalone setup](standalone/README.md) - it includes all services and comprehensive documentation!
 
-## 주요 기능
+## 개요
 
-- **파일 동기화**: 데스크톱/모바일 클라이언트로 자동 동기화
-- **파일 공유**: 공개/비공개 링크 공유, 권한 관리
-- **협업**: 문서 편집, 캘린더, 연락처, 메일
-- **앱 생태계**: 200+ 공식/커뮤니티 앱
-- **End-to-End 암호화**: 클라이언트 측 암호화 지원
-- **GDPR 준수**: EU 데이터 보호 규정 준수
+Nextcloud는 개인 클라우드 스토리지 및 협업 플랫폼을 구축하기 위한 오픈소스 소프트웨어입니다:
+- 📁 파일 동기화 및 공유
+- 📝 온라인 오피스 (Collabora, OnlyOffice 연동)
+- 📅 캘린더 및 연락처 관리
+- 💬 채팅 및 화상 통화 (Nextcloud Talk)
+- 📧 웹메일 통합
+- 🔐 엔드투엔드 암호화
+- 📱 모바일 앱 지원 (iOS, Android)
+- 🔌 확장 앱 마켓플레이스
+- 👥 사용자 및 그룹 관리
+- 🌐 연합 파일 공유 (Federation)
 
-## 디렉토리 구조
+## Deployment Options
 
-```
-nextcloud/
-├── README.md          # 이 파일
-├── Makefile           # 공통 make 명령어
-└── standalone/        # Standalone 배포
-    ├── compose.fpm.yml      # FPM + Nginx 구성 (권장)
-    ├── compose.apache.yml   # Apache 구성
-    └── Makefile
-```
+### ✅ Standalone (Recommended for Production)
 
-## Quick Start
-
-### Standalone 배포 (권장)
+Complete production-ready setup:
 
 ```bash
-cd standalone
+cd standalone/
+make up
+```
+
+**What's included:**
+- ✅ Nextcloud (Apache or FPM)
+- ✅ PostgreSQL 16 / MariaDB
+- ✅ Redis 8.2 cache
+- ✅ Network isolation
+
+**Access:** http://localhost:8210
+
+📚 **See [standalone/README.md](standalone/README.md) for complete setup guide.**
+
+---
+
+### 🔧 Basic Setup (For Development)
+
+**For development and testing only.**
+
+## Default Configuration
+
+**Default port:** 8210 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+
+**Container name:** nextcloud
+
+Environment variables:
+```bash
+WEB_PORT=8210
+NEXTCLOUD_ADMIN_USER=admin
+NEXTCLOUD_ADMIN_PASSWORD=passw0rd
+```
+
+## Port Information
+
+| Port | Service | Purpose |
+|------|---------|---------|
+| 8210 | nextcloud | 웹 서버 (WEB_PORT로 변경 가능) |
+| 6379 | redis | Redis (FPM 버전, 내부) |
+| 9020 | phpmyadmin | phpMyAdmin (MariaDB 사용 시, 선택사항) |
+
+**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+
+> ✅ **포트 설정**: 기본 포트는 8210입니다. WEB_PORT 환경변수로 변경 가능합니다.
+
+## 빠른 시작
+
+### Apache 버전 (권장)
+
+standalone 디렉토리에서 바로 Nextcloud를 실행할 수 있습니다:
+
+```bash
+# 1. standalone 디렉토리로 이동
+cd nextcloud/standalone
+
+# 2. Apache 버전 실행 (PostgreSQL + Redis)
 docker compose -f compose.fpm.yml up -d
+
+# 3. 브라우저에서 접속
+# http://localhost:8210
 ```
 
-웹 UI 접속: http://localhost:8080
+### 외부 데이터베이스 사용
 
-**기본 Credentials**:
-- Username: `admin`
-- Password: `passw0rd`
+devbox의 PostgreSQL/MariaDB/Redis를 사용하려면:
 
-> **⚠️ 보안 경고**: 프로덕션 환경에서는 반드시 비밀번호를 변경하세요!
+```bash
+# standalone 디렉토리에서
+make server-up
 
-## 시스템 요구사항
-
-| 항목 | 최소 | 권장 |
-|------|------|------|
-| **메모리** | 512MB | 1GB+ |
-| **CPU** | 1코어 | 2코어+ |
-| **스토리지** | 10GB | 50GB+ |
-| **Database** | SQLite (기본) | PostgreSQL/MySQL |
-
-## 구성 옵션
-
-### FPM + Nginx (고성능)
-
-`standalone/compose.fpm.yml` 사용:
-
-**장점**:
-- 높은 성능 (PHP-FPM 프로세스 풀)
-- 리소스 효율적
-- 확장성 우수
-
-**구성**:
-- Nextcloud (PHP-FPM)
-- PostgreSQL 16
-- Redis (캐싱, 세션)
-
-### Apache (간단한 설정)
-
-`standalone/compose.apache.yml` 사용:
-
-**장점**:
-- 설정 간단
-- 추가 웹서버 불필요
-
-**단점**:
-- FPM보다 성능 낮음
-
-## 주요 설정
-
-### 환경 변수
-
-```yaml
-services:
-  nextcloud:
-    environment:
-      # 관리자 계정
-      NEXTCLOUD_ADMIN_USER: admin
-      NEXTCLOUD_ADMIN_PASSWORD: your-strong-password
-
-      # 데이터베이스
-      POSTGRES_HOST: postgres
-      POSTGRES_DB: nextcloud
-      POSTGRES_USER: nextcloud
-      POSTGRES_PASSWORD: postgres-password
-
-      # Redis 캐시
-      REDIS_HOST: redis
-      REDIS_HOST_PORT: 6379
-      REDIS_HOST_PASSWORD: redis-password
-
-      # 신뢰 도메인
-      NEXTCLOUD_TRUSTED_DOMAINS: cloud.example.com
+# 또는 직접 실행
+docker compose -f compose.apache.yml \
+  -f ../../devbox/compose.bn-pg15.yml \
+  -f ../../devbox/compose.bn-redis.yml \
+  -f ../../devbox/compose.mariadb.yml \
+  up -d
 ```
 
-### Hooks (고급)
+## 서비스 구성
 
-Docker Entrypoint Hooks를 사용한 자동화:
+### Apache 버전 (compose.apache.yml)
 
+독립 실행형 구성, 외부 데이터베이스 서비스 필요:
+
+- **nextcloud**: Nextcloud Apache 웹 서버 (포트 8210)
+- **외부 MariaDB**: 데이터베이스 (devbox 사용)
+- **외부 Redis**: 캐시 서버 (devbox 사용)
+
+### FPM 버전 (compose.fpm.yml)
+
+완전한 올인원 구성, 모든 서비스 포함:
+
+- **nextcloud**: Nextcloud FPM 애플리케이션 (포트 8210)
+- **postgres**: PostgreSQL 16 데이터베이스
+- **redis**: Redis 8.2 캐시 서버 (포트 6379)
+
+
+## 환경 변수
+
+### 관리자 계정
+
+- `NEXTCLOUD_ADMIN_USER`: 관리자 사용자명 (기본값: admin)
+- `NEXTCLOUD_ADMIN_PASSWORD`: 관리자 비밀번호 (기본값: passw0rd)
+
+### 데이터베이스 설정 (MariaDB)
+
+- `MYSQL_HOST`: MariaDB 호스트 (기본값: mariadb)
+- `MYSQL_DATABASE`: 데이터베이스 이름 (기본값: db01)
+- `MYSQL_USER`: 데이터베이스 사용자 (기본값: user01)
+- `MYSQL_PASSWORD`: 데이터베이스 비밀번호 (기본값: passw0rd)
+
+### 데이터베이스 설정 (PostgreSQL)
+
+- `POSTGRES_HOST`: PostgreSQL 호스트 (기본값: postgres)
+- `POSTGRES_DB`: 데이터베이스 이름 (기본값: db01)
+- `POSTGRES_USER`: 데이터베이스 사용자 (기본값: user01)
+- `POSTGRES_PASSWORD`: 데이터베이스 비밀번호 (기본값: passw0rd)
+
+### Redis 설정
+
+- `REDIS_HOST`: Redis 호스트 (기본값: redis)
+- `REDIS_HOST_PORT`: Redis 포트 (기본값: 6379)
+- `REDIS_HOST_PASSWORD`: Redis 비밀번호 (기본값: passw0rd)
+
+### 선택적 설정
+
+- `NC_DEBUG`: 디버그 모드 활성화 (기본값: true)
+- `NEXTCLOUD_TRUSTED_DOMAINS`: 신뢰할 도메인 목록
+- `NEXTCLOUD_UPLOAD_MAX_FILESIZE`: 최대 업로드 파일 크기 (예: 4G)
+- `NEXTCLOUD_MAX_FILE_UPLOADS`: 최대 업로드 파일 개수
+
+## 사용법
+
+### 서비스 시작
+
+```bash
+# FPM 버전 (올인원)
+cd nextcloud/standalone
+docker compose -f compose.fpm.yml up -d
+
+# Apache 버전 (외부 DB)
+cd nextcloud/standalone
+make server-up
+```
+
+### 서비스 중지
+
+```bash
+# FPM 버전
+docker compose -f compose.fpm.yml down
+
+# Apache 버전 (볼륨 포함 삭제)
+make server-down
+```
+
+### 컨테이너 쉘 접속
+
+```bash
+# Nextcloud 컨테이너 접속
+docker compose -f compose.fpm.yml exec nextcloud bash
+
+# 또는 Makefile 사용
+make server-enter
+```
+
+### 로그 확인
+
+```bash
+# 모든 서비스 로그
+docker compose -f compose.fpm.yml logs -f
+
+# Nextcloud 로그만 확인
+docker compose -f compose.fpm.yml logs -f nextcloud
+```
+
+## 볼륨 구조
+
+Nextcloud 데이터는 다음 볼륨에 저장됩니다:
+
+- `nxc_root`: Nextcloud 루트 디렉토리 (/var/www/html)
+- `nxc_apps`: 커스텀 앱 (/var/www/html/custom_apps)
+- `nxc_data`: 사용자 데이터 (/var/www/html/data)
+- `nxc_themes`: 테마 파일 (/var/www/html/themes)
+- `postgres` 또는 `mariadb`: 데이터베이스 데이터
+- `redis`: Redis 데이터
+
+## Docker Hooks
+
+Nextcloud는 라이프사이클의 다양한 단계에서 커스텀 스크립트를 실행할 수 있습니다:
+
+- **pre-installation**: Nextcloud 설치/초기화 전 실행
+- **post-installation**: Nextcloud 설치/초기화 후 실행
+- **pre-upgrade**: Nextcloud 업그레이드 전 실행
+- **post-upgrade**: Nextcloud 업그레이드 후 실행
+- **before-starting**: Nextcloud 시작 전 실행
+
+hooks 사용 방법:
 ```yaml
 volumes:
   - ./app-hooks/pre-installation:/docker-entrypoint-hooks.d/pre-installation
@@ -114,375 +227,146 @@ volumes:
   - ./app-hooks/before-starting:/docker-entrypoint-hooks.d/before-starting
 ```
 
-**Hook 타입**:
-- `pre-installation`: Nextcloud 설치 전 실행
-- `post-installation`: Nextcloud 설치 후 실행
-- `pre-upgrade`: 업그레이드 전 실행
-- `post-upgrade`: 업그레이드 후 실행
-- `before-starting`: Nextcloud 시작 전 실행
-
-**예제** (`app-hooks/post-installation/01-install-apps.sh`):
-```bash
-#!/bin/bash
-set -e
-
-# 앱 자동 설치
-occ app:install calendar
-occ app:install contacts
-occ app:install deck
-occ app:enable files_external
-
-# S3 외부 스토리지 설정 (Minio)
-occ config:system:set objectstore arguments bucket --value="nextcloud-data"
-occ config:system:set objectstore arguments endpoint --value="minio:9000"
-```
-
-## 통합 예제
-
-### Minio S3 외부 스토리지
-
-Nextcloud의 파일을 Minio에 저장:
-
-#### 1. compose.yml 수정
-
-```yaml
-services:
-  nextcloud:
-    depends_on:
-      - minio
-    networks:
-      - db-network
-      - minio-network  # Minio 네트워크 추가
-
-networks:
-  minio-network:
-    external: true
-```
-
-#### 2. Web UI 설정
-
-1. Settings → External storages
-2. Add storage → Amazon S3
-3. 설정:
-   ```
-   Bucket: nextcloud-data
-   Hostname: minio:9000
-   Port: 9000
-   Region: us-east-1
-   Enable SSL: No
-   Enable Path Style: Yes
-   Access Key: minioadmin
-   Secret Key: minioadmin
-   ```
-
-#### 3. CLI 설정 (선택)
-
-```bash
-docker exec -u www-data nextcloud php occ files_external:create \
-  "S3 Storage" amazons3 amazons3::accesskey \
-  -c bucket=nextcloud-data \
-  -c hostname=minio \
-  -c port=9000 \
-  -c use_ssl=false \
-  -c use_path_style=true \
-  -c region=us-east-1 \
-  -c key=minioadmin \
-  -c secret=minioadmin
-```
-
-### Collabora Online (문서 편집)
-
-#### 1. Collabora 추가
-
-```yaml
-services:
-  collabora:
-    image: collabora/code:latest
-    environment:
-      - domain=cloud\\.example\\.com
-      - extra_params=--o:ssl.enable=false
-    ports:
-      - "9980:9980"
-    networks:
-      - db-network
-```
-
-#### 2. Nextcloud 설정
-
-```bash
-# Collabora 앱 설치
-docker exec -u www-data nextcloud php occ app:install richdocuments
-
-# Collabora 서버 설정
-docker exec -u www-data nextcloud php occ config:app:set richdocuments wopi_url --value="http://collabora:9980"
-```
-
-### OnlyOffice (대안)
-
-```yaml
-services:
-  onlyoffice:
-    image: onlyoffice/documentserver:latest
-    environment:
-      - JWT_SECRET=your-secret
-    ports:
-      - "9981:80"
-    networks:
-      - db-network
-```
-
-## 백업 및 복원
-
-### 데이터 백업
-
-```bash
-#!/bin/bash
-BACKUP_DIR="/backup/nextcloud"
-DATE=$(date +%Y%m%d-%H%M%S)
-
-# 유지보수 모드 활성화
-docker exec -u www-data nextcloud php occ maintenance:mode --on
-
-# PostgreSQL 백업
-docker exec postgres pg_dump -U nextcloud nextcloud | gzip > $BACKUP_DIR/db-$DATE.sql.gz
-
-# 파일 백업 (볼륨)
-docker run --rm \
-  -v nextcloud_nxc_data:/source:ro \
-  -v $BACKUP_DIR:/backup \
-  alpine tar czf /backup/files-$DATE.tar.gz -C /source .
-
-# 유지보수 모드 비활성화
-docker exec -u www-data nextcloud php occ maintenance:mode --off
-
-echo "Backup completed: $DATE"
-```
-
-### 데이터 복원
-
-```bash
-#!/bin/bash
-BACKUP_DATE="20250115-120000"
-BACKUP_DIR="/backup/nextcloud"
-
-# 서비스 중지
-docker compose down
-
-# PostgreSQL 복원
-gunzip < $BACKUP_DIR/db-$BACKUP_DATE.sql.gz | \
-  docker exec -i postgres psql -U nextcloud nextcloud
-
-# 파일 복원
-docker run --rm \
-  -v nextcloud_nxc_data:/target \
-  -v $BACKUP_DIR:/backup \
-  alpine tar xzf /backup/files-$BACKUP_DATE.tar.gz -C /target
-
-# 서비스 시작
-docker compose up -d
-
-# 파일 스캔
-docker exec -u www-data nextcloud php occ files:scan --all
-```
-
-## 유지보수
-
-### 버전 업그레이드
-
-```bash
-# 1. 백업 (위 스크립트 참조)
-
-# 2. compose.yml에서 버전 변경
-# image: nextcloud:29 → nextcloud:30
-
-# 3. 컨테이너 재시작
-docker compose pull
-docker compose up -d
-
-# 4. 업그레이드 완료 확인
-docker exec -u www-data nextcloud php occ status
-```
-
-### 캐시 정리
-
-```bash
-# Redis 캐시 플러시
-docker exec -u www-data nextcloud php occ redis:clear-cache
-
-# OPcache 리셋
-docker exec -u www-data nextcloud php occ opcache:reset
-```
-
-### 파일 스캔
-
-```bash
-# 모든 파일 재스캔
-docker exec -u www-data nextcloud php occ files:scan --all
-
-# 특정 사용자만
-docker exec -u www-data nextcloud php occ files:scan username
-```
-
-### 앱 관리
-
-```bash
-# 앱 목록
-docker exec -u www-data nextcloud php occ app:list
-
-# 앱 설치
-docker exec -u www-data nextcloud php occ app:install calendar
-
-# 앱 활성화/비활성화
-docker exec -u www-data nextcloud php occ app:enable contacts
-docker exec -u www-data nextcloud php occ app:disable survey_client
-```
-
-## 성능 최적화
-
-### PHP 설정
-
-`php.ini` 또는 환경 변수로 조정:
-
-```ini
-memory_limit = 512M
-upload_max_filesize = 16G
-post_max_size = 16G
-max_execution_time = 3600
-max_input_time = 3600
-```
-
-### Redis 캐싱
-
-이미 `compose.fpm.yml`에 포함됨. 추가 설정:
-
-```bash
-docker exec -u www-data nextcloud php occ config:system:set \
-  memcache.local --value="\\OC\\Memcache\\APCu"
-docker exec -u www-data nextcloud php occ config:system:set \
-  memcache.distributed --value="\\OC\\Memcache\\Redis"
-docker exec -u www-data nextcloud php occ config:system:set \
-  memcache.locking --value="\\OC\\Memcache\\Redis"
-```
-
-### 백그라운드 작업
-
-```bash
-# Cron 활성화 (권장)
-docker exec -u www-data nextcloud php occ background:cron
-
-# 또는 compose.yml에 cron 컨테이너 추가
-services:
-  cron:
-    image: nextcloud:29
-    entrypoint: /cron.sh
-    depends_on:
-      - postgres
-      - redis
-    volumes_from:
-      - nextcloud
-```
-
-## 보안 설정
-
-### HTTPS 설정 (Nginx 리버스 프록시)
-
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name cloud.example.com;
-
-    ssl_certificate /etc/ssl/certs/cloud.example.com.crt;
-    ssl_certificate_key /etc/ssl/private/cloud.example.com.key;
-
-    client_max_body_size 16G;
-    client_body_buffer_size 400M;
-
-    location / {
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        # WebDAV 지원
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_buffering off;
-    }
-}
-```
-
-### 신뢰 도메인 추가
-
-```bash
-docker exec -u www-data nextcloud php occ config:system:set \
-  trusted_domains 1 --value="cloud.example.com"
-```
-
-### 2단계 인증 강제
-
-```bash
-docker exec -u www-data nextcloud php occ config:app:set \
-  twofactor_totp --value="1"
-```
-
 ## 문제 해결
 
-### 파일 업로드 실패
+### 데이터베이스 연결 실패
 
 ```bash
-# PHP 메모리 제한 확인
-docker exec nextcloud php -i | grep memory_limit
+# 데이터베이스 서비스가 준비될 때까지 대기
+docker compose -f compose.fpm.yml down
+docker compose -f compose.fpm.yml up -d
 
-# 업로드 크기 제한 확인
-docker exec nextcloud php -i | grep upload_max_filesize
+# 로그 확인
+docker compose -f compose.fpm.yml logs postgres
+docker compose -f compose.fpm.yml logs nextcloud
+```
+
+### 권한 문제
+
+```bash
+# Nextcloud 컨테이너 내부에서 권한 수정
+docker compose -f compose.fpm.yml exec nextcloud chown -R www-data:www-data /var/www/html
 ```
 
 ### Redis 연결 실패
 
 ```bash
-# Redis 상태 확인
-docker exec redis redis-cli ping
+# Redis 서비스 상태 확인
+docker compose -f compose.fpm.yml exec redis redis-cli ping
 
-# Nextcloud Redis 설정 확인
-docker exec -u www-data nextcloud php occ config:list | grep redis
+# Redis 비밀번호 확인
+docker compose -f compose.fpm.yml exec redis redis-cli -a passw0rd ping
 ```
 
-### "Trusted domain" 오류
+### 업로드 파일 크기 제한
+
+compose 파일에 환경 변수 추가:
+```yaml
+environment:
+  NEXTCLOUD_UPLOAD_MAX_FILESIZE: 4G
+  NEXTCLOUD_MAX_FILE_UPLOADS: 10
+```
+
+### 신뢰할 도메인 추가
 
 ```bash
-# 신뢰 도메인 목록 확인
-docker exec -u www-data nextcloud php occ config:system:get trusted_domains
+# occ 명령어 사용
+docker compose -f compose.fpm.yml exec -u www-data nextcloud php occ config:system:set trusted_domains 1 --value=example.com
 
-# 도메인 추가
-docker exec -u www-data nextcloud php occ config:system:set \
-  trusted_domains 2 --value="192.168.1.100"
+# 또는 환경 변수 사용
+environment:
+  NEXTCLOUD_TRUSTED_DOMAINS: example.com another-domain.com
+```
+
+### 초기화 및 재설치
+
+```bash
+# 모든 컨테이너와 볼륨 삭제
+docker compose -f compose.fpm.yml down -v
+
+# 재시작
+docker compose -f compose.fpm.yml up -d
+```
+
+## 디렉토리 구조
+
+```
+nextcloud/
+├── Makefile                    # 편의 명령어 (외부 DB 사용)
+├── README.md                   # 이 문서
+└── standalone/
+    ├── Makefile                # standalone 편의 명령어
+    ├── README.md               # standalone 가이드
+    ├── compose.apache.yml      # Apache 버전 (외부 DB)
+    ├── compose.fpm.yml         # FPM 버전 (올인원)
+    ├── app-hooks/              # Docker 라이프사이클 hooks
+    │   ├── pre-installation/
+    │   ├── post-installation/
+    │   ├── pre-upgrade/
+    │   ├── post-upgrade/
+    │   └── before-starting/
+    └── config/                 # 설정 파일
+        └── log.config.php
 ```
 
 ## 참고 자료
 
 ### 공식 문서
-- [Nextcloud 공식 사이트](https://nextcloud.com/)
-- [Admin Manual](https://docs.nextcloud.com/server/latest/admin_manual/)
-- [Docker Hub](https://hub.docker.com/_/nextcloud)
-- [Docker 설치 가이드](https://github.com/nextcloud/docker)
 
-### 앱 및 통합
-- [App Store](https://apps.nextcloud.com/)
-- [Collabora Online](https://www.collaboraoffice.com/)
-- [OnlyOffice](https://www.onlyoffice.com/)
-- [External Storage](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/external_storage/)
+- [Nextcloud 공식 웹사이트](https://nextcloud.com/)
+- [Nextcloud 문서](https://docs.nextcloud.com/)
+- [Nextcloud Docker Hub](https://hub.docker.com/_/nextcloud)
+- [Nextcloud GitHub (Server)](https://github.com/nextcloud/server)
+- [Nextcloud GitHub (Docker)](https://github.com/nextcloud/docker)
+- [Nextcloud GitHub (All-in-One)](https://github.com/nextcloud/all-in-one)
 
-### 커뮤니티
-- [Nextcloud Forum](https://help.nextcloud.com/)
-- [GitHub Issues](https://github.com/nextcloud/server/issues)
+### Docker 설정
+
+- [Docker 환경 변수 설정](https://github.com/nextcloud/docker#environment-variables)
+- [Docker Hooks 지원](https://github.com/nextcloud/docker/pull/2231)
+- [occ 명령어 가이드](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html)
+
+### 추가 정보
+
+- [설치 가이드](https://docs.nextcloud.com/server/latest/admin_manual/installation/)
+- [설정 옵션](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/config_sample_php_parameters.html)
+- [성능 튜닝](https://docs.nextcloud.com/server/latest/admin_manual/installation/server_tuning.html)
+
+## 기술 스택
+
+- **Nextcloud**: 29 (최신 버전)
+- **PostgreSQL**: 16 (Alpine)
+- **Redis**: 8.2 (Alpine)
+- **PHP**: 8.x (Nextcloud 이미지에 포함)
+- **Apache** 또는 **PHP-FPM**: 웹 서버 옵션
 
 ## 라이선스
 
 Nextcloud는 AGPLv3 라이선스로 배포됩니다.
 
-## 관련 프로젝트
+## 버전 선택 가이드
 
-- **ownCloud**: Nextcloud의 원조 프로젝트
-- **Seafile**: 고성능 파일 동기화
-- **Syncthing**: P2P 파일 동기화
-- **Minio**: S3 호환 오브젝트 스토리지 (외부 스토리지로 사용 가능)
+### Apache vs FPM
+
+| 항목 | Apache 버전 | FPM 버전 |
+|------|-------------|----------|
+| **구성** | 외부 DB 필요 | 올인원 (모든 서비스 포함) |
+| **난이도** | 중급 | 초급 |
+| **성능** | 기본 | 최적화 가능 (Nginx + FPM) |
+| **용도** | 기존 인프라 활용 | 빠른 테스트/개발 |
+| **추천** | 프로덕션 환경 | 개발/테스트 환경 |
+
+### 데이터베이스 선택
+
+| 데이터베이스 | 장점 | 단점 |
+|--------------|------|------|
+| **PostgreSQL** | 고급 기능, 트랜잭션 | 약간 느린 설정 |
+| **MariaDB** | 빠른 속도, 익숙함 | 일부 고급 기능 제한 |
+
+## 보안 권장사항
+
+1. **기본 비밀번호 변경**: 프로덕션에서는 반드시 강력한 비밀번호 사용
+2. **HTTPS 사용**: 리버스 프록시(Nginx, Traefik 등)로 SSL/TLS 설정
+3. **신뢰할 도메인 설정**: `NEXTCLOUD_TRUSTED_DOMAINS`로 허용 도메인 제한
+4. **정기 업데이트**: 보안 패치를 위해 정기적으로 이미지 업데이트
+5. **백업**: 데이터와 설정을 정기적으로 백업
