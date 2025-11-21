@@ -472,6 +472,54 @@ if requests > 100:
 
 ---
 
+## Integration with Buildbox
+
+**[Buildbox](../buildbox/)** provides pre-configured Redis templates for quick development environment setup.
+
+### Using Redis with Buildbox
+
+**Start Redis standalone:**
+```bash
+cd ../buildbox
+make redis
+# Redis available at localhost:6379
+```
+
+**Start complete development stack:**
+```bash
+# Django stack (PostgreSQL + Redis + MailSlurper)
+make django-stack
+
+# Rails stack (PostgreSQL + Redis)
+make rails-stack
+
+# PHP stack (MariaDB + Redis)
+make php-stack
+```
+
+### Connect Your Application
+
+Reference Buildbox's Redis service in your `docker-compose.yml`:
+
+```yaml
+services:
+  your-app:
+    environment:
+      REDIS_URL: redis://:passw0rd@redis_dev:6379/0
+    networks:
+      - buildbox_data-network
+    depends_on:
+      - redis
+
+networks:
+  buildbox_data-network:
+    external: true
+```
+
+**See also:** [Buildbox README](../buildbox/README.md) for complete usage patterns.
+
+---
+
 ## References
 
 ### Official Documentation

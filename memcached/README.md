@@ -620,6 +620,56 @@ command: memcached -m 64 -vv  # -v, -vv, or -vvv
 
 ---
 
+## Integration with Buildbox
+
+**Note:** Memcached is not included in Buildbox templates. However, you can use this standalone configuration
+alongside Buildbox services for projects requiring Memcached instead of Redis.
+
+### Running with Buildbox Services
+
+**Start Memcached (from this directory):**
+```bash
+cd memcached
+docker compose up -d
+# Memcached available at localhost:11211
+```
+
+**Start Buildbox database (from buildbox directory):**
+```bash
+cd ../buildbox
+make postgres  # or make mariadb
+```
+
+### Connect Your Application
+
+Reference both Memcached and Buildbox services in your `docker-compose.yml`:
+
+```yaml
+services:
+  your-app:
+    environment:
+      MEMCACHED_HOST: memcached
+      DATABASE_URL: postgresql://postgres:passw0rd@postgres_dev:5432/app_db
+    networks:
+      - memcached_cache-network
+      - buildbox_data-network
+    depends_on:
+      - memcached
+      - postgres
+
+networks:
+  memcached_cache-network:
+    external: true
+  buildbox_data-network:
+    external: true
+```
+
+**See also:**
+- [Buildbox README](../buildbox/README.md) for PostgreSQL/MariaDB templates
+- [Redis README](../redis/README.md) for Redis alternative (included in Buildbox)
+
+---
+
 ## References
 
 ### Official Documentation

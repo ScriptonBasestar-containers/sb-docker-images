@@ -754,6 +754,63 @@ volumes:
 
 ---
 
+## Integration with Buildbox
+
+**Note:** Apache Ignite is not included in Buildbox templates. However, you can use this standalone configuration
+alongside Buildbox services for advanced use cases requiring distributed computing and in-memory data grids.
+
+### Running with Buildbox Services
+
+**Start Ignite (from this directory):**
+```bash
+cd ignite
+docker compose up -d
+# Ignite available at:
+# - REST API: localhost:8080
+# - SQL: localhost:10800
+# - Thin Client: localhost:10800
+```
+
+**Start Buildbox services (from buildbox directory):**
+```bash
+cd ../buildbox
+make postgres  # For persistent data storage
+make redis     # For complementary caching
+```
+
+### Use Cases with Buildbox
+
+**1. Ignite as Compute Grid + Buildbox as Data Source:**
+```yaml
+services:
+  compute-app:
+    environment:
+      IGNITE_HOST: ignite
+      POSTGRES_URL: postgresql://postgres:passw0rd@postgres_dev:5432/app_db
+    networks:
+      - ignite_compute-network
+      - buildbox_data-network
+```
+
+**2. Hybrid Architecture:**
+- **Ignite**: Hot data, real-time analytics, compute tasks
+- **PostgreSQL** (Buildbox): Persistent storage, reporting
+- **Redis** (Buildbox): Session storage, simple caching
+
+```yaml
+networks:
+  ignite_compute-network:
+    external: true
+  buildbox_data-network:
+    external: true
+```
+
+**See also:**
+- [Buildbox README](../buildbox/README.md) for PostgreSQL/Redis templates
+- [Redis README](../redis/README.md) for simple caching use cases
+
+---
+
 ## References
 
 ### Official Documentation
