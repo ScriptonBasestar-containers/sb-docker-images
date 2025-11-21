@@ -79,7 +79,40 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-  # Job 4: Security Scan (Optional)
+  # Job 4: Run Quality Scripts
+  quality-checks:
+    name: Quality Validation Scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
+      - name: Validate Compose Files
+        run: ./scripts/validate-compose.sh
+
+      - name: Test Environment Examples
+        run: ./scripts/test-env-examples.sh
+
+      - name: Check Required Files
+        run: ./scripts/check-required-files.sh
+
+      - name: Check Port Conflicts
+        run: ./scripts/check-port-conflicts.sh
+
+      - name: Verify Health Checks
+        run: ./scripts/verify-health-checks.sh
+
+      - name: Quality Summary
+        if: always()
+        run: |
+          echo "=== Quality Checks Complete ==="
+          echo "All quality validation scripts executed successfully"
+
+  # Job 5: Security Scan (Optional)
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
@@ -102,11 +135,11 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  # Job 5: Summary
+  # Job 6: Summary
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [validate-compose, test-makefile, build-postgres-exts]
+    needs: [validate-compose, test-makefile, build-postgres-exts, quality-checks]
     if: always()
 
     steps:
@@ -116,10 +149,12 @@ jobs:
           echo "Validate Compose: ${{ needs.validate-compose.result }}"
           echo "Test Makefile: ${{ needs.test-makefile.result }}"
           echo "Build PostgreSQL: ${{ needs.build-postgres-exts.result }}"
+          echo "Quality Checks: ${{ needs.quality-checks.result }}"
 
           if [ "${{ needs.validate-compose.result }}" != "success" ] || \
              [ "${{ needs.test-makefile.result }}" != "success" ] || \
-             [ "${{ needs.build-postgres-exts.result }}" != "success" ]; then
+             [ "${{ needs.build-postgres-exts.result }}" != "success" ] || \
+             [ "${{ needs.quality-checks.result }}" != "success" ]; then
             echo "❌ Some CI checks failed"
             exit 1
           else
