@@ -70,13 +70,14 @@ Incomplete:        0
 ```
 
 **필수 파일 목록:**
-- ✅ README.md (48/48)
+- ✅ README.md (48/48) - **Phase 11.5에서 인프라 서비스 3개 추가 완료**
 - ✅ Makefile (48/48)
 - ✅ compose.yml or docker-compose.yml (48/48)
 
 **결과:**
 - ✅ 모든 프로젝트가 필수 파일 보유
 - ✅ 문서화 표준 100% 준수
+- ✅ **인프라 서비스 README 커버리지: 100%** (Redis, Memcached, Ignite)
 
 **검증 스크립트:** `./scripts/check-required-files.sh`
 
@@ -240,6 +241,45 @@ Recommendations:               0 ✅
 **자동화:**
 - +39 라인 (GitHub Actions)
 - +14 라인 (스크립트 개선)
+
+---
+
+### Phase 11.5: 인프라 서비스 및 Standalone 프로젝트 문서화
+
+**작업 범위:** 문서 개선 및 신규 README 생성
+
+**주요 성과:**
+- ✅ 포트 충돌 해결 완료 문서화 (PORT_GUIDE.md 확장)
+  - 선택적 구성 포트 충돌 상세 설명 (4개)
+  - Phase 8-11 포트 변경 이력 정리
+  - 포트 충돌 확인 방법 가이드 추가
+- ✅ Standalone 프로젝트 README 전면 개선
+  - Nextcloud Standalone: 20줄 → 365줄 (18배 확장)
+  - Flarum: Apache vs Nginx 변형 가이드 추가 (32줄)
+- ✅ 인프라 서비스 README 신규 생성
+  - Redis: 0줄 → 496줄 (완전 신규)
+  - Memcached: 0줄 → 646줄 (완전 신규)
+  - Apache Ignite: 0줄 → 783줄 (완전 신규)
+
+**문서화 품질:**
+- 다국어 클라이언트 예제 (Python, Node.js, Go, PHP, Java, C#)
+- 프로덕션 보안 체크리스트
+- 운영 명령어 가이드 (백업, 복원, 모니터링)
+- Troubleshooting 가이드
+- Use Cases 및 Best Practices
+
+**문서화 개선:**
+- +3,322 라인 (순증)
+- 인프라 서비스 문서화: 0% → 100%
+- Standalone 프로젝트 설명: 부족 → 완전
+
+**커밋 수:** 6개
+- docs(ports): 포트 충돌 해결 완료 및 선택적 구성 문서화
+- docs(nextcloud): Nextcloud Standalone 프로젝트 README 전면 개선
+- docs(flarum): 웹서버 변형 선택 가이드 추가
+- docs(redis): Redis 프로젝트 종합 README 생성
+- docs(memcached): Memcached 프로젝트 종합 README 생성
+- docs(ignite): Apache Ignite 프로젝트 종합 README 생성
 
 ---
 

@@ -77,6 +77,88 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2025-11-21] - Phase 11.5: Infrastructure Services Documentation
+
+### Added
+
+#### 인프라 서비스 README 신규 생성
+**3개 핵심 인프라 서비스 완전 문서화**:
+
+**Redis (496줄 신규)**:
+- Quick Start 및 Configuration 가이드
+- 다국어 클라이언트 예제 (Python, Node.js, Go)
+- Monitoring and Maintenance (서버 정보, 성능 모니터링)
+- Data Management (백업, 복원, 정리)
+- Security Best Practices (프로덕션 체크리스트)
+- Troubleshooting 및 Use Cases
+  * Session Store, Cache Layer, Message Queue, Rate Limiting
+
+**Memcached (646줄 신규)**:
+- Quick Start 및 메모리 크기 가이드
+- 다국어 클라이언트 예제 (Python, Node.js, PHP, Go)
+- Monitoring (Hit Rate, Evictions, Memory Usage)
+- Security Best Practices
+- **Redis vs Memcached 비교표** (언제 사용할지 가이드)
+- Advanced Configuration (Connection Pooling)
+- Performance Tips
+
+**Apache Ignite (783줄 신규)**:
+- 분산 데이터베이스/캐시 플랫폼 종합 가이드
+- Connecting to Ignite (Java, Python, Node.js, C#)
+- REST API, SQL Operations (JDBC, Thin Client)
+- Cache Operations (PARTITIONED, REPLICATED, LOCAL 모드)
+- Clustering 및 Multi-node 설정
+- Data Persistence, Backup, Snapshot 관리
+- Use Cases: 분산 캐시, In-Memory DB, Compute Grid, Stream Processing
+
+#### Standalone 프로젝트 README 전면 개선
+
+**Nextcloud Standalone (20줄 → 365줄, 18배 확장)**:
+- Apache vs FPM 비교표 및 빠른 시작 가이드
+- Docker Hooks 사용법 상세 가이드
+- 운영 명령어 (백업, 유지보수, 캐시 관리)
+- Health Check 설정 설명
+- 문제 해결 가이드
+- 공식 문서 및 GitHub 이슈 참조
+
+**Flarum (32줄 추가)**:
+- Apache vs Nginx 변형 설명 섹션 추가
+- 초보자/고급 사용자별 권장사항
+- 포트 충돌 경고 (둘 다 8140 사용)
+- 동시 실행 불가 명시
+
+### Improved
+
+#### 포트 충돌 해결 완료 문서화
+
+**PORT_GUIDE.md 확장**:
+- 선택적 구성 포트 충돌 상세 설명 (4개)
+  * Flarum: Apache vs Nginx 선택
+  * Nextcloud: Apache vs FPM 선택
+  * Memcached: 독립 실행 서비스
+  * Gollum: 포트 매핑 오탐
+- Phase 8-11 포트 변경 이력 정리
+- "제안 포트 할당" → "할당 완료 포트"로 업데이트
+- 포트 충돌 확인 방법 가이드 추가
+- 동시 실행 vs 독립 실행 설명 추가
+
+### Documentation Statistics (Phase 11.5)
+- **총 라인 수 추가**: 3,322+ 줄
+- **신규 README**: 3개 (Redis, Memcached, Ignite)
+- **개선된 README**: 3개 (PORT_GUIDE, Nextcloud, Flarum)
+- **인프라 서비스 문서화 커버리지**: 0% → 100%
+- **커밋 수**: 6개
+- **다국어 예제 코드**: Python, Node.js, Go, PHP, Java, C#
+
+### Quality Improvements
+- ✅ 모든 인프라 서비스 완전 문서화
+- ✅ Standalone 프로젝트 선택 가이드 추가
+- ✅ 포트 충돌 "선택적 구성" 개념 명확화
+- ✅ 프로덕션 보안 체크리스트 제공
+- ✅ Troubleshooting 및 Use Cases 상세화
+
+---
+
 ## [2025-11-17] - Phase 8
 
 ### Added
