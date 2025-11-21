@@ -66,15 +66,20 @@ for file in $COMPOSE_FILES; do
         # Check if port is already mapped
         if [ -n "${PORT_MAP[$port]}" ]; then
             EXISTING="${PORT_MAP[$port]}"
-            echo -e "${RED}⚠ CONFLICT: Port $port${NC}"
-            echo "  Already used:"
-            echo "    File: $(echo "$EXISTING" | cut -d'|' -f1)"
-            echo "    Service: $(echo "$EXISTING" | cut -d'|' -f2)"
-            echo "  Also used in:"
-            echo "    File: $REL_PATH"
-            echo "    Service: $SERVICE"
-            echo ""
-            CONFLICTS=$((CONFLICTS + 1))
+            EXISTING_FILE=$(echo "$EXISTING" | cut -d'|' -f1)
+
+            # Skip if it's the same file (e.g., TCP and UDP on same port)
+            if [ "$EXISTING_FILE" != "$REL_PATH" ]; then
+                echo -e "${RED}⚠ CONFLICT: Port $port${NC}"
+                echo "  Already used:"
+                echo "    File: $EXISTING_FILE"
+                echo "    Service: $(echo "$EXISTING" | cut -d'|' -f2)"
+                echo "  Also used in:"
+                echo "    File: $REL_PATH"
+                echo "    Service: $SERVICE"
+                echo ""
+                CONFLICTS=$((CONFLICTS + 1))
+            fi
         else
             PORT_MAP[$port]="$REL_PATH|$SERVICE"
             echo -e "${GREEN}✓${NC} Port $port → $REL_PATH ($SERVICE)"
