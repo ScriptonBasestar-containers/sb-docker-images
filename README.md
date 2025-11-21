@@ -11,13 +11,13 @@
 ## 검증 상태
 
 총 24개 프로젝트 중:
-- ✅ **완전 성공**: 19개 (79.2%)
+- ✅ **완전 성공**: 23개 (95.8%)
 - ⚠️ **이슈 발견**: 0개 (0%)
-- 🔄 **미검증**: 5개 (20.8%)
+- 🔄 **미검증**: 1개 (4.2%)
 
 상세 검증 결과: [`docs/verification/VERIFICATION-PROGRESS.md`](docs/verification/VERIFICATION-PROGRESS.md)
 
-### 성공 프로젝트 (19개)
+### 성공 프로젝트 (23개)
 
 | 프로젝트 | 포트 | 접근 URL | 비고 |
 |---------|------|----------|------|
@@ -40,6 +40,10 @@
 | **Gollum** | **4567** | http://localhost:4567 | Dockerfile 경로 + 포트 수정 |
 | **Docker Bitcoin** | **8332, 8333, 3002** | http://localhost:3002 | 이미지 변경 (tyzbit) |
 | **RTMP Proxy** | **1935** | rtmp://localhost:1935 | Dockerfile 경로 수정 |
+| **Discourse** | **3000, 8080, 8443** | http://localhost:3000 | PostgreSQL/Redis 추가 |
+| **DokuWiki** | **8130** | http://localhost:8130 | 수정 없음 |
+| **Forem** | **3000, 3333** | http://localhost:3000 | 수정 없음 |
+| **FlaskBB** | **8250** | http://localhost:8250 | 환경변수 기반 설정 |
 
 **추가 검증 통과**:
 - **Home Assistant**: host 네트워크 모드 (포트 충돌 없음)

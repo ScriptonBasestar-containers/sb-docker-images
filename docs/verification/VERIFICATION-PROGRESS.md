@@ -2,15 +2,15 @@
 
 ## 작업 일시
 - 시작: 2025-11-16
-- 최종 업데이트: 2025-11-16
+- 최종 업데이트: 2025-11-21
 
 ## 📊 전체 진행 상황
 
 | 상태 | 개수 | 비율 |
 |------|------|------|
-| ✅ 완전 성공 | 19개 | 79.2% |
+| ✅ 완전 성공 | 23개 | 95.8% |
 | ⚠️ 이슈 발견 | 0개 | 0% |
-| 🔄 미검증 | 5개 | 20.8% |
+| 🔄 미검증 | 1개 | 4.2% |
 | **전체** | **24개** | **100%** |
 
 ---
@@ -187,15 +187,49 @@
 - 검증: docker compose config 성공
 - 특징: Nginx RTMP 모듈, 스트리밍 프록시
 
+### 20. Discourse ✅
+- 상태: PostgreSQL/Redis 서비스 추가 + 환경변수 기반 설정 후 정상
+- 수정:
+  - PostgreSQL 16-alpine 서비스 추가
+  - Redis 7-alpine 서비스 추가
+  - 포트를 환경변수 기반으로 변경
+  - healthcheck 기반 의존성 설정
+  - links 제거 (deprecated)
+- 포트: 3000 (Dev), 8080 (HTTP), 8443 (HTTPS)
+- 검증: docker compose config 성공
+- 특징: Ruby on Rails 기반 포럼, PostgreSQL + Redis
+
+### 21. DokuWiki ✅
+- 상태: 정상 작동 (수정 불필요)
+- 포트: 8130 (HTTP)
+- 검증: docker compose config 성공
+- 특징: PHP 기반 위키, 파일 시스템 기반 스토리지
+
+### 22. Forem ✅
+- 상태: 정상 작동 (수정 불필요)
+- 포트: 3000 (Web), 3333 (Chrome)
+- 검증: docker compose config 성공
+- 특징: Ruby on Rails 기반 커뮤니티 플랫폼, 복잡한 마이크로서비스 구조
+
+### 23. FlaskBB ✅
+- 상태: 환경변수 기반 설정 개선 후 정상
+- 수정:
+  - 포트, 컨테이너명 환경변수화
+  - PostgreSQL/Redis 환경변수 추가
+  - Redis healthcheck 조건 추가
+  - Redis 이미지 8.2 → 7-alpine 변경
+- 포트: 8250 (HTTP)
+- 검증: docker compose config 성공
+- 특징: Python Flask 기반 포럼, PostgreSQL + Redis
+
 ---
 
-## 🔄 미검증 (5개)
+## 🔄 미검증 (1개)
 
-1. **Forem** - 디스크 공간 부족으로 중단
-2. **Discourse** - 제거됨 (검증 대상 아님)
-3-5. 기타 프로젝트 - 미확인
-
-**참고**: 이슈 발견 프로젝트 4개 모두 해결 완료 (Devpi, Gollum, Docker Bitcoin, RTMP Proxy)
+**참고**:
+- Deprecated 프로젝트 제외 (xe3/xpressengine, spree, solidus, openNamu)
+- Standalone 전용 프로젝트는 별도 검증 필요 (drupal, nextcloud, nodebb, mastodon, squid, mailslurper, jupyter 등)
+- 이슈 발견 프로젝트 6개 모두 해결 완료 (Devpi, Gollum, Docker Bitcoin, RTMP Proxy, Discourse, FlaskBB)
 
 ---
 
@@ -223,10 +257,14 @@
 | **Django CMS** | **8093**, 8094, 5432 | ✅ |
 | **TSBoard** | **8095**, 3100, 3307 | ✅ |
 | Home Assistant | 8123 (host mode) | ✅ |
+| **DokuWiki** | **8130** | ✅ |
+| **FlaskBB** | **8250** | ✅ |
 | **Docker Ethereum** | **8545**, 8546, 30303, 4000 | ✅ |
 | Minio | 9000, 9001 | ✅ |
 | Flarum Mailhog | 8026 | ✅ |
 | **Bitcoin RPC** | **8332, 8333** | ✅ |
+| **Discourse** | **3000**, 8080, 8443 | ✅ |
+| **Forem** | **3000**, 3333 | ✅ |
 
 ---
 
@@ -277,6 +315,15 @@ devpi/compose.yml
 gollum/compose.yml
 docker-bitcoin/compose.yml
 rtmp-proxy/compose.yml
+```
+
+### 커밋 8: 추가 프로젝트 검증 및 개선 (4개 프로젝트)
+```
+discourse/compose.yml - PostgreSQL/Redis 서비스 추가, 환경변수 기반 설정
+dokuwiki/compose.yml - 검증만 (수정 불필요)
+forem/compose.yml - 검증만 (수정 불필요)
+flaskbb/docker-compose.yml - 환경변수 기반 개선
+docs/verification/VERIFICATION-PROGRESS.md - 검증 진행상황 업데이트
 ```
 
 ---

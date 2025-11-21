@@ -4,11 +4,11 @@ services:
 #    build:
 #      context: image/discourse_app
 #      dockerfile: Dockerfile
-    container_name: discourse_dev
+    container_name: ${DISCOURSE_CONTAINER_NAME:-discourse_dev}
     ports:
-      - "3000:3000"
-      - "8080:80"
-      - "8443:443"
+      - "${DISCOURSE_DEV_PORT:-3000}:3000"
+      - "${DISCOURSE_HTTP_PORT:-8080}:80"
+      - "${DISCOURSE_HTTPS_PORT:-8443}:443"
 #    command: ["bash", "-c", "while true; do sleep 1000; done"]
     command: ["rails", "s"]
     entrypoint: ["entrypoint.sh"]
@@ -48,26 +48,38 @@ services:
       # POSTGRESQL_CLIENT_CREATE_DATABASE_NAME: dev_discourse_db
       # POSTGRESQL_CLIENT_CREATE_DATABASE_EXTENSIONS: hstore,pg_trgm
     depends_on:
-      - redis
-      - postgres
-    links:
-      - redis
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
-  # sidekiq:
-  #   DEPRECATED: Legacy configuration removed
-  #   Use official discourse/app image with standard paths
-  #   image: discourse/app
-  #   container_name: sidekiq_dev
-  #   depends_on:
-  #     - discourse
-  #   volumes:
-  #     - 'sidekiq_data:/var/www/discourse'
-  #   environment:
-  #     - DISCOURSE_HOST=www.example.com
-  #     - DISCOURSE_DATABASE_HOST=postgresql
-  #     - DISCOURSE_DATABASE_PORT_NUMBER=5432
-  #     - DISCOURSE_DATABASE_USER=discourse_user
-  #     - DISCOURSE_DATABASE_NAME=discourse_db
-  #     - DISCOURSE_REDIS_HOST=redis
-  #     - DISCOURSE_REDIS_PORT_NUMBER=6379
+  postgres:
+    image: postgres:16-alpine
+    container_name: ${POSTGRES_CONTAINER_NAME:-discourse-postgres}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-db01}
+      POSTGRES_USER: ${POSTGRES_USER:-user01}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-passw0rd}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user01}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ${REDIS_CONTAINER_NAME:-discourse-redis}
+    command: redis-server --requirepass ${REDIS_PASSWORD:-passw0rd}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:

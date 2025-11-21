@@ -1,21 +1,21 @@
 services:
   flaskbb:
     image: flaskbb/flaskbb:latest
-    container_name: flaskbb
+    container_name: ${FLASKBB_CONTAINER_NAME:-flaskbb}
     restart: unless-stopped
     ports:
-      - "8250:8080"
+      - "${FLASKBB_PORT:-8250}:8080"
     environment:
       # Flask 설정
       FLASK_APP: flaskbb
       FLASK_ENV: production
 
       # FlaskBB 설정
-      FLASKBB_SERVER_NAME: localhost:8250
-      FLASKBB_SECRET_KEY: change-this-to-a-random-secret-key
+      FLASKBB_SERVER_NAME: ${FLASKBB_SERVER_NAME:-localhost:8250}
+      FLASKBB_SECRET_KEY: ${FLASKBB_SECRET_KEY:-change-this-to-a-random-secret-key}
 
       # 데이터베이스 설정
-      FLASKBB_DATABASE_URI: postgresql://user01:passw0rd@postgres:5432/db01
+      FLASKBB_DATABASE_URI: postgresql://${POSTGRES_USER:-user01}:${POSTGRES_PASSWORD:-passw0rd}@postgres:5432/${POSTGRES_DB:-db01}
 
       # Redis 설정
       FLASKBB_REDIS_URL: redis://redis:6379/0
@@ -31,7 +31,7 @@ services:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
     networks:
       - flaskbb-network
     volumes:
@@ -40,12 +40,12 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: flaskbb_postgres
+    container_name: ${POSTGRES_CONTAINER_NAME:-flaskbb_postgres}
     restart: unless-stopped
     environment:
-      POSTGRES_DB: db01
-      POSTGRES_USER: user01
-      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_DB: ${POSTGRES_DB:-db01}
+      POSTGRES_USER: ${POSTGRES_USER:-user01}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-passw0rd}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
@@ -57,8 +57,8 @@ services:
       retries: 5
 
   redis:
-    image: redis:8.2-alpine
-    container_name: flaskbb_redis
+    image: redis:7-alpine
+    container_name: ${REDIS_CONTAINER_NAME:-flaskbb_redis}
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
