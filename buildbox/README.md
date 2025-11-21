@@ -4,7 +4,8 @@ Reusable Docker Compose templates collection for common infrastructure services 
 
 ## Overview
 
-Buildbox provides modular, pre-configured Docker Compose templates that you can combine to create custom development stacks. Instead of writing compose files from scratch, select and combine the services you need.
+Buildbox provides modular, pre-configured Docker Compose templates that you can combine to create custom
+development stacks. Instead of writing compose files from scratch, select and combine the services you need.
 
 **Key Features:**
 - ✅ Modular compose templates (mix and match)
