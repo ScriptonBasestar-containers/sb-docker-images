@@ -43,6 +43,38 @@ make up
 
 **For development and testing only.** Includes additional development tools.
 
+#### Web Server Variants
+
+이 디렉토리는 두 가지 웹서버 구성을 제공합니다 (**하나만 선택하여 사용**):
+
+**1. Apache 변형 (권장 - 초보자용)**
+```bash
+docker compose -f compose.apache.yml up -d
+```
+- ✅ Apache 웹서버 내장
+- ✅ 간단한 설정 (단일 컨테이너)
+- ✅ 초보자에게 권장
+- 📦 빌드: `flarum-apache.dockerfile`
+
+**2. Nginx 변형 (고급 사용자용)**
+```bash
+docker compose -f compose.nginx.yml up -d
+```
+- ✅ Nginx + PHP-FPM 분리 아키텍처
+- ✅ 고성능 처리
+- ✅ 세밀한 설정 가능
+- 📦 빌드: `flarum-fpm.dockerfile`
+
+**⚠️ 포트 충돌 주의:**
+- 두 구성 모두 포트 **8140**을 사용합니다
+- **동시에 실행하지 마세요**
+- 하나를 선택하여 사용하세요
+
+**기본 설정 (compose.yml):**
+- 개발 도구 포함: phpMyAdmin, MailHog
+- Apache 기반 구성
+- 추가 개발 도구와 함께 사용
+
 ## Default Configuration
 
 **Default port:** 8140 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
