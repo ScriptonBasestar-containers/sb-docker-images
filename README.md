@@ -10,14 +10,14 @@
 
 ## 검증 상태
 
-총 24개 프로젝트 중:
-- ✅ **완전 성공**: 23개 (95.8%)
+총 26개 프로젝트 중:
+- ✅ **완전 성공**: 26개 (100%)
 - ⚠️ **이슈 발견**: 0개 (0%)
-- 🔄 **미검증**: 1개 (4.2%)
+- 🔄 **미검증**: 0개 (0%)
 
 상세 검증 결과: [`docs/verification/VERIFICATION-PROGRESS.md`](docs/verification/VERIFICATION-PROGRESS.md)
 
-### 성공 프로젝트 (23개)
+### 성공 프로젝트 (26개)
 
 | 프로젝트 | 포트 | 접근 URL | 비고 |
 |---------|------|----------|------|
@@ -48,6 +48,9 @@
 **추가 검증 통과**:
 - **Home Assistant**: host 네트워크 모드 (포트 충돌 없음)
 - **Kratos**: 전용 포트 사용 (4433, 4434, 4455)
+- **Redis**: In-memory data store (6379)
+- **Memcached**: Memory caching (11211)
+- **Apache Ignite**: In-memory computing platform (10800, 11211, 47100, 47500)
 
 ## 주요 기능
 
