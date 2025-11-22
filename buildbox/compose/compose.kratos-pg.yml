@@ -1,11 +1,13 @@
 services:
   kratos-migrate:
+    image: oryd/kratos:v1.2
     environment:
       - DSN=postgres://kratos_user:passw0rd@postgres:5432/kratos_db?sslmode=disable&max_conns=20&max_idle_conns=4
     networks:
       - data-network
 
   kratos:
+    image: oryd/kratos:v1.2
     environment:
       - DSN=postgres://kratos_user:passw0rd@postgres:5432/kratos_db?sslmode=disable&max_conns=20&max_idle_conns=4
     networks:
@@ -21,3 +23,7 @@ services:
 #      - POSTGRES_DB=kratos
 #    networks:
 #      - intra-network
+
+networks:
+  data-network:
+    driver: bridge

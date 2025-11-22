@@ -38,3 +38,29 @@ services:
       - db-network
     depends_on:
       - mariadb
+
+  mariadb:
+    image: mariadb:11.8
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=db01
+      - MYSQL_USER=user01
+      - MYSQL_PASSWORD=passw0rd
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - db-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  code-network:
+    driver: bridge
+  db-network:
+    driver: bridge
+
+volumes:
+  mariadb:

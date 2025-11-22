@@ -65,6 +65,10 @@ services:
     networks:
       - intra-network
 
+networks:
+  intra-network:
+    driver: bridge
+
 volumes:
   kratos-sqlite:
   kratos-config:
