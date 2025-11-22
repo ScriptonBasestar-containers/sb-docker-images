@@ -248,9 +248,12 @@
 
 **참고**:
 - Deprecated 프로젝트 제외 (xe3/xpressengine, spree, solidus, openNamu)
-- Standalone 전용 프로젝트는 별도 검증 필요 (drupal, nextcloud, nodebb, mastodon, squid, mailslurper, jupyter 등)
+- **Standalone 구성 검증 완료**: 23개 프로젝트, 24개 파일 100% 통과
+  - Standalone 전용 (9개): drupal, jupyter, mailslurper, mastodon, nextcloud, nodebb, openNamu, solidus, squid
+  - 하이브리드 (14개): discourse, django-cms, dokuwiki, flarum, flaskbb, gnuboard5, ignite, jenkins, joomla, mediawiki, memcached, redis, wikijs, wordpress
 - 이슈 발견 프로젝트 6개 모두 해결 완료 (Devpi, Gollum, Docker Bitcoin, RTMP Proxy, Discourse, FlaskBB)
 - **Phase 11.5**: 인프라 서비스 3개 추가 검증 (Redis, Memcached, Ignite)
+- **Phase 11.6**: Standalone 구성 전체 검증 완료 (24개 파일)
 
 ---
 
