@@ -18,15 +18,62 @@ Real-world examples for using sb-docker-images in common development scenarios.
 **Scenario**: Create a blog application with Django, PostgreSQL, Redis, Celery, and Nginx.
 
 **Architecture**:
+
+```mermaid
+graph TB
+    Client[👤 User/Browser]
+
+    subgraph frontend["Frontend Layer"]
+        Nginx[Nginx<br/>Reverse Proxy<br/>:80]
+    end
+
+    subgraph backend["Backend Layer"]
+        Django[Django/Gunicorn<br/>Web Application<br/>:8000]
+        Celery[Celery Worker<br/>Background Tasks]
+        CeleryBeat[Celery Beat<br/>Scheduler]
+    end
+
+    subgraph data["Data Layer"]
+        PG[(PostgreSQL<br/>:5432)]
+        Redis[(Redis<br/>:6379)]
+    end
+
+    subgraph storage["Storage"]
+        Static[Static Files<br/>Volume]
+        Media[Media Files<br/>Volume]
+    end
+
+    Client -->|HTTP| Nginx
+    Nginx -->|Proxy Pass| Django
+    Nginx -.->|Serve| Static
+    Nginx -.->|Serve| Media
+
+    Django -->|ORM| PG
+    Django -->|Cache/Sessions| Redis
+    Django -->|Enqueue Jobs| Redis
+
+    Celery -->|Consume Jobs| Redis
+    Celery -->|Store Results| PG
+
+    CeleryBeat -->|Schedule Jobs| Redis
+
+    Django -.->|Write| Static
+    Django -.->|Upload| Media
+
+    style Client fill:#e1f5fe
+    style frontend fill:#fff3e0
+    style backend fill:#f3e5f5
+    style data fill:#e8f5e9
+    style storage fill:#fff9c4
 ```
-Nginx (Reverse Proxy)
-  ↓
-Django (Web App) ← Redis (Cache/Sessions)
-  ↓
-PostgreSQL (Database)
-  ↓
-Celery (Background Tasks)
-```
+
+**Component Roles**:
+- **Nginx**: Serves static files, proxies dynamic requests to Django
+- **Django**: Handles HTTP requests, business logic, ORM
+- **Celery Worker**: Processes background tasks (emails, reports, etc.)
+- **Celery Beat**: Schedules periodic tasks
+- **PostgreSQL**: Persistent data storage
+- **Redis**: Caching, sessions, and message broker for Celery
 
 **Project Structure**:
 ```
@@ -275,17 +322,56 @@ volumes:
 **Scenario**: Modern microservices architecture with API gateway, multiple services, and shared infrastructure.
 
 **Architecture**:
+
+```mermaid
+graph TB
+    Client[👤 Client/Browser]
+
+    subgraph gateway["API Gateway"]
+        Nginx[Nginx<br/>Reverse Proxy<br/>:80]
+    end
+
+    subgraph services["Microservices Layer"]
+        UserSvc[User Service<br/>:3000]
+        ProductSvc[Product Service<br/>:3001]
+        OrderSvc[Order Service<br/>:3002]
+    end
+
+    subgraph persistence["Data Layer"]
+        PG_Users[(PostgreSQL<br/>users DB)]
+        Mongo[(MongoDB<br/>products DB)]
+        PG_Orders[(PostgreSQL<br/>orders DB)]
+        Redis[(Redis<br/>Shared Cache)]
+    end
+
+    Client -->|HTTP/HTTPS| Nginx
+
+    Nginx -->|/api/users| UserSvc
+    Nginx -->|/api/products| ProductSvc
+    Nginx -->|/api/orders| OrderSvc
+
+    UserSvc --> PG_Users
+    UserSvc -.->|Cache| Redis
+
+    ProductSvc --> Mongo
+    ProductSvc -.->|Cache| Redis
+
+    OrderSvc --> PG_Orders
+    OrderSvc -.->|Cache| Redis
+    OrderSvc -.->|User Data| UserSvc
+    OrderSvc -.->|Product Data| ProductSvc
+
+    style Client fill:#e1f5fe
+    style gateway fill:#fff3e0
+    style services fill:#f3e5f5
+    style persistence fill:#e8f5e9
 ```
-                Nginx (API Gateway)
-                      ↓
-        ┌─────────────┼─────────────┐
-        ↓             ↓             ↓
-   User Service   Product Service  Order Service
-        ↓             ↓             ↓
-     Postgres       MongoDB        Postgres
-        ↓             ↓             ↓
-           Redis (Shared Cache)
-```
+
+**Key Features**:
+- **API Gateway**: Single entry point for all client requests
+- **Service Independence**: Each microservice has its own database
+- **Shared Cache**: Redis for cross-service caching
+- **Service Communication**: Inter-service API calls for data aggregation
 
 **Project Structure**:
 ```

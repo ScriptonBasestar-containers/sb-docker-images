@@ -48,6 +48,26 @@ Resource requirements, optimization tips, and performance benchmarks for sb-dock
 
 ## Resource Allocation
 
+### Resource Overview
+
+Typical resource distribution for a full-stack application:
+
+```mermaid
+%%{init: {'theme':'base'}}%%
+pie title Resource Allocation by Service Type
+    "Databases (PostgreSQL/MariaDB)" : 35
+    "Application Servers (Django/Rails)" : 30
+    "Cache (Redis/Memcached)" : 15
+    "Web Servers (Nginx)" : 5
+    "Background Workers (Celery/Sidekiq)" : 10
+    "Other Services" : 5
+```
+
+**Recommended Total Resources** for a typical stack:
+- **CPU**: 4-8 cores
+- **RAM**: 8-16 GB
+- **Disk**: 50-100 GB SSD
+
 ### Per-Service Resource Usage
 
 #### Databases

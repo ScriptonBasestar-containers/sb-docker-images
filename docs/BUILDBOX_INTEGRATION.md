@@ -26,18 +26,29 @@ Buildbox provides reusable infrastructure services that can be integrated with a
 
 ### Architecture
 
+```mermaid
+graph TB
+    subgraph "Your Application"
+        App[Django/Rails/PHP App]
+    end
+
+    subgraph "Buildbox Infrastructure"
+        DB[(PostgreSQL)]
+        Cache[(Redis)]
+        Queue[Message Queue]
+    end
+
+    App -->|Database Queries| DB
+    App -->|Caching| Cache
+    App -->|Background Jobs| Queue
+
+    style App fill:#e1f5fe
+    style DB fill:#c8e6c9
+    style Cache fill:#fff9c4
+    style Queue fill:#f8bbd0
 ```
-┌─────────────────┐
-│  Your App       │ ← Application code
-│  (Django/Rails) │
-└────────┬────────┘
-         │
-         ├──────────────┐
-         │              │
-    ┌────▼─────┐   ┌────▼─────┐
-    │PostgreSQL│   │  Redis   │ ← Buildbox services
-    └──────────┘   └──────────┘
-```
+
+**Simple Integration**: Your application connects to Buildbox services via Docker networks, avoiding the need to configure databases and caches in each project.
 
 ---
 
@@ -401,22 +412,48 @@ module.exports = client;
 
 Buildbox uses three network layers for security and isolation:
 
+```mermaid
+graph TD
+    subgraph app["🌐 app-network (Application Layer)"]
+        Web[Nginx/Apache<br/>Web Servers]
+        API[API Services<br/>REST/GraphQL]
+        App[Application<br/>Django/Rails]
+    end
+
+    subgraph intra["🔧 intra-network (Service Layer)"]
+        Auth[Auth Services<br/>Kratos/Authelia]
+        Mail[Mail Services<br/>SMTP/MailHog]
+        Internal[Internal APIs<br/>Microservices]
+    end
+
+    subgraph data["💾 data-network (Data Layer)"]
+        DB[(PostgreSQL<br/>MariaDB)]
+        Cache[(Redis<br/>Memcached)]
+        Queue[(Message Queue<br/>RabbitMQ)]
+    end
+
+    App --> Auth
+    App --> Mail
+    App --> Internal
+
+    Auth --> DB
+    Internal --> DB
+    App --> DB
+
+    App --> Cache
+    Internal --> Cache
+
+    App --> Queue
+
+    style app fill:#e3f2fd
+    style intra fill:#fff3e0
+    style data fill:#f1f8e9
 ```
-┌─────────────────────────────────────┐
-│         app-network                 │ ← Application layer
-│  (Web servers, API services)        │
-└──────────────┬──────────────────────┘
-               │
-┌──────────────▼──────────────────────┐
-│        intra-network                │ ← Service layer
-│  (Auth, Mail, Internal services)    │
-└──────────────┬──────────────────────┘
-               │
-┌──────────────▼──────────────────────┐
-│        data-network                 │ ← Data layer
-│  (Databases, Caches)                │
-└─────────────────────────────────────┘
-```
+
+**Security Benefits**:
+- **app-network**: Public-facing services, can be exposed to internet
+- **intra-network**: Internal services, isolated from direct external access
+- **data-network**: Data storage, most restricted layer
 
 ### Network Configuration
 
