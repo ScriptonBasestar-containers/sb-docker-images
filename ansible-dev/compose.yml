@@ -1,0 +1,39 @@
+services:
+  ansible:
+    build:
+      context: .
+      dockerfile: alpine/Dockerfile
+    image: ansible-dev:2.18
+    container_name: ${CONTAINER_NAME:-ansible-dev}
+    environment:
+      - ANSIBLE_VERSION=${ANSIBLE_VERSION:-2.18}
+      - ANSIBLE_GATHERING=${ANSIBLE_GATHERING:-smart}
+      - ANSIBLE_HOST_KEY_CHECKING=${ANSIBLE_HOST_KEY_CHECKING:-false}
+      - ANSIBLE_RETRY_FILES_ENABLED=${ANSIBLE_RETRY_FILES_ENABLED:-false}
+      - ANSIBLE_ROLES_PATH=${ANSIBLE_ROLES_PATH:-/ansible/playbooks/roles}
+      - ANSIBLE_SSH_PIPELINING=${ANSIBLE_SSH_PIPELINING:-True}
+      - ANSIBLE_LIBRARY=${ANSIBLE_LIBRARY:-/ansible/library}
+      - EDITOR=${EDITOR:-nano}
+    volumes:
+      # Mount your playbooks directory
+      - ./playbooks:/playbooks
+      # Mount SSH keys (optional, uncomment if needed)
+      # - ~/.ssh:/root/.ssh:ro
+      # Mount custom roles (optional)
+      # - ./roles:/ansible/playbooks/roles
+      # Mount custom library (optional)
+      # - ./library:/ansible/library
+    working_dir: /playbooks
+    # Override entrypoint for interactive shell
+    # entrypoint: /bin/bash
+    # command: -c "tail -f /dev/null"
+    restart: "no"
+    networks:
+      - ansible-network
+
+networks:
+  ansible-network:
+    driver: bridge
+
+volumes:
+  playbooks:

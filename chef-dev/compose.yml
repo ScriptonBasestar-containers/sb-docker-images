@@ -1,0 +1,33 @@
+services:
+  chef:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - CHEF_VERSION=${CHEF_VERSION:-3.4.28}
+        - CUSTOM_USER=${CUSTOM_USER:-developer}
+    image: chef-dev:3.4.28
+    container_name: ${CONTAINER_NAME:-chef-dev}
+    environment:
+      - CHEF_LICENSE=${CHEF_LICENSE:-accept}
+      - CUSTOM_USER=${CUSTOM_USER:-developer}
+    volumes:
+      # Mount your chef cookbooks/recipes directory
+      - ./cookbooks:/work/cookbooks
+      # Mount chef configuration (optional)
+      # - ./config:/work/config
+      # Mount SSH keys for remote deployment (optional)
+      # - ~/.ssh:/home/${CUSTOM_USER:-developer}/.ssh:ro
+    working_dir: /work
+    # Keep container running for development
+    command: tail -f /dev/null
+    restart: unless-stopped
+    networks:
+      - chef-network
+
+networks:
+  chef-network:
+    driver: bridge
+
+volumes:
+  cookbooks:
