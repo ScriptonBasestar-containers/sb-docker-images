@@ -108,6 +108,7 @@ Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
 ### 시작하기
 - [빠른 시작](#빠른-시작) - 프로젝트 실행 기본 가이드
 - [PORT_GUIDE.md](./PORT_GUIDE.md) - 포트 할당 및 충돌 방지
+- [VERSIONING.md](./docs/VERSIONING.md) - 프로젝트별 버전 관리 전략 ⭐ **NEW**
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - 기여 가이드라인
 
 ### 고급 가이드 ⭐ **Phase 11.7 NEW**
@@ -281,7 +282,9 @@ https://axbom.com/fediverse/
 - ✅ 보안 스캔 (Trivy)
 
 **Continuous Deployment (CD)**:
-- 🚀 Tag 기반 자동 배포 (`v*.*.*`, `postgres-exts-v*`)
+- 🚀 **프로젝트별 버전 태그** (`discourse-v1.0.0`, `wikijs-v2.0.0`) ⭐ **NEW**
+- 🚀 Phase 태그 지원 (`phase-11.7`, `phase-12.0`)
+- 🚀 자동 Docker 이미지 빌드 및 배포
 - 🚀 Manual workflow dispatch 지원
 - 🚀 Multi-architecture 빌드 (amd64, arm64)
 
@@ -290,9 +293,24 @@ https://axbom.com/fediverse/
 - 📋 관련 테스트만 선택적 실행
 - 📋 코드 품질 자동 체크
 
+### Version Management
+
+각 프로젝트는 독립적인 버전 관리:
+
+```bash
+# 프로젝트 버전 태그 생성
+./scripts/version-tag.sh discourse 1.2.3
+
+# 버전 목록 확인
+./scripts/list-versions.sh
+./scripts/list-versions.sh --latest
+```
+
+상세 내용: [VERSIONING.md](./docs/VERSIONING.md)
+
 ### Workflow Files
 - `.github/workflows/ci.yml` - CI 워크플로우
-- `.github/workflows/cd.yml` - CD 워크플로우
+- `.github/workflows/cd.yml` - CD 워크플로우 (프로젝트별 빌드 지원)
 - `.github/workflows/pr-check.yml` - PR 자동 체크
 
 ## Repository Maintenance

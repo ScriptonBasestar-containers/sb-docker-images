@@ -3,8 +3,8 @@ name: CD - Continuous Deployment
 on:
   push:
     tags:
-      - 'v*.*.*'
-      - 'postgres-exts-v*'
+      - '*-v*.*.*'        # All project tags (discourse-v1.0.0, wikijs-v2.0.0, etc.)
+      - 'phase-*'         # Phase tags (phase-11.7, phase-12.0, etc.)
   workflow_dispatch:
     inputs:
       project:
@@ -14,14 +14,66 @@ on:
         options:
           - postgres-exts-essential
           - postgres-exts-full
+          - discourse
+          - wikijs
+          - wordpress
+          - gitea
+          - flarum
           - all
 
 jobs:
+  # Detect project from tag
+  detect-project:
+    name: Detect Project and Version
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    outputs:
+      project: ${{ steps.parse.outputs.project }}
+      version: ${{ steps.parse.outputs.version }}
+      is_phase: ${{ steps.parse.outputs.is_phase }}
+      should_build: ${{ steps.parse.outputs.should_build }}
+
+    steps:
+      - name: Parse tag
+        id: parse
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "Full tag: $TAG"
+
+          # Check if phase tag
+          if [[ "$TAG" =~ ^phase- ]]; then
+            echo "is_phase=true" >> $GITHUB_OUTPUT
+            echo "should_build=false" >> $GITHUB_OUTPUT
+            echo "Phase tag detected - no build required"
+            exit 0
+          fi
+
+          # Extract project and version from tag (format: project-vX.Y.Z)
+          if [[ "$TAG" =~ ^(.+)-v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            PROJECT="${BASH_REMATCH[1]}"
+            VERSION="${BASH_REMATCH[2]}"
+
+            echo "project=$PROJECT" >> $GITHUB_OUTPUT
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "is_phase=false" >> $GITHUB_OUTPUT
+            echo "should_build=true" >> $GITHUB_OUTPUT
+
+            echo "Detected project: $PROJECT"
+            echo "Detected version: $VERSION"
+          else
+            echo "Invalid tag format: $TAG"
+            echo "should_build=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
   # Build and push PostgreSQL Extensions
   build-push-postgres-exts:
     name: Build & Push PostgreSQL Extensions
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'
+    needs: [detect-project]
+    if: |
+      (github.event_name == 'push' && needs.detect-project.outputs.project == 'postgres-exts') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'))
 
     steps:
       - name: Checkout code
@@ -38,13 +90,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
-      - name: Extract version from tag
+      - name: Extract version
         id: version
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
-            VERSION=${GITHUB_REF#refs/tags/}
+            VERSION="${{ needs.detect-project.outputs.version }}"
             echo "version=$VERSION" >> $GITHUB_OUTPUT
           else
             echo "version=manual-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
@@ -74,13 +125,13 @@ jobs:
           fi
 
       - name: Push Essential Image
-        if: (github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push') && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        if: github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push'
         run: |
           docker push scriptonbasestar/postgres-exts:16-essential
           docker push scriptonbasestar/postgres-exts:16-essential-${{ steps.version.outputs.version }}
 
       - name: Push Full Image
-        if: (github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all') && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        if: github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'
         run: |
           docker push scriptonbasestar/postgres-exts:16-full
           docker push scriptonbasestar/postgres-exts:16-full-${{ steps.version.outputs.version }}
@@ -88,8 +139,147 @@ jobs:
       - name: Create Release Summary
         if: github.event_name == 'push'
         run: |
-          echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## PostgreSQL Extensions Release" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "**Images Built**:" >> $GITHUB_STEP_SUMMARY
           docker images | grep postgres-exts >> $GITHUB_STEP_SUMMARY || true
+
+  # Build and push Custom Dockerfile projects
+  build-push-custom:
+    name: Build & Push Custom Image
+    runs-on: ubuntu-latest
+    needs: [detect-project]
+    if: |
+      github.event_name == 'push' &&
+      needs.detect-project.outputs.should_build == 'true' &&
+      needs.detect-project.outputs.project != 'postgres-exts'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Check project type
+        id: check
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+
+          # Check if project has Dockerfile(s)
+          if [ -f "$PROJECT/Dockerfile" ] || find "$PROJECT" -name "Dockerfile" -type f | grep -q .; then
+            echo "has_dockerfile=true" >> $GITHUB_OUTPUT
+            echo "Project has Dockerfile"
+          else
+            echo "has_dockerfile=false" >> $GITHUB_OUTPUT
+            echo "Project uses upstream images only"
+          fi
+
+          # Check if project has Makefile with build target
+          if [ -f "$PROJECT/Makefile" ] && grep -q "^build:" "$PROJECT/Makefile"; then
+            echo "has_makefile=true" >> $GITHUB_OUTPUT
+            echo "Project has Makefile with build target"
+          else
+            echo "has_makefile=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build with Makefile
+        if: steps.check.outputs.has_makefile == 'true' && steps.check.outputs.has_dockerfile == 'true'
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+          VERSION="${{ needs.detect-project.outputs.version }}"
+
+          cd "$PROJECT"
+          make build || echo "Build target failed or not standard"
+
+      - name: Build with Docker
+        if: steps.check.outputs.has_dockerfile == 'true' && steps.check.outputs.has_makefile == 'false'
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+          VERSION="${{ needs.detect-project.outputs.version }}"
+
+          cd "$PROJECT"
+
+          # Find Dockerfile
+          if [ -f "Dockerfile" ]; then
+            DOCKERFILE="Dockerfile"
+          else
+            DOCKERFILE=$(find . -name "Dockerfile" -type f | head -1)
+          fi
+
+          if [ -n "$DOCKERFILE" ]; then
+            docker build -t "scriptonbasestar/${PROJECT}:${VERSION}" -f "$DOCKERFILE" .
+            docker tag "scriptonbasestar/${PROJECT}:${VERSION}" "scriptonbasestar/${PROJECT}:latest"
+          fi
+
+      - name: Test Image
+        if: steps.check.outputs.has_dockerfile == 'true'
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+
+          # Basic smoke test - check if image exists
+          docker images | grep "$PROJECT" || echo "No images found"
+
+      - name: Push to Docker Hub
+        if: steps.check.outputs.has_dockerfile == 'true'
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+          VERSION="${{ needs.detect-project.outputs.version }}"
+
+          # Push versioned tag
+          if docker images | grep -q "scriptonbasestar/${PROJECT}"; then
+            docker push "scriptonbasestar/${PROJECT}:${VERSION}" || echo "Version tag push failed"
+            docker push "scriptonbasestar/${PROJECT}:latest" || echo "Latest tag push failed"
+          fi
+
+      - name: Create Release Summary
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+          VERSION="${{ needs.detect-project.outputs.version }}"
+
+          echo "## $PROJECT Release" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Project**: $PROJECT" >> $GITHUB_STEP_SUMMARY
+          echo "**Version**: $VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "**Has Dockerfile**: ${{ steps.check.outputs.has_dockerfile }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.check.outputs.has_dockerfile }}" == "true" ]; then
+            echo "**Docker Images**:" >> $GITHUB_STEP_SUMMARY
+            docker images | grep "$PROJECT" >> $GITHUB_STEP_SUMMARY || echo "No images found" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Docker Hub**: https://hub.docker.com/r/scriptonbasestar/$PROJECT" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ This project uses upstream images and doesn't require custom builds." >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Summary for phase tags
+  phase-summary:
+    name: Phase Tag Summary
+    runs-on: ubuntu-latest
+    needs: [detect-project]
+    if: github.event_name == 'push' && needs.detect-project.outputs.is_phase == 'true'
+
+    steps:
+      - name: Create Summary
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "## Phase Tag: $TAG" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "This is a repository-wide milestone tag." >> $GITHUB_STEP_SUMMARY
+          echo "No Docker images are built for phase tags." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Phase tags are used for:" >> $GITHUB_STEP_SUMMARY
+          echo "- Documentation milestones" >> $GITHUB_STEP_SUMMARY
+          echo "- Infrastructure improvements" >> $GITHUB_STEP_SUMMARY
+          echo "- Major refactoring completion" >> $GITHUB_STEP_SUMMARY

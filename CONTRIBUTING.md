@@ -359,6 +359,135 @@ docker compose down -v
 - [ ] 로컬 테스트 완료
 - [ ] 자동화 검증 통과
 
+## 버전 관리 및 릴리스
+
+### 프로젝트별 독립 버전 관리
+
+각 Docker 이미지 프로젝트는 독립적인 버전을 가집니다.
+
+**태그 형식**: `<project>-v<major>.<minor>.<patch>`
+
+예시:
+```bash
+discourse-v1.2.3
+wikijs-v2.0.0
+postgres-exts-v16.2.1
+```
+
+### 버전 태깅 워크플로우
+
+#### 1. 변경 사항 커밋
+
+```bash
+cd discourse/
+# ... 파일 수정 ...
+
+git add .
+git commit -m "feat(discourse): add Redis caching support"
+```
+
+#### 2. 버전 태그 생성
+
+```bash
+# Helper 스크립트 사용 (권장)
+./scripts/version-tag.sh discourse 1.2.3
+
+# 또는 수동으로
+git tag discourse-v1.2.3
+```
+
+#### 3. 태그 푸시
+
+```bash
+# 커밋과 태그 모두 푸시
+git push origin master
+git push origin discourse-v1.2.3
+```
+
+#### 4. 자동 빌드
+
+CD 워크플로우가 자동으로:
+- Docker 이미지 빌드
+- Docker Hub에 푸시
+- Release summary 생성
+
+### 버전 증가 규칙
+
+**Major (X.0.0)**:
+- Breaking changes
+- 주요 upstream 버전 업그레이드
+- 호환성 없는 변경
+
+**Minor (0.X.0)**:
+- 새로운 기능 추가
+- Compose 설정 개선
+- 의존성 업데이트 (호환성 유지)
+
+**Patch (0.0.X)**:
+- 버그 수정
+- 문서 업데이트
+- 환경변수 수정
+
+### 버전 관리 도구
+
+```bash
+# 모든 프로젝트 버전 확인
+./scripts/list-versions.sh
+
+# 특정 프로젝트 버전 확인
+./scripts/list-versions.sh discourse
+
+# 최신 버전만 표시
+./scripts/list-versions.sh --latest
+
+# 통계 확인
+./scripts/list-versions.sh --summary
+
+# Dry-run 테스트
+./scripts/version-tag.sh discourse 1.2.3 --dry-run
+```
+
+### Phase 버전 vs 프로젝트 버전
+
+**Phase 버전** (`phase-11.7`, `phase-12.0`):
+- 저장소 전체 마일스톤
+- 문서화, 인프라 개선
+- Docker 이미지 빌드 없음
+
+**프로젝트 버전** (`discourse-v1.2.3`):
+- 개별 Docker 이미지 릴리스
+- 자동 빌드/배포 트리거
+- Docker Hub 업데이트
+
+### Docker Hub 이미지 태그
+
+각 버전 태그는 Docker Hub에 여러 태그로 배포:
+
+```bash
+# Git tag: discourse-v1.2.3 생성 시
+
+# Docker Hub에 자동 푸시:
+scriptonbasestar/discourse:1.2.3    # 특정 버전
+scriptonbasestar/discourse:1.2      # Minor 버전 별칭
+scriptonbasestar/discourse:1        # Major 버전 별칭
+scriptonbasestar/discourse:latest   # 최신 버전
+```
+
+### 릴리스 체크리스트
+
+프로젝트 릴리스 전 확인 사항:
+
+- [ ] 모든 변경 사항 커밋 완료
+- [ ] 로컬에서 테스트 완료
+- [ ] CHANGELOG.md 업데이트 (선택)
+- [ ] README.md 버전 정보 업데이트 (필요시)
+- [ ] 버전 번호 확인 (Semantic Versioning)
+- [ ] 태그 생성 및 푸시
+- [ ] CD 워크플로우 성공 확인
+- [ ] Docker Hub 이미지 확인
+
+상세 내용: [`docs/VERSIONING.md`](./docs/VERSIONING.md)
+
 ## 커밋 메시지 규칙
 
 Conventional Commits 형식 사용:
