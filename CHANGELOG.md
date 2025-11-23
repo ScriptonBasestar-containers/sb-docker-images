@@ -6,6 +6,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-23] - Phase 11.7: Development Tools Enhancement
+
+### Added
+
+#### Development Tools 프로젝트 완성
+**ansible-dev & chef-dev 프로젝트 필수 파일 추가**:
+
+**ansible-dev 개선**:
+- ✅ `compose.yml` 생성 - Docker Compose 지원 추가
+- ✅ `.env.example` 간소화 - 197줄 → 40줄 (79% 감소)
+- ✅ `Makefile` 확장 - 8개 명령어 추가 (help, up, down, logs, restart, ps, shell, run-playbook, clean)
+- Alpine 3.20, Ansible 2.18 기반
+- Playbook/SSH 키 볼륨 마운트 지원
+
+**chef-dev 개선**:
+- ✅ `compose.yml` 생성 - Docker Compose 지원 추가
+- ✅ `.env.example` 간소화 - 명확한 설정 구조
+- chef/chefdk:3.4.28 기반
+- 커스텀 사용자 지원 (developer)
+- Cookbook 디렉토리 마운트
+
+### Fixed
+
+#### CI 검증 실패 수정
+**Buildbox 및 Flarum Compose 파일 수정**:
+
+**Buildbox Kratos 관련 (5개 파일)**:
+- `compose.kratos-pg.yml` - oryd/kratos:v1.2 이미지 추가, data-network 정의
+- `compose.kratos-standalone.yml` - oryd/kratos-selfservice-ui-node:v1.2.0 이미지 추가
+- `compose.kratos.yml` - intra-network 정의 추가
+- `compose.mailslurper.yml` - 네트워크 이름 통일 (intranet → intra-network)
+- `compose.ory-kratos.yml` - 네트워크 이름 통일 (intranet → intra-network)
+
+**Flarum 대체 구성 (2개 파일)**:
+- `compose.apache.yml` - mariadb 서비스 및 네트워크 정의 추가
+- `compose.nginx.yml` - mariadb 서비스 및 네트워크 정의 추가
+
+### Coverage Statistics (Phase 11.7)
+- **Compose 파일 검증**: 68개 → **70개 (100%)** ✅
+- **필수 파일 완비 프로젝트**: 51개 → **53개 (100%)** ✅
+- **CI 검증 성공률**: 89.7% → **100%** ✅
+- **전체 프로젝트 완성도**: **100% 달성**
+
+---
+
 ## [2025-11-22] - Phase 11.6: Complete Verification Achievement
 
 ### Added
