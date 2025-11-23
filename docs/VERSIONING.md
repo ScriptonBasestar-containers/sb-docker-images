@@ -280,5 +280,6 @@ Check:
 
 - [CHANGELOG.md](../CHANGELOG.md) - Version history
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Development workflow
+- [UPDATE_STRATEGY.md](./UPDATE_STRATEGY.md) - Long-term update strategy ⭐ **NEW**
 - [CI/CD Workflows](../.github/workflows/) - Automation
 - [VERSION_INVENTORY.md](../tmp/VERSION_INVENTORY.md) - Current version status

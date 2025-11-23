@@ -111,7 +111,7 @@ Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
 - [VERSIONING.md](./docs/VERSIONING.md) - 프로젝트별 버전 관리 전략 ⭐ **NEW**
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - 기여 가이드라인
 
-### 고급 가이드 ⭐ **Phase 11.7 NEW**
+### 고급 가이드
 - [**Buildbox 통합 가이드**](docs/BUILDBOX_INTEGRATION.md) - 프레임워크별 통합 패턴
   - Django, Rails, PHP/Laravel, Node.js 통합 방법
   - 3가지 통합 패턴 (Shared Network, Override, External)
@@ -127,6 +127,11 @@ Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
   - 데이터베이스/캐시/애플리케이션 최적화
   - 실제 벤치마크 결과 (PostgreSQL: 1,247 TPS, Redis: 71k-83k ops/sec)
   - Prometheus, Grafana 모니터링 설정
+- [**업데이트 전략**](docs/UPDATE_STRATEGY.md) - 프로젝트별 업데이트 관리 ⭐ **Phase 11.8 NEW**
+  - 프로젝트 카테고리별 업데이트 주기
+  - 버전 증가 규칙 및 워크플로우
+  - 보안 업데이트 프로토콜
+  - 업스트림 추적 및 자동화
 
 ### 참고 문서
 - [CHANGELOG.md](./CHANGELOG.md) - 변경 이력
