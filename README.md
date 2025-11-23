@@ -103,6 +103,35 @@ Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
 
 문서: [`PORT_GUIDE.md`](./PORT_GUIDE.md) | [`docs/PORT_GUIDE.md`](./docs/PORT_GUIDE.md)
 
+## 📚 문서
+
+### 시작하기
+- [빠른 시작](#빠른-시작) - 프로젝트 실행 기본 가이드
+- [PORT_GUIDE.md](./PORT_GUIDE.md) - 포트 할당 및 충돌 방지
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - 기여 가이드라인
+
+### 고급 가이드 ⭐ **Phase 11.7 NEW**
+- [**Buildbox 통합 가이드**](docs/BUILDBOX_INTEGRATION.md) - 프레임워크별 통합 패턴
+  - Django, Rails, PHP/Laravel, Node.js 통합 방법
+  - 3가지 통합 패턴 (Shared Network, Override, External)
+  - 네트워크 아키텍처 및 베스트 프랙티스
+  - 트러블슈팅 가이드
+- [**실전 예시**](docs/PRACTICAL_EXAMPLES.md) - 실제 사용 사례 및 완전한 예제
+  - Full Stack 애플리케이션 (Django 블로그, Rails 이커머스)
+  - 마이크로서비스 아키텍처 (API Gateway + 서비스)
+  - 개발 워크플로우 (Hot-reload, 테스팅 환경)
+  - 프로덕션 배포 (모니터링 포함)
+- [**성능 가이드**](docs/PERFORMANCE.md) - 벤치마크, 최적화, 모니터링
+  - 시스템 요구사항 및 리소스 할당
+  - 데이터베이스/캐시/애플리케이션 최적화
+  - 실제 벤치마크 결과 (PostgreSQL: 1,247 TPS, Redis: 71k-83k ops/sec)
+  - Prometheus, Grafana 모니터링 설정
+
+### 참고 문서
+- [CHANGELOG.md](./CHANGELOG.md) - 변경 이력
+- [QUALITY_REPORT.md](./QUALITY_REPORT.md) - 품질 보고서
+- [docs/verification/](./docs/verification/) - 검증 문서
+
 ## 사용법
 
 ### 빠른 시작

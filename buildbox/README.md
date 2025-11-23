@@ -1063,6 +1063,32 @@ make mailslurper
 
 ---
 
+## See Also
+
+### 📚 Advanced Guides
+
+For comprehensive integration guides and real-world examples, see our advanced documentation:
+
+- **[Buildbox Integration Guide](../docs/BUILDBOX_INTEGRATION.md)** ⭐ **RECOMMENDED**
+  - Complete integration patterns for Django, Rails, PHP/Laravel, and Node.js
+  - Network architecture and multi-layer security setup
+  - Framework-specific configuration examples
+  - Troubleshooting common integration issues
+
+- **[Practical Examples](../docs/PRACTICAL_EXAMPLES.md)**
+  - Full-stack application examples (Django blog, Rails e-commerce)
+  - Microservices architecture patterns
+  - Development workflows with hot-reload
+  - Production deployment configurations
+
+- **[Performance Guide](../docs/PERFORMANCE.md)**
+  - System requirements and resource allocation
+  - Database and cache optimization
+  - Real-world benchmarks and metrics
+  - Monitoring setup (Prometheus, Grafana)
+
+---
+
 ## References
 
 ### Official Documentation
