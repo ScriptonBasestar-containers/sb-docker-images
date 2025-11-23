@@ -1,6 +1,48 @@
 # Ansible Development Environment
 
-> 💡 **Quick Start**: This project does not have a standalone setup. Use the basic setup below for development and testing.
+## 🚀 Quick Start
+
+### Option 1: Docker Compose (Recommended)
+
+```bash
+# 1. 환경 설정
+cp .env.example .env
+
+# 2. Playbook 디렉토리 생성
+mkdir -p playbooks
+
+# 3. 샘플 Playbook 생성
+cat > playbooks/ping.yml <<'EOF'
+---
+- name: Ping test
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Ping
+      ping:
+EOF
+
+# 4. 서비스 시작
+make up
+
+# 5. Playbook 실행
+make run-playbook PLAYBOOK=ping.yml
+
+# 6. 셸 접근
+make shell
+```
+
+### Option 2: Direct Docker Run
+
+```bash
+# 이미지 빌드
+make build
+
+# Playbook 실행
+docker run --rm \
+  -v $(pwd)/playbooks:/playbooks \
+  ansible-dev:2.18 ping.yml -i inventory/hosts
+```
 
 ## 개요
 
@@ -627,6 +669,91 @@ control_path = /tmp/ansible-ssh-%%h-%%p-%%r
 - Ansible Vault로 민감 정보 암호화
 - 환경별 인벤토리 분리
 - 프로덕션 배포 전 --check 모드 실행
+
+## 🔧 Troubleshooting
+
+### SSH 연결 문제
+
+**문제**: "Host key verification failed"
+```bash
+# 해결책 1: Host key checking 비활성화 (.env 파일)
+ANSIBLE_HOST_KEY_CHECKING=false
+
+# 해결책 2: known_hosts 마운트
+docker run --rm \
+  -v $(pwd):/playbooks \
+  -v ~/.ssh:/root/.ssh:ro \
+  ansible-dev site.yml
+```
+
+**문제**: "Permission denied (publickey)"
+```bash
+# 해결책: SSH 키 권한 확인
+chmod 600 ~/.ssh/id_rsa
+chmod 644 ~/.ssh/id_rsa.pub
+
+# SSH 에이전트 포워딩
+docker run --rm \
+  -v $(pwd):/playbooks \
+  -v $SSH_AUTH_SOCK:/ssh-agent \
+  -e SSH_AUTH_SOCK=/ssh-agent \
+  ansible-dev site.yml
+```
+
+### Playbook 실행 문제
+
+**문제**: "Could not find or access playbook"
+```bash
+# 해결책: 작업 디렉토리 확인
+# Playbook은 /playbooks 디렉토리 기준 상대 경로로 지정
+docker run --rm \
+  -v $(pwd)/my-playbooks:/playbooks \
+  ansible-dev site.yml  # /playbooks/site.yml을 찾음
+```
+
+**문제**: "Module not found"
+```bash
+# 해결책: Python 모듈 설치가 필요한 경우
+docker run --rm \
+  -v $(pwd):/playbooks \
+  --entrypoint /bin/bash \
+  ansible-dev -c "pip install <module> && ansible-playbook site.yml"
+```
+
+### 성능 최적화
+
+**Fact Gathering 속도 향상**:
+```bash
+# .env 파일에서 설정
+ANSIBLE_GATHERING=smart
+ANSIBLE_SSH_PIPELINING=True
+```
+
+**병렬 실행**:
+```yaml
+# playbook에서 forks 설정
+- hosts: all
+  strategy: free  # 또는 linear
+  serial: 10     # 한 번에 10개씩 처리
+```
+
+### 디버깅
+
+**Verbose 모드**:
+```bash
+# -v: 기본 정보
+# -vv: 더 많은 정보
+# -vvv: 모든 연결 정보
+# -vvvv: 모든 디버그 정보
+make run-playbook PLAYBOOK=site.yml ARGS="-vvv"
+```
+
+**Step 모드** (단계별 실행):
+```bash
+docker run -it --rm \
+  -v $(pwd):/playbooks \
+  ansible-dev site.yml --step
+```
 
 ## 참고 자료
 

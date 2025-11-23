@@ -10,47 +10,49 @@
 
 ## 검증 상태
 
-총 26개 프로젝트 중:
-- ✅ **완전 성공**: 26개 (100%)
+총 53개 프로젝트 중:
+- ✅ **완전 성공**: 53개 (100%)
 - ⚠️ **이슈 발견**: 0개 (0%)
 - 🔄 **미검증**: 0개 (0%)
 
+**Phase 11.7 완성**: 모든 프로젝트 필수 파일 완비 및 검증 통과 ✅
+
 상세 검증 결과: [`docs/verification/VERIFICATION-PROGRESS.md`](docs/verification/VERIFICATION-PROGRESS.md)
 
-### 성공 프로젝트 (26개)
+### 프로젝트 카테고리 (53개)
 
-| 프로젝트 | 포트 | 접근 URL | 비고 |
-|---------|------|----------|------|
-| Wiki.js | 80 | http://localhost | 수정 없음 |
-| Gitea | 3001, 2222 | http://localhost:3001 | 포트 수정 |
-| Flarum | 8082, 8081, 8026 | http://localhost:8082 | 포트 + ARM64 |
-| Gnuboard6 | 8084 | http://localhost:8084 | Python 3.11 업그레이드 |
-| WordPress | 8085 | http://localhost:8085 | MariaDB/Redis 추가 |
-| MediaWiki | 8086 | http://localhost:8086 | MariaDB/Redis 추가 |
-| Jenkins | 8087, 50000 | http://localhost:8087 | 포트 수정 |
-| Joomla | 8088 | http://localhost:8088 | MariaDB/Redis 추가 |
-| XpressEngine | 8089 | http://localhost:8089 | 포트 수정 |
-| Gnuboard5 | 8090, 8091 | http://localhost:8090 | 포트 수정 |
-| Misago | 8092, 8443 | http://localhost:8092 | 포트 수정 |
-| Django CMS | 8093, 8094 | http://localhost:8093 | 포트 수정, 설정 개선 |
-| TSBoard | 8095, 3100 | http://localhost:8095 | 포트 수정, DATABASE_URL 설정 |
-| Docker Ethereum | 8545, 8546, 4000 | http://localhost:4000 | Geth + BlockScout |
-| Minio | 9000, 9001 | http://localhost:9001 | 수정 없음 |
-| **Devpi** | **3141** | http://localhost:3141 | Dockerfile 경로 수정 |
-| **Gollum** | **4567** | http://localhost:4567 | Dockerfile 경로 + 포트 수정 |
-| **Docker Bitcoin** | **8332, 8333, 3002** | http://localhost:3002 | 이미지 변경 (tyzbit) |
-| **RTMP Proxy** | **1935** | rtmp://localhost:1935 | Dockerfile 경로 수정 |
-| **Discourse** | **3000, 8080, 8443** | http://localhost:3000 | PostgreSQL/Redis 추가 |
-| **DokuWiki** | **8130** | http://localhost:8130 | 수정 없음 |
-| **Forem** | **3000, 3333** | http://localhost:3000 | 수정 없음 |
-| **FlaskBB** | **8250** | http://localhost:8250 | 환경변수 기반 설정 |
+#### 🚀 웹 애플리케이션 & CMS (23개)
+Wiki.js, Gitea, Flarum, Gnuboard5, Gnuboard6, WordPress, MediaWiki, Joomla, XpressEngine, Discourse, DokuWiki, Forem, FlaskBB, Misago, Django CMS, TSBoard, Drupal, Jupyter, Mailslurper, Mastodon, Nextcloud, NodeBB, OpenNamu, Solidus
 
-**추가 검증 통과**:
-- **Home Assistant**: host 네트워크 모드 (포트 충돌 없음)
-- **Kratos**: 전용 포트 사용 (4433, 4434, 4455)
+#### 🔧 개발 도구 (3개)
+- **Buildbox**: 재사용 가능한 Docker Compose 템플릿 컬렉션 ⭐ **NEW**
+  - PostgreSQL, MariaDB, Redis 등 모듈식 서비스 제공
+  - Django/Rails/PHP 스택 사전 구성
+- **Ansible-dev**: Ansible 2.18 개발 환경 ⭐ **NEW**
+  - Alpine 3.20 기반 경량 이미지
+  - Playbook 실행 및 개발 지원
+- **Chef-dev**: Chef DK 3.4.28 개발 환경 ⭐ **NEW**
+  - Cookbook 개발 및 테스트
+  - Test Kitchen, Berkshelf 포함
+
+#### 🗄️ 인프라 서비스 (3개)
 - **Redis**: In-memory data store (6379)
 - **Memcached**: Memory caching (11211)
 - **Apache Ignite**: In-memory computing platform (10800, 11211, 47100, 47500)
+
+#### 🔐 인증 & 보안 (2개)
+- **Kratos**: Identity & user management (4433, 4434, 4455)
+- **Home Assistant**: Smart home platform (host network)
+
+#### ⚡ 블록체인 & 스트리밍 (3개)
+- **Docker Ethereum**: Geth + BlockScout (8545, 8546, 4000)
+- **Docker Bitcoin**: Bitcoin node (8332, 8333, 3002)
+- **RTMP Proxy**: RTMP streaming (1935)
+
+#### 📦 기타 도구 (19개)
+Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
+
+**전체 프로젝트 목록**: [`PORT_GUIDE.md`](./PORT_GUIDE.md) 참조
 
 ## 주요 기능
 
@@ -75,9 +77,10 @@
 
 ### 📝 환경변수 템플릿
 모든 프로젝트에 `.env.example` 파일 제공:
-- 64개 프로젝트 100% 커버리지
+- 53개 프로젝트 100% 커버리지
 - 상세한 설명과 기본값 포함
 - 프로덕션 배포 시 필수 설정 가이드
+- **Phase 11.7**: ansible-dev, chef-dev 템플릿 추가
 
 ### 🚀 Standalone 구성
 프로덕션 준비된 독립 실행 구성 (23개 프로젝트, 24개 파일):

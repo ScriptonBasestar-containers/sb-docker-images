@@ -1,6 +1,48 @@
 # Chef Development Environment
 
-> 💡 **Quick Start**: This project does not have a standalone setup. Use the basic setup below for development and testing.
+## 🚀 Quick Start
+
+### Option 1: Docker Compose (Recommended)
+
+```bash
+# 1. 환경 설정
+cp .env.example .env
+
+# 2. Cookbooks 디렉토리 생성
+mkdir -p cookbooks
+
+# 3. 샘플 Cookbook 생성
+cat > cookbooks/hello/recipes/default.rb <<'EOF'
+log 'Hello from Chef!' do
+  level :info
+end
+
+package 'curl' do
+  action :install
+end
+EOF
+
+# 4. 서비스 시작 (백그라운드)
+make up
+
+# 5. 셸 접근
+make shell
+
+# 6. (컨테이너 내부에서) Cookbook 실행
+chef-client --local-mode --runlist 'recipe[hello]'
+```
+
+### Option 2: Direct Docker Run
+
+```bash
+# 이미지 빌드
+docker build -t chef-dev:3.4.28 .
+
+# 개발 셸 시작
+docker run -it --rm \
+  -v $(pwd)/cookbooks:/work/cookbooks \
+  chef-dev:3.4.28
+```
 
 ## 개요
 
@@ -261,6 +303,122 @@ services:
   node2:
     image: ubuntu:20.04
     command: tail -f /dev/null
+```
+
+## 🔧 Troubleshooting
+
+### Chef 라이선스 문제
+
+**문제**: "Chef license not accepted"
+```bash
+# 해결책: .env 파일에서 라이선스 수락
+CHEF_LICENSE=accept
+
+# 또는 런타임에 설정
+docker run -it --rm \
+  -e CHEF_LICENSE=accept \
+  chef-dev
+```
+
+### Cookbook 경로 문제
+
+**문제**: "Cookbook not found"
+```bash
+# 해결책: 작업 디렉토리 확인
+# Cookbooks는 /work/cookbooks 디렉토리에 있어야 함
+docker run -it --rm \
+  -v $(pwd)/my-cookbooks:/work/cookbooks \
+  chef-dev
+```
+
+### Berkshelf 의존성 문제
+
+**문제**: "Could not find cookbook in any of the sources"
+```bash
+# 해결책 1: Berksfile 경로 확인
+cd /work
+berks install
+
+# 해결책 2: Berkshelf 캐시 삭제
+rm -rf ~/.berkshelf
+berks install
+```
+
+### Test Kitchen Docker 문제
+
+**문제**: "Cannot connect to Docker daemon"
+```bash
+# 해결책: Docker socket 마운트
+docker run -it --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $(pwd):/work \
+  chef-dev
+
+# 컨테이너 내에서
+kitchen test
+```
+
+### 권한 문제
+
+**문제**: "Permission denied" when creating files
+```bash
+# 해결책: 사용자 ID 매칭
+docker run -it --rm \
+  -v $(pwd):/work \
+  -e CUSTOM_USER=developer \
+  --user $(id -u):$(id -g) \
+  chef-dev
+
+# 또는 sudo 사용 (컨테이너 내에서)
+sudo chown -R developer:developer /work
+```
+
+### Chef-solo 실행 문제
+
+**문제**: "No such file or directory - solo.rb"
+```bash
+# 해결책: solo.rb 생성
+cat > solo.rb <<'EOF'
+file_cache_path "/tmp/chef"
+cookbook_path "/work/cookbooks"
+EOF
+
+# 실행
+chef-solo -c solo.rb -j node.json
+```
+
+### 성능 최적화
+
+**Gem 설치 속도 향상**:
+```bash
+# 한국 미러 사용 (Dockerfile에 이미 포함)
+# 카카오 APT 미러가 자동으로 설정됨
+```
+
+**Cookbook 개발 팁**:
+```ruby
+# ChefSpec으로 단위 테스트 (빠름)
+rspec spec/unit/recipes/default_spec.rb
+
+# Test Kitchen으로 통합 테스트 (느림, 필요시만)
+kitchen test
+```
+
+### 디버깅
+
+**로그 레벨 조정**:
+```bash
+# Chef 실행 시 verbose 모드
+chef-client --local-mode --log_level debug
+
+# 또는
+chef-client -l debug -c solo.rb -j node.json
+```
+
+**Why-run 모드** (Dry-run):
+```bash
+# 실제 변경 없이 시뮬레이션
+chef-client --local-mode --why-run --runlist 'recipe[my_cookbook]'
 ```
 
 ## 참고 자료
