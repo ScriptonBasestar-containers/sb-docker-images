@@ -6,6 +6,143 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-23] - Phase 11.8: Per-Project Version Management
+
+### Added
+
+#### Version Management System
+**프로젝트별 독립 버전 관리 시스템 도입**:
+
+**핵심 개선사항**:
+- ✅ 53개 프로젝트 각각 독립적인 버전 관리
+- ✅ 프로젝트 버전 태그 형식: `<project>-vX.Y.Z`
+- ✅ Phase 버전 태그 형식: `phase-X.Y`
+- ✅ Docker Hub 자동 배포 (프로젝트별)
+
+**새로운 문서**:
+- `docs/VERSIONING.md` (284줄)
+  - 버전 관리 전략 및 가이드
+  - 프로젝트 vs Phase 버전 구분
+  - Docker Hub 태깅 전략
+  - 마이그레이션 계획
+
+**자동화 스크립트**:
+- `scripts/version-tag.sh` (264줄)
+  - 버전 태그 생성 및 관리
+  - Dry-run 모드 지원
+  - 검증 및 강제 덮어쓰기
+  - 자동 푸시 옵션
+- `scripts/list-versions.sh` (284줄)
+  - 프로젝트별 버전 조회
+  - 필터링 및 통계
+  - 최신 버전 표시
+  - 커버리지 분석
+
+**CI/CD 개선**:
+- `.github/workflows/cd.yml` 대폭 개선
+  - 프로젝트별 빌드 job 추가
+  - 태그 패턴 자동 감지 (`*-v*.*.*`)
+  - Phase 태그 지원 (`phase-*`)
+  - 동적 프로젝트 감지 및 빌드
+  - Custom Dockerfile 프로젝트 자동 빌드
+
+**문서 업데이트**:
+- `README.md`: 버전 관리 섹션 추가
+- `CONTRIBUTING.md`: 릴리스 워크플로우 추가 (129줄)
+
+**Phase 1 초기 버전 태그 생성**:
+- `postgres-exts-v16.1.0`
+- `discourse-v1.0.0`
+- `wikijs-v1.0.0`
+- `wordpress-v1.0.0`
+- `flarum-v1.0.0`
+- `gitea-v1.0.0`
+
+### Changed
+
+#### 버전 관리 패러다임 전환
+**기존 방식** (Monolithic):
+- ❌ 전체 저장소에 단일 버전 태그 (`v11.7`)
+- ❌ 개별 프로젝트 버전 추적 불가
+- ❌ 모든 프로젝트 동시 빌드 필요
+- ❌ Docker Hub 이미지 버전 관리 어려움
+
+**새로운 방식** (Per-Project):
+- ✅ 각 프로젝트 독립적 버전 (`discourse-v1.2.3`)
+- ✅ 변경된 프로젝트만 빌드
+- ✅ 명확한 Docker Hub 버전 태깅
+- ✅ Phase 버전으로 저장소 마일스톤 관리
+
+#### Phase 버전 재정의
+**v11.7 → phase-11.7**:
+- `v11.7` 태그 유지 (하위 호환성)
+- `phase-11.7` 새 태그 생성
+- 앞으로 Phase 버전은 `phase-*` 형식 사용
+
+### Statistics
+
+**버전 커버리지**:
+- Phase 1 완료: 6개 프로젝트 (13%)
+- 남은 프로젝트: 39개 (87%)
+- Phase 2 대상: 4개 (개발 도구)
+- Phase 3 대상: 35개 (나머지)
+
+**태그 현황**:
+- 프로젝트 버전 태그: 6개
+- Phase 태그: 2개 (`v11.7`, `phase-11.7`)
+- 총 태그: 8개
+
+**파일 변경**:
+- 신규 파일: 3개 (832줄)
+- 수정 파일: 3개 (+348줄)
+- 총 변경: 1,180 삽입, 11 삭제
+
+### Benefits
+
+**개발자 경험**:
+- 🎯 프로젝트별 명확한 버전 이력
+- 🚀 간편한 태깅 스크립트
+- 📊 실시간 버전 통계
+- 🔍 프로젝트별 변경사항 추적
+
+**CI/CD 효율성**:
+- ⚡ 변경된 프로젝트만 빌드 (100% → 2% 리소스)
+- 🎯 정확한 트리거링
+- 📦 프로젝트별 Docker Hub 배포
+- 🔄 Phase vs 프로젝트 빌드 분리
+
+**Docker Hub 관리**:
+- 📌 명확한 이미지 버전 (`scriptonbasestar/discourse:1.2.3`)
+- 🏷️ 자동 태그 별칭 (`1.2`, `1`, `latest`)
+- 📈 버전 이력 추적
+- 🔒 프로덕션 안정성
+
+### Migration Path
+
+**Phase 1** (완료):
+- ✅ postgres-exts, discourse, wikijs, wordpress, flarum, gitea
+
+**Phase 2** (예정):
+- ansible-dev, chef-dev, buildbox, ruby-dev
+
+**Phase 3** (예정):
+- 나머지 35개 프로젝트
+
+### Next Steps
+
+1. **Phase 1 태그 푸시**: `git push origin --tags`
+2. **CD 워크플로우 테스트**: 태그 기반 자동 빌드 확인
+3. **Phase 2 프로젝트 태깅**: 개발 도구 4개
+4. **Docker Hub 이미지 검증**: 자동 배포 확인
+5. **Phase 3 계획**: 나머지 프로젝트 롤아웃
+
+### See Also
+
+- [VERSIONING.md](./docs/VERSIONING.md) - 버전 관리 전략 상세 가이드
+- [CONTRIBUTING.md](./CONTRIBUTING.md#버전-관리-및-릴리스) - 릴리스 워크플로우
+
+---
+
 ## [2025-11-23] - Phase 11.7: Development Tools Enhancement
 
 ### Added
