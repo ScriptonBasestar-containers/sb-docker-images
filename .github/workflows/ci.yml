@@ -71,7 +71,7 @@ jobs:
           make essential-test
 
       - name: Save build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: postgres-exts-images
           path: |
