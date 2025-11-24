@@ -13,7 +13,9 @@ SHELL := /bin/bash
 PROJECTS := images/database/postgres-exts images/community/discourse images/community/flarum \
             images/cms/nextcloud images/cms/wordpress images/cms/drupal \
             images/cms/gnuboard5 images/cms/gnuboard6 images/wiki/mediawiki images/wiki/gollum \
-            images/database/mariadb images/registry/devpi images/devtools/jenkins images/infrastructure/squid
+            images/wiki/outline images/database/mariadb images/registry/devpi \
+            images/devtools/jenkins images/infrastructure/squid images/social/mattermost \
+            images/social/rocketchat
 
 # ============================================================================
 # Help

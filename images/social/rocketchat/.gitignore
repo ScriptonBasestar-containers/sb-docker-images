@@ -1,0 +1,15 @@
+# Environment
+.env
+
+# Backups
+backups/
+*.sql
+*.tar.gz
+*.archive
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
