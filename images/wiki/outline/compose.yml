@@ -1,0 +1,71 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-outline}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-outline}
+      POSTGRES_DB: ${POSTGRES_DB:-outline}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-outline}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  outline:
+    image: docker.getoutline.com/outlinewiki/outline:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      # Database
+      DATABASE_URL: postgres://${POSTGRES_USER:-outline}:${POSTGRES_PASSWORD:-outline}@postgres:5432/${POSTGRES_DB:-outline}
+      PGSSLMODE: disable
+
+      # Redis
+      REDIS_URL: redis://redis:6379
+
+      # URL
+      URL: ${URL:-http://localhost:3000}
+
+      # Security
+      SECRET_KEY: ${SECRET_KEY}
+      UTILS_SECRET: ${UTILS_SECRET}
+
+      # Files storage (local)
+      FILE_STORAGE: local
+      FILE_STORAGE_LOCAL_ROOT_DIR: /var/lib/outline/data
+      FILE_STORAGE_UPLOAD_MAX_SIZE: 26214400
+
+      # Optional: SMTP
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-}
+      SMTP_SECURE: ${SMTP_SECURE:-true}
+
+      # Optional: Slack OAuth (for login)
+      SLACK_CLIENT_ID: ${SLACK_CLIENT_ID:-}
+      SLACK_CLIENT_SECRET: ${SLACK_CLIENT_SECRET:-}
+
+    ports:
+      - "${PORT:-3000}:3000"
+    volumes:
+      - outline-data:/var/lib/outline/data
+
+volumes:
+  postgres-data:
+  redis-data:
+  outline-data:

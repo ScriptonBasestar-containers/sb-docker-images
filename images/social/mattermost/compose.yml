@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mattermost}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mattermost}
+      POSTGRES_DB: ${POSTGRES_DB:-mattermost}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-mattermost}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mattermost:
+    image: mattermost/mattermost-team-edition:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Database
+      MM_SQLSETTINGS_DRIVERNAME: postgres
+      MM_SQLSETTINGS_DATASOURCE: postgres://${POSTGRES_USER:-mattermost}:${POSTGRES_PASSWORD:-mattermost}@postgres:5432/${POSTGRES_DB:-mattermost}?sslmode=disable&connect_timeout=10
+
+      # Server
+      MM_SERVICESETTINGS_SITEURL: ${SITE_URL:-http://localhost:8065}
+      MM_SERVICESETTINGS_LISTENADDRESS: :8065
+
+      # Files
+      MM_FILESETTINGS_DRIVERNAME: local
+      MM_FILESETTINGS_DIRECTORY: /mattermost/data
+
+      # Optional: SMTP
+      MM_EMAILSETTINGS_ENABLESMTPAUTH: ${SMTP_AUTH:-false}
+      MM_EMAILSETTINGS_SMTPSERVER: ${SMTP_SERVER:-}
+      MM_EMAILSETTINGS_SMTPPORT: ${SMTP_PORT:-587}
+      MM_EMAILSETTINGS_SMTPUSERNAME: ${SMTP_USERNAME:-}
+      MM_EMAILSETTINGS_SMTPPASSWORD: ${SMTP_PASSWORD:-}
+      MM_EMAILSETTINGS_FEEDBACKEMAIL: ${FEEDBACK_EMAIL:-}
+
+      # Team Settings
+      MM_TEAMSETTINGS_ENABLEOPENSERVER: ${ENABLE_OPEN_SERVER:-true}
+
+    ports:
+      - "${PORT:-8065}:8065"
+    volumes:
+      - mattermost-data:/mattermost/data
+      - mattermost-logs:/mattermost/logs
+      - mattermost-config:/mattermost/config
+      - mattermost-plugins:/mattermost/plugins
+
+volumes:
+  postgres-data:
+  mattermost-data:
+  mattermost-logs:
+  mattermost-config:
+  mattermost-plugins:
