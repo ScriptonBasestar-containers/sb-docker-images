@@ -12,13 +12,18 @@ jobs:
 
     steps:
       - name: PR Details
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+          PR_HEAD: ${{ github.event.pull_request.head.ref }}
         run: |
           echo "## Pull Request Details" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Title**: ${{ github.event.pull_request.title }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Author**: @${{ github.event.pull_request.user.login }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Base**: ${{ github.event.pull_request.base.ref }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Head**: ${{ github.event.pull_request.head.ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Title**: $PR_TITLE" >> $GITHUB_STEP_SUMMARY
+          echo "**Author**: @$PR_AUTHOR" >> $GITHUB_STEP_SUMMARY
+          echo "**Base**: $PR_BASE" >> $GITHUB_STEP_SUMMARY
+          echo "**Head**: $PR_HEAD" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
   # 변경된 파일 분석
