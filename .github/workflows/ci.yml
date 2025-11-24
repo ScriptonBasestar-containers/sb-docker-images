@@ -62,12 +62,12 @@ jobs:
 
       - name: Build Essential Image
         run: |
-          cd postgres-exts
+          cd images/database/postgres-exts
           make essential-build
 
       - name: Test Essential Image
         run: |
-          cd postgres-exts
+          cd images/database/postgres-exts
           make essential-test
 
       - name: Save build artifacts
@@ -75,7 +75,7 @@ jobs:
         with:
           name: postgres-exts-images
           path: |
-            postgres-exts/*.log
+            images/database/postgres-exts/*.log
           retention-days: 7
           if-no-files-found: ignore
 

@@ -144,7 +144,7 @@ Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
 
 1. **프로젝트 선택 및 이동**
 ```bash
-cd discourse  # 또는 원하는 프로젝트
+cd images/community/discourse  # 또는 원하는 프로젝트
 ```
 
 2. **환경변수 설정**
@@ -173,7 +173,7 @@ docker compose logs -f
 완전한 프로덕션 스택이 필요한 경우:
 
 ```bash
-cd nextcloud/standalone
+cd images/cms/nextcloud/standalone
 cp .env.example .env
 docker compose up -d
 ```
@@ -194,74 +194,110 @@ docker compose up -d
 - 두 네이밍 모두 정상 동작하며, 80%가 이미 최신 표준 사용 중
 - 상세 분석: `tmp/compose-naming-report.md` 참조
 
-## List
+## 프로젝트 디렉토리 구조
 
-- nextcloud
-- squid
-- jenkins-agent
-- git, vcs
-  - gitea
-- storage
-  - minio
-- auth,security
-  - https://github.com/freeipa/freeipa
-  - keycloak
-  - authelia
-  - ory kratos
-  - cas
-- wiki
-  - gollum
-  - mediawiki
-  - wikijs
-- forum
-  - discourse
-  - misago
-  - flaskbb
-  - nodebb
-- cms
-  - https://github.com/pyrocms/pyrocms
-  - joomla
-  - drupal
-  - wordpress
-  - gnuboard
-  - djangocms
-- static, blog
-  - ghost
-  - jekyll
-  - hugo
-  - https://github.com/hexojs/hexo
-  - gatsby
-- sns, timeline
-  - mastodon
+모든 프로젝트는 `images/` 아래 용도별로 분류되어 있습니다:
 
-## 프로젝트 분류
+```
+images/
+├── cms/           (8개)  - CMS 및 컨텐츠 플랫폼
+├── community/     (6개)  - 커뮤니티 및 포럼
+├── wiki/          (5개)  - 위키 시스템
+├── devtools/      (6개)  - 개발 도구
+├── database/      (4개)  - 데이터베이스 및 캐시
+├── infrastructure/(4개)  - 인프라 서비스
+├── auth/          (2개)  - 인증 및 보안
+├── blockchain/    (3개)  - 블록체인 플랫폼
+├── registry/      (1개)  - 패키지 레지스트리
+├── vcs/           (1개)  - 버전 관리 시스템
+├── ecommerce/     (2개)  - 전자상거래
+├── feed/          (1개)  - RSS/피드
+└── social/        (2개)  - 소셜 네트워크
+```
 
-### 프로덕션 준비 완료
-상세 내용은 [RELEASE.md](./RELEASE.md) 참조
+**총 45개 프로젝트** (카테고리별 자동 분류)
 
-### 개발/테스트 도구
-- **buildbox** - 통합 테스트 환경 (Kratos, Redis, PostgreSQL 등)
-- **ansible-dev** - Ansible 개발 환경
-- **chef-dev** - Chef 개발 환경
-- **ruby-dev** - Ruby 개발 환경
+## 카테고리별 프로젝트 목록
 
-### 활발히 유지보수 중
-- discourse, flarum, nextcloud, wordpress
-- gnuboard5, gnuboard6, mediawiki, gollum
-- postgres-exts, mariadb, devpi, minio
-- jenkins, squid, kratos, gitea
+### 🎨 CMS (8개)
+`images/cms/` - 컨텐츠 관리 시스템
+- drupal, wordpress, joomla, nextcloud
+- django-cms, gnuboard5, gnuboard6, xpressengine
 
-### 실험적/테스트용
-- docker-bitcoin, docker-ethereum
-- mastodon, forem
+### 💬 Community (6개)
+`images/community/` - 커뮤니티 및 포럼 플랫폼
+- discourse, flarum, nodebb, misago, flaskbb, tsboard
+
+### 📖 Wiki (5개)
+`images/wiki/` - 위키 및 문서화 시스템
+- wikijs, mediawiki, gollum, dokuwiki, openNamu
+
+### 🔧 Development Tools (6개)
+`images/devtools/` - 개발 및 CI/CD 도구
+- ansible-dev, chef-dev, ruby-dev, jenkins
 - jupyter, jupyter2
-- **home-assistant** (참조용, Docker 비권장 - HA OS 사용 권장)
 
-### Deprecated / 아카이브 예정
-- **xe3** (현재: xpressengine) - 레거시 XE3, 공식 지원 종료
-- **flaskbb** - Flask 기반 포럼, 개발 중단됨
-- **openNamu** - 개발 중단 위키
-- **spree/solidus** - Ruby 이커머스, 테스트만 진행
+### 🗄️ Database (4개)
+`images/database/` - 데이터베이스 및 캐시
+- postgres-exts, mariadb, redis, memcached
+
+### 🏗️ Infrastructure (4개)
+`images/infrastructure/` - 인프라 서비스
+- minio, squid, rtmp-proxy, mailslurper
+
+### 🔐 Auth & Security (2개)
+`images/auth/` - 인증 및 보안
+- kratos, home-assistant
+
+### ⛓️ Blockchain (3개)
+`images/blockchain/` - 블록체인 플랫폼
+- docker-bitcoin, docker-ethereum, ignite
+
+### 📦 Registry (1개)
+`images/registry/` - 패키지 레지스트리
+- devpi
+
+### 🌿 VCS (1개)
+`images/vcs/` - 버전 관리 시스템
+- gitea
+
+### 🛒 E-commerce (2개)
+`images/ecommerce/` - 전자상거래
+- solidus, spree
+
+### 📡 Feed (1개)
+`images/feed/` - RSS 및 피드
+- rsshub
+
+### 🌐 Social (2개)
+`images/social/` - 소셜 네트워크
+- mastodon, forem
+
+---
+
+### 프로젝트 상태 분류
+
+**프로덕션 준비 완료** - [RELEASE.md](./RELEASE.md) 참조
+
+**활발히 유지보수 중**:
+- CMS: discourse, flarum, nextcloud, wordpress, gnuboard5, gnuboard6
+- Wiki: mediawiki, gollum, wikijs
+- Database: postgres-exts, mariadb
+- Infrastructure: devpi, minio, jenkins, squid
+- Auth: kratos
+- VCS: gitea
+
+**실험적/테스트용**:
+- blockchain: docker-bitcoin, docker-ethereum
+- social: mastodon, forem
+- devtools: jupyter, jupyter2
+- auth: home-assistant (참조용, Docker 비권장 - HA OS 사용 권장)
+
+**Deprecated / 아카이브 예정**:
+- xpressengine (레거시 XE3, 공식 지원 종료)
+- flaskbb (개발 중단)
+- openNamu (개발 중단)
+- spree/solidus (테스트만 진행)
 
 > 아카이브 예정 프로젝트는 필요 시 `archive/` 디렉토리로 이동
 

@@ -162,9 +162,9 @@ show_summary() {
     # Count unique projects with versions
     local projects_with_versions=$(git tag -l "*-v*" | grep -v "^v" | sed 's/-v.*//' | sort -u | wc -l | tr -d ' ')
 
-    # Total directories (potential projects)
-    local total_projects=$(find . -maxdepth 1 -type d ! -name ".*" ! -name "tmp" ! -name "docs" ! -name "scripts" | wc -l | tr -d ' ')
-    total_projects=$((total_projects - 1))  # Exclude current dir
+    # Total directories (potential projects) - now in images/*/
+    local total_projects=$(find ./images -maxdepth 2 -mindepth 2 -type d | wc -l | tr -d ' ')
+    # Already counting only projects in images/*/, no need to subtract
 
     echo "Total Projects (directories):     $total_projects"
     echo "Projects with Versions:           $projects_with_versions"
@@ -188,8 +188,8 @@ show_summary() {
         header "Projects without versions:"
         echo ""
 
-        # Get all directories
-        local all_dirs=$(find . -maxdepth 1 -type d ! -name ".*" ! -name "tmp" ! -name "docs" ! -name "scripts" -exec basename {} \;)
+        # Get all directories - now in images/*/
+        local all_dirs=$(find ./images -maxdepth 2 -mindepth 2 -type d -exec basename {} \;)
 
         # Get projects with versions
         local versioned=$(git tag -l "*-v*" | grep -v "^v" | sed 's/-v.*//' | sort -u)

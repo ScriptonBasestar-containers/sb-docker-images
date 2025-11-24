@@ -51,7 +51,7 @@ jobs:
               - 'README.md'
               - '**/README.md'
             postgres:
-              - 'postgres-exts/**'
+              - 'images/database/postgres-exts/**'
 
   # Compose 파일 검증
   validate-compose-changes:
@@ -82,7 +82,7 @@ jobs:
 
       - name: Build and test
         run: |
-          cd postgres-exts
+          cd images/database/postgres-exts
           make essential-build
           make essential-test
 

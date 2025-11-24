@@ -9,10 +9,11 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
-# 주요 프로젝트 목록
-PROJECTS := postgres-exts discourse flarum nextcloud wordpress drupal \
-            gnuboard5 gnuboard6 mediawiki gollum \
-            mariadb devpi jenkins squid
+# 주요 프로젝트 목록 (images/ 하위 경로)
+PROJECTS := images/database/postgres-exts images/community/discourse images/community/flarum \
+            images/cms/nextcloud images/cms/wordpress images/cms/drupal \
+            images/cms/gnuboard5 images/cms/gnuboard6 images/wiki/mediawiki images/wiki/gollum \
+            images/database/mariadb images/registry/devpi images/devtools/jenkins images/infrastructure/squid
 
 # ============================================================================
 # Help
@@ -57,27 +58,26 @@ list:
 	@echo "=== 프로젝트 목록 ==="
 	@echo ""
 	@echo "Compose 파일이 있는 프로젝트:"
-	@find . -maxdepth 2 -type f \( -name "compose.yml" -o -name "docker-compose.yml" \) \
-		! -path "./.git/*" ! -path "./buildbox/*" -exec dirname {} \; | \
-		sed 's|^\./||' | sort | nl
+	@find ./images -maxdepth 3 -type f \( -name "compose.yml" -o -name "docker-compose.yml" \) \
+		-exec dirname {} \; | \
+		sed 's|^\./images/||' | sort | nl
 	@echo ""
 	@echo "Makefile이 있는 프로젝트:"
-	@find . -maxdepth 2 -name "Makefile" ! -path "./.git/*" ! -path "./Makefile" \
-		-exec dirname {} \; | sed 's|^\./||' | sort | nl
+	@find ./images -maxdepth 3 -name "Makefile" \
+		-exec dirname {} \; | sed 's|^\./images/||' | sort | nl
 
 .PHONY: check
 check:
 	@echo "=== 프로젝트 구조 검증 ==="
 	@echo ""
 	@echo "Compose 파일 검사..."
-	@find . -maxdepth 2 -type f \( -name "compose.yml" -o -name "docker-compose.yml" \) \
-		! -path "./.git/*" ! -path "./buildbox/*" | while read file; do \
+	@find ./images -maxdepth 3 -type f \( -name "compose.yml" -o -name "docker-compose.yml" \) | while read file; do \
 		echo "  ✓ $$file"; \
 		docker compose -f "$$file" config > /dev/null 2>&1 && echo "    ✅ Valid" || echo "    ❌ Invalid"; \
 	done
 	@echo ""
 	@echo "README 파일 검사..."
-	@for dir in */; do \
+	@find ./images -maxdepth 2 -mindepth 2 -type d | while read dir; do \
 		if [ -f "$$dir/compose.yml" ] || [ -f "$$dir/docker-compose.yml" ]; then \
 			if [ -f "$$dir/README.md" ]; then \
 				echo "  ✅ $$dir - README 있음"; \
@@ -111,17 +111,17 @@ build-all:
 .PHONY: build-postgres-exts
 build-postgres-exts:
 	@echo "=== Building PostgreSQL Extensions ==="
-	$(MAKE) -C postgres-exts essential-build
+	$(MAKE) -C images/database/postgres-exts essential-build
 
 .PHONY: build-discourse
 build-discourse:
 	@echo "=== Building Discourse ==="
-	docker compose -f discourse/compose.yml build
+	docker compose -f images/community/discourse/compose.yml build
 
 .PHONY: build-nextcloud
 build-nextcloud:
 	@echo "=== Building Nextcloud ==="
-	docker compose -f nextcloud/standalone/compose.fpm.yml build
+	docker compose -f images/cms/nextcloud/standalone/compose.fpm.yml build
 
 # ============================================================================
 # Test Targets
@@ -148,7 +148,7 @@ test-all:
 .PHONY: test-postgres-exts
 test-postgres-exts:
 	@echo "=== Testing PostgreSQL Extensions ==="
-	$(MAKE) -C postgres-exts essential-test
+	$(MAKE) -C images/database/postgres-exts essential-test
 
 # ============================================================================
 # Clean Targets

@@ -22,8 +22,8 @@ echo ""
 # Directories to skip
 SKIP_DIRS=("scripts" "buildbox" ".git" ".github" ".vscode" "work" "tmp")
 
-# Find all directories with compose files
-DIRS=$(find "$TARGET_DIR" -maxdepth 3 -type f \( -name "compose.yml" -o -name "docker-compose.yml" \) -exec dirname {} \; | sort -u)
+# Find all directories with compose files (images/category/project/ structure)
+DIRS=$(find "$TARGET_DIR" -maxdepth 4 -type f \( -name "compose.yml" -o -name "docker-compose.yml" \) -exec dirname {} \; | sort -u)
 
 if [ -z "$DIRS" ]; then
     echo -e "${YELLOW}No directories with compose files found${NC}"

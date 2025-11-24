@@ -104,7 +104,7 @@ jobs:
       - name: Build Essential Image
         if: github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push'
         run: |
-          cd postgres-exts
+          cd images/database/postgres-exts
           make essential-build
           docker tag postgres-exts:essential scriptonbasestar/postgres-exts:16-essential
           docker tag postgres-exts:essential scriptonbasestar/postgres-exts:16-essential-${{ steps.version.outputs.version }}
@@ -112,14 +112,14 @@ jobs:
       - name: Build Full Image
         if: github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'
         run: |
-          cd postgres-exts
+          cd images/database/postgres-exts
           make full-build
           docker tag postgres-exts:full scriptonbasestar/postgres-exts:16-full
           docker tag postgres-exts:full scriptonbasestar/postgres-exts:16-full-${{ steps.version.outputs.version }}
 
       - name: Test Images
         run: |
-          cd postgres-exts
+          cd images/database/postgres-exts
           if docker images | grep -q "postgres-exts.*essential"; then
             make essential-test
           fi
