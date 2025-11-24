@@ -6,6 +6,57 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-24] - Phase 11.9: Directory Structure Reorganization
+
+### Changed
+
+#### Project Directory Restructuring
+**45개 프로젝트를 계층적 카테고리 구조로 재편성**:
+
+**핵심 변경사항**:
+- ✅ 모든 프로젝트를 `images/` 디렉토리로 이동
+- ✅ 13개 카테고리별 분류 (cms, community, wiki, devtools, database, infrastructure, auth, blockchain, registry, vcs, ecommerce, feed, social)
+- ✅ Git 히스토리 보존 (git mv 사용, 449개 파일 rename)
+- ✅ 모든 참조 경로 업데이트
+
+**업데이트된 파일**:
+- `Makefile`: 프로젝트 경로, 빌드/테스트 타겟 업데이트
+- `README.md`: 디렉토리 구조 문서화, 카테고리별 프로젝트 목록
+- `scripts/list-versions.sh`: find 경로 조정
+- `scripts/check-required-files.sh`: maxdepth 조정
+- `.github/workflows/ci.yml`: postgres-exts 경로 업데이트
+- `.github/workflows/cd.yml`: postgres-exts 경로 업데이트
+- `.github/workflows/pr-check.yml`: postgres-exts 경로 업데이트
+
+**검증 완료**:
+- `make list`: 44개 compose 파일 정상 감지
+- `make check`: 모든 경로 정상 작동
+- Git rename detection: 100% 히스토리 보존
+
+### Fixed
+
+#### GitHub Actions Workflow Issues
+**워크플로우 검증 이슈 해결 및 보안 강화**:
+
+**해결된 이슈**:
+- ❌ `deploy.yml`, `deploy2.yml` 삭제 (on 속성 누락, 미사용)
+- ✅ `pr-check.yml` 보안 취약점 수정 (script injection 방지)
+
+**보안 개선**:
+- PR 메타데이터를 환경 변수로 격리
+- 신뢰할 수 없는 입력값 직접 사용 방지
+- GitHub 보안 베스트 프랙티스 적용
+
+**검증**:
+- actionlint: 모든 워크플로우 검증 통과
+- 125줄 코드 정리
+
+**Benefits**:
+- 📁 카테고리별 프로젝트 탐색 용이
+- 🔍 45개 프로젝트의 체계적 관리
+- 📚 명확한 분류 체계
+- 🔒 향상된 CI/CD 보안
+
 ## [2025-11-23] - Phase 11.8: Per-Project Version Management
 
 ### Added
