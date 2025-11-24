@@ -40,6 +40,11 @@ help:
 	@echo "  make clean             - 임시 파일 정리"
 	@echo "  make clean-all         - 모든 컨테이너/이미지 정리 (주의!)"
 	@echo ""
+	@echo "CI/CD 타겟:"
+	@echo "  make lint-workflows    - GitHub Actions 워크플로우 검증"
+	@echo "  make ci-validate       - CI 전체 검증 (check + test + workflows)"
+	@echo "  make ci-build          - CI 빌드 (주요 프로젝트)"
+	@echo ""
 	@echo "레거시 타겟 (호환성):"
 	@echo "  make init0             - buildbox 테스트 환경 시작"
 	@echo "  make teardown          - buildbox 환경 종료"
@@ -48,6 +53,7 @@ help:
 	@echo "  make build-postgres-exts    # PostgreSQL 확장 이미지 빌드"
 	@echo "  make test-discourse         # Discourse compose 검증"
 	@echo "  make list                   # 전체 프로젝트 목록"
+	@echo "  make lint-workflows         # 워크플로우 검증"
 
 # ============================================================================
 # Project Discovery
@@ -203,8 +209,24 @@ enter:
 # CI/CD Targets
 # ============================================================================
 
+.PHONY: lint-workflows
+lint-workflows:
+	@echo "=== GitHub Actions 워크플로우 검증 ==="
+	@command -v actionlint >/dev/null 2>&1 || { \
+		echo "❌ actionlint가 설치되지 않았습니다."; \
+		echo ""; \
+		echo "설치 방법:"; \
+		echo "  Linux:   bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)"; \
+		echo "  macOS:   brew install actionlint"; \
+		echo "  Go:      go install github.com/rhysd/actionlint/cmd/actionlint@latest"; \
+		echo ""; \
+		exit 1; \
+	}
+	@actionlint .github/workflows/*.yml
+	@echo "✅ 모든 워크플로우 검증 통과"
+
 .PHONY: ci-validate
-ci-validate: check test-all
+ci-validate: check test-all lint-workflows
 	@echo "✅ CI 검증 완료"
 
 .PHONY: ci-build
