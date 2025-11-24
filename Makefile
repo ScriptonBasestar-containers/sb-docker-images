@@ -42,6 +42,12 @@ help:
 	@echo "  make clean             - 임시 파일 정리"
 	@echo "  make clean-all         - 모든 컨테이너/이미지 정리 (주의!)"
 	@echo ""
+	@echo "버전 관리 타겟:"
+	@echo "  make version-list              - 모든 프로젝트 버전 목록"
+	@echo "  make version-show PROJECT=name - 특정 프로젝트 버전 표시"
+	@echo "  make version-tag PROJECT=name VERSION=x.y.z - 버전 태그 생성"
+	@echo "  make version-check             - VERSION 파일 형식 검증"
+	@echo ""
 	@echo "CI/CD 타겟:"
 	@echo "  make lint-workflows    - GitHub Actions 워크플로우 검증"
 	@echo "  make ci-validate       - CI 전체 검증 (check + test + workflows)"
@@ -206,6 +212,116 @@ teardown:
 enter:
 	@echo "=== busybox 컨테이너 접속 ==="
 	docker compose exec busybox sh
+
+# ============================================================================
+# Version Management Targets
+# ============================================================================
+
+.PHONY: version-list
+version-list:
+	@echo "=== 프로젝트 버전 목록 ==="
+	@echo ""
+	@for dir in images/*/*; do \
+		if [ -d "$$dir" ] && [ -f "$$dir/VERSION" ]; then \
+			project=$$(basename $$dir); \
+			version=$$(grep "^VERSION=" $$dir/VERSION | cut -d= -f2); \
+			category=$$(basename $$(dirname $$dir)); \
+			printf "%-20s %-15s %s\n" "$$project" "v$$version" "[$$category]"; \
+		fi; \
+	done | sort
+
+.PHONY: version-show
+version-show:
+	@if [ -z "$(PROJECT)" ]; then \
+		echo "❌ PROJECT 변수가 필요합니다."; \
+		echo ""; \
+		echo "사용법:"; \
+		echo "  make version-show PROJECT=wikijs"; \
+		echo "  make version-show PROJECT=mattermost"; \
+		exit 1; \
+	fi
+	@echo "=== 프로젝트 버전 정보: $(PROJECT) ==="
+	@echo ""
+	@found=0; \
+	for dir in images/*/*; do \
+		if [ -d "$$dir" ] && [ "$$(basename $$dir)" = "$(PROJECT)" ]; then \
+			if [ -f "$$dir/VERSION" ]; then \
+				cat $$dir/VERSION; \
+				found=1; \
+				break; \
+			fi; \
+		fi; \
+	done; \
+	if [ $$found -eq 0 ]; then \
+		echo "❌ 프로젝트를 찾을 수 없거나 VERSION 파일이 없습니다: $(PROJECT)"; \
+		exit 1; \
+	fi
+
+.PHONY: version-tag
+version-tag:
+	@if [ -z "$(PROJECT)" ] || [ -z "$(VERSION)" ]; then \
+		echo "❌ PROJECT와 VERSION 변수가 필요합니다."; \
+		echo ""; \
+		echo "사용법:"; \
+		echo "  make version-tag PROJECT=wikijs VERSION=1.0.0"; \
+		echo "  make version-tag PROJECT=mattermost VERSION=1.2.3"; \
+		echo ""; \
+		echo "주의: 실제 태그 생성을 위해 scripts/version-tag.sh를 사용하세요"; \
+		echo "  ./scripts/version-tag.sh $(PROJECT) $(VERSION) --dry-run"; \
+		exit 1; \
+	fi
+	@echo "=== 버전 태그 생성: $(PROJECT)-v$(VERSION) ==="
+	@echo ""
+	@echo "다음 명령어를 실행하세요:"
+	@echo ""
+	@echo "  # Dry-run (테스트):"
+	@echo "  ./scripts/version-tag.sh $(PROJECT) $(VERSION) --dry-run"
+	@echo ""
+	@echo "  # 실제 태그 생성:"
+	@echo "  ./scripts/version-tag.sh $(PROJECT) $(VERSION)"
+	@echo ""
+	@echo "  # 태그 생성 및 원격 푸시:"
+	@echo "  ./scripts/version-tag.sh $(PROJECT) $(VERSION) --push"
+
+.PHONY: version-check
+version-check:
+	@echo "=== VERSION 파일 검증 ==="
+	@echo ""
+	@total=0; \
+	valid=0; \
+	invalid=0; \
+	for dir in images/*/*; do \
+		if [ -d "$$dir" ] && [ ! "$$(basename $$dir)" = "INDEX.md" ]; then \
+			total=$$((total + 1)); \
+			if [ -f "$$dir/VERSION" ]; then \
+				project=$$(basename $$dir); \
+				if grep -q "^VERSION=[0-9]\+\.[0-9]\+\.[0-9]\+$$" $$dir/VERSION; then \
+					valid=$$((valid + 1)); \
+					printf "  ✅ %-25s " "$$project"; \
+					grep "^VERSION=" $$dir/VERSION; \
+				else \
+					invalid=$$((invalid + 1)); \
+					echo "  ❌ $$project - 잘못된 VERSION 형식"; \
+				fi; \
+			else \
+				invalid=$$((invalid + 1)); \
+				echo "  ⚠️  $$(basename $$dir) - VERSION 파일 없음"; \
+			fi; \
+		fi; \
+	done; \
+	echo ""; \
+	echo "통계:"; \
+	echo "  전체 프로젝트: $$total"; \
+	echo "  유효한 VERSION: $$valid"; \
+	echo "  문제 있음: $$invalid"; \
+	if [ $$invalid -eq 0 ]; then \
+		echo ""; \
+		echo "✅ 모든 VERSION 파일 검증 통과"; \
+	else \
+		echo ""; \
+		echo "⚠️  일부 프로젝트에 문제가 있습니다"; \
+		exit 1; \
+	fi
 
 # ============================================================================
 # CI/CD Targets
