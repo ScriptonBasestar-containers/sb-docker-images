@@ -1,5 +1,7 @@
 # FlaskBB
 
+> ⚠️ **DEPRECATED**: FlaskBB는 업스트림 개발이 중단된 상태입니다. 프로덕션 사용을 권장하지 않으며, Discourse, Flarum, NodeBB 등의 대안을 고려하세요.
+
 > 💡 **Quick Start**: For production deployment with PostgreSQL and Redis, use the [standalone setup](standalone/README.md) - it includes all services and comprehensive documentation!
 
 ## 개요

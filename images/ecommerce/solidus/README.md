@@ -1,5 +1,7 @@
 # Solidus
 
+> ⚠️ **DEPRECATED**: Solidus는 테스트 목적으로만 제공됩니다. 프로덕션 사용 시 Shopify, Medusa, Saleor 등의 대안을 고려하세요.
+
 > 💡 **Quick Start**: For production deployment with PostgreSQL and Redis, use the [standalone setup](standalone/README.md) - it includes database, cache, and comprehensive documentation!
 
 ## 개요

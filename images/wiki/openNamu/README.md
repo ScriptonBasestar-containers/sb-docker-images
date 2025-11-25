@@ -1,5 +1,7 @@
 # openNAMU
 
+> ⚠️ **DEPRECATED**: openNAMU는 업스트림 개발이 중단된 상태입니다. 프로덕션 사용을 권장하지 않으며, MediaWiki, Wiki.js, DokuWiki 등의 대안을 고려하세요.
+
 openNAMU는 the seed 엔진 기반의 한국어 위키 소프트웨어입니다. Python과 Flask로 작성되었으며, 나무위키 스타일의 문법을 지원합니다.
 
 > 💡 **Quick Start**: This project provides a basic `compose.yml` for development. For complete examples and production setup, see the quick start methods below.

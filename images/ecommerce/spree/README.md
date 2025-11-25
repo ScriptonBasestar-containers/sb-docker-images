@@ -1,5 +1,7 @@
 # Spree Commerce
 
+> ⚠️ **DEPRECATED**: Spree는 테스트 목적으로만 제공됩니다. 프로덕션 사용 시 최신 Solidus 또는 Shopify, Medusa 등의 대안을 고려하세요.
+
 > 💡 **Quick Start**: This project does not have a standalone setup. Use the basic setup below for development and testing.
 
 ## 개요
