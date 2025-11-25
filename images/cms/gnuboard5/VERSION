@@ -1,7 +1,8 @@
 # Project Version
 # Format: MAJOR.MINOR.PATCH (semantic versioning)
 # Git tag format: gnuboard5-vMAJOR.MINOR.PATCH
-VERSION=1.0.0
+VERSION=1.0.1
 
 # Version history (most recent first)
+# v1.0.1 - 2025-11-25 - Fix mysqli PHP extension installation
 # v1.0.0 - 2025-11-24 - Initial release

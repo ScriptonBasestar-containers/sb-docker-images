@@ -1,7 +1,8 @@
 # Project Version
 # Format: MAJOR.MINOR.PATCH (semantic versioning)
 # Git tag format: chef-dev-vMAJOR.MINOR.PATCH
-VERSION=1.0.0
+VERSION=1.1.0
 
 # Version history (most recent first)
+# v1.1.0 - 2025-11-25 - Migrate from ChefDK to Chef Workstation
 # v1.0.0 - 2025-11-24 - Initial release
