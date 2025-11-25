@@ -176,8 +176,22 @@ jobs:
         run: |
           PROJECT="${{ needs.detect-project.outputs.project }}"
 
+          # Find project directory (projects are in images/<category>/<project>/)
+          PROJECT_DIR=$(find images -maxdepth 2 -mindepth 2 -type d -name "$PROJECT" | head -1)
+
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "Project directory not found: $PROJECT"
+            echo "has_dockerfile=false" >> $GITHUB_OUTPUT
+            echo "has_makefile=false" >> $GITHUB_OUTPUT
+            echo "project_dir=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "project_dir=$PROJECT_DIR" >> $GITHUB_OUTPUT
+          echo "Found project directory: $PROJECT_DIR"
+
           # Check if project has Dockerfile(s)
-          if [ -f "$PROJECT/Dockerfile" ] || find "$PROJECT" -name "Dockerfile" -type f | grep -q .; then
+          if [ -f "$PROJECT_DIR/Dockerfile" ] || find "$PROJECT_DIR" -name "Dockerfile" -type f 2>/dev/null | grep -q . || find "$PROJECT_DIR" -name "*.dockerfile" -type f 2>/dev/null | grep -q .; then
             echo "has_dockerfile=true" >> $GITHUB_OUTPUT
             echo "Project has Dockerfile"
           else
@@ -186,7 +200,7 @@ jobs:
           fi
 
           # Check if project has Makefile with build target
-          if [ -f "$PROJECT/Makefile" ] && grep -q "^build:" "$PROJECT/Makefile"; then
+          if [ -f "$PROJECT_DIR/Makefile" ] && grep -q "^build:" "$PROJECT_DIR/Makefile"; then
             echo "has_makefile=true" >> $GITHUB_OUTPUT
             echo "Project has Makefile with build target"
           else
@@ -198,8 +212,9 @@ jobs:
         run: |
           PROJECT="${{ needs.detect-project.outputs.project }}"
           VERSION="${{ needs.detect-project.outputs.version }}"
+          PROJECT_DIR="${{ steps.check.outputs.project_dir }}"
 
-          cd "$PROJECT"
+          cd "$PROJECT_DIR"
           make build || echo "Build target failed or not standard"
 
       - name: Build with Docker
@@ -207,14 +222,15 @@ jobs:
         run: |
           PROJECT="${{ needs.detect-project.outputs.project }}"
           VERSION="${{ needs.detect-project.outputs.version }}"
+          PROJECT_DIR="${{ steps.check.outputs.project_dir }}"
 
-          cd "$PROJECT"
+          cd "$PROJECT_DIR"
 
           # Find Dockerfile
           if [ -f "Dockerfile" ]; then
             DOCKERFILE="Dockerfile"
           else
-            DOCKERFILE=$(find . -name "Dockerfile" -type f | head -1)
+            DOCKERFILE=$(find . -name "Dockerfile" -o -name "*.dockerfile" -type f | head -1)
           fi
 
           if [ -n "$DOCKERFILE" ]; then
