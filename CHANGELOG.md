@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 #### New Categories
-**2개 신규 카테고리 생성**:
+**3개 신규 카테고리 생성**:
 
 - **analytics/** - 웹 분석 솔루션
   - OWA (Open Web Analytics) 포함
@@ -19,8 +19,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **media/** - 미디어 스트리밍 솔루션
   - Koel (Personal music streaming) 포함
 
-#### New Projects (4개)
-**총 프로젝트 수: 48 → 52개**
+- **groupware/** - 그룹웨어 및 협업 도구
+  - AgenDAV (CalDAV web client) 포함
+
+#### New Projects (5개)
+**총 프로젝트 수: 48 → 53개**
 
 1. **node-pnpm** (devtools/)
    - Node.js with pnpm 패키지 매니저
@@ -49,13 +52,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
    - 트랜스코딩 지원
    - Port: 8290
 
+5. **AgenDAV** (groupware/)
+   - CalDAV web client for calendar management
+   - PHP 8.2 + nginx + MariaDB
+   - Radicale, Baikal, Nextcloud 호환
+   - 공식 Docker 이미지 없음 대응
+   - Port: 8300
+
 ### Changed
 
 #### Documentation Updates
-- README.md: 프로젝트 수 48 → 52개 반영
-- README.md: 신규 카테고리 추가 (analytics, media)
-- PORT_GUIDE.md: 신규 포트 할당 (owa: 8280, koel: 8290, taiga: 9000)
+- README.md: 프로젝트 수 48 → 53개 반영
+- README.md: 신규 카테고리 추가 (analytics, media, groupware)
+- PORT_GUIDE.md: 신규 포트 할당 (owa: 8280, koel: 8290, agendav: 8300, taiga: 9000)
 - devtools/INDEX.md: node-pnpm, taiga 추가
+- groupware/INDEX.md: agendav 추가
 
 ---
 

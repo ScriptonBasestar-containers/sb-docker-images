@@ -1,0 +1,77 @@
+# AgenDAV - CalDAV web client
+# https://agendav.github.io/agendav/
+#
+# Requires a CalDAV server (Baikal, Radicale, etc.)
+
+services:
+  agendav:
+    build:
+      context: .
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.2}
+        AGENDAV_VERSION: ${AGENDAV_VERSION:-2.6.0}
+    image: ${DOCKER_REPONAME:-scriptonbasestar}/agendav:${AGENDAV_VERSION:-2.6.0}
+    container_name: agendav
+    ports:
+      - "${AGENDAV_PORT:-8300}:80"
+    environment:
+      # AgenDAV settings
+      - AGENDAV_TITLE=${AGENDAV_TITLE:-AgenDAV}
+      - AGENDAV_TIMEZONE=${AGENDAV_TIMEZONE:-UTC}
+      - AGENDAV_LANGUAGE=${AGENDAV_LANGUAGE:-en}
+      - AGENDAV_LOG_LEVEL=${AGENDAV_LOG_LEVEL:-WARNING}
+      - AGENDAV_ENCRYPTION_KEY=${AGENDAV_ENCRYPTION_KEY:-change_me_please_32chars}
+      - AGENDAV_INIT_DB=${AGENDAV_INIT_DB:-false}
+      # Database
+      - DB_HOST=${DB_HOST:-db}
+      - DB_DATABASE=${DB_DATABASE:-agendav}
+      - DB_USERNAME=${DB_USERNAME:-agendav}
+      - DB_PASSWORD=${DB_PASSWORD:-agendav_password}
+      # CalDAV server
+      - CALDAV_URL=${CALDAV_URL:-http://caldav:5232/}
+      - CALDAV_AUTH_METHOD=${CALDAV_AUTH_METHOD:-basic}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  db:
+    image: mariadb:10.11
+    container_name: agendav-db
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:-root_password}
+      - MARIADB_DATABASE=${DB_DATABASE:-agendav}
+      - MARIADB_USER=${DB_USERNAME:-agendav}
+      - MARIADB_PASSWORD=${DB_PASSWORD:-agendav_password}
+    volumes:
+      - agendav-db:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Optional: Radicale CalDAV server
+  # Uncomment to use built-in CalDAV server
+  # caldav:
+  #   image: tomsquest/docker-radicale:latest
+  #   container_name: agendav-caldav
+  #   ports:
+  #     - "${CALDAV_PORT:-5232}:5232"
+  #   volumes:
+  #     - caldav-data:/data
+  #   restart: unless-stopped
+
+volumes:
+  agendav-db:
+    name: agendav-db
+  # caldav-data:
+  #   name: agendav-caldav-data

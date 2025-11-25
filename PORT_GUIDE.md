@@ -173,6 +173,7 @@ MEMCACHED_PORT=11212 docker compose up -d
 - xpressengine: 8270
 - owa: 8280
 - koel: 8290
+- agendav: 8300
 - taiga: 9000
 
 ### ✅ 기타 포트 충돌 해결 완료
