@@ -6,6 +6,83 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-25] - Phase 13: Project Maintenance & Archive
+
+### Changed
+
+#### Deprecated Projects Archived (6개)
+**6개 deprecated 프로젝트를 archive로 이동**:
+
+- **FlaskBB** (`images/community/flaskbb/` → `images/archive/flaskbb/`)
+  - Reason: Upstream development discontinued
+  - Alternatives: Discourse, Flarum, NodeBB
+
+- **openNamu** (`images/wiki/openNamu/` → `images/archive/openNamu/`)
+  - Reason: Upstream development discontinued
+  - Alternatives: MediaWiki, Wiki.js, DokuWiki
+
+- **Spree** (`images/ecommerce/spree/` → `images/archive/spree/`)
+  - Reason: Test-only, superseded by modern alternatives
+  - Alternatives: Shopify, Medusa, Saleor
+
+- **Solidus** (`images/ecommerce/solidus/` → `images/archive/solidus/`)
+  - Reason: Test-only, superseded by modern alternatives
+  - Alternatives: Shopify, Medusa, Saleor
+
+- **discourse_fast_switch** (`images/community/discourse/image/discourse_fast_switch/` → `images/archive/discourse_fast_switch/`)
+  - Reason: 7+ years old, uses EOL Ruby 2.4/2.5
+  - Base: `discourse/base:2.0.20180608` (2018)
+
+- **discourse_bench** (`images/community/discourse/image/discourse_bench/` → `images/archive/discourse_bench/`)
+  - Reason: 7+ years old, uses EOL PostgreSQL 9.5
+  - Base: `discourse/discourse_test:1.4.0`
+
+**Impact:**
+- Active project count: 54 → 48
+- E-commerce category removed (empty)
+- Git history preserved via `git mv`
+- Ports released: 8240, 8250, 8260, 8400
+
+#### Critical Dockerfile Updates (3개)
+**EOL 베이스 이미지 업데이트**:
+
+- **rtmp-proxy/ubuntu**: `ubuntu:18.04` → `ubuntu:24.04`
+  - 18.04 EOL (April 2023) → 24.04 LTS (until April 2029)
+  - VERSION: 1.0.0 → 1.1.0
+
+- **discourse_monitor**: `samsaffron/discourse_base:1.0.7` → `ruby:3.3-slim-bookworm`
+  - 개인 repo에서 공식 Ruby 이미지로 마이그레이션
+
+- **jupyter2-debian**: `debian:buster` → `debian:bookworm`
+  - buster EOL → bookworm (current stable)
+  - 주요 버전 업데이트: Java 12→21, Ruby 2.6→3.3, Scala 2.12→2.13
+
+#### Version Pinning (9개 Dockerfile)
+**Floating tag 버전 고정**:
+
+| 프로젝트 | 변경 전 | 변경 후 |
+|---------|--------|--------|
+| chef-dev | `latest` | `24.10.1098` |
+| rtmp-proxy/nginx | `alpine` | `1.27-alpine3.20` |
+| jupyter | unversioned | `2024-10-07` |
+| jupyter2 | unversioned | `2024-10-07` |
+| ruby-dev | no default | `3.3` |
+| discourse_app | unversioned | `2.0.20241022-0018` |
+| discourse_dev | `slim` | `2.0.20241022-0018-slim` |
+| discourse_test | `build` | `2.0.20241022-0018-build` |
+| squid | `focal` | `20.04` |
+
+**표준 버전 주석 추가**:
+- 모든 업데이트된 Dockerfile에 버전 정보 주석 추가
+- Docker Hub 링크 및 최종 검증 일자 포함
+
+#### Documentation Updates
+- README.md: 프로젝트 수 54 → 48개 반영, archive 카테고리 추가
+- PORT_GUIDE.md: archived 프로젝트 포트 정보 업데이트
+- images/archive/INDEX.md: 새로 생성
+
+---
+
 ## [2025-11-25] - Phase 12: New Project Categories & Images
 
 ### Added

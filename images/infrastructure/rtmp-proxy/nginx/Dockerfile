@@ -1,6 +1,10 @@
-ARG OS_VERSION=alpine
+# Base Image: nginx
+# Version: 1.27-alpine3.20
+# Last Verified: 2025-11-25
+# Docker Hub: https://hub.docker.com/_/nginx/tags
+ARG NGINX_VERSION=1.27-alpine3.20
 
-FROM nginx:${OS_VERSION}
+FROM nginx:${NGINX_VERSION}
 
 RUN apk update && apk upgrade && \
     apk add nginx-mod-rtmp

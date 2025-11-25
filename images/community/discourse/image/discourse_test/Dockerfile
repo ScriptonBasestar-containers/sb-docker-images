@@ -1,4 +1,9 @@
-ARG from_tag=build
+# Base Image: discourse/base
+# Version: 2.0.20241022-0018
+# Last Verified: 2025-11-25
+# Docker Hub: https://hub.docker.com/r/discourse/base/tags
+ARG DISCOURSE_BASE_VERSION=2.0.20241022-0018
+ARG from_tag=${DISCOURSE_BASE_VERSION}-build
 
 FROM discourse/base:$from_tag AS base
 ENV RAILS_ENV test

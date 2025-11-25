@@ -10,29 +10,30 @@
 
 ## 검증 상태
 
-총 54개 프로젝트:
-- ✅ **완전 성공**: 54개 (100%)
+총 48개 프로젝트 (+ 6개 archived):
+- ✅ **완전 성공**: 48개 (100%)
 - ⚠️ **이슈 발견**: 0개 (0%)
 - 🔄 **미검증**: 0개 (0%)
+- 📦 **Archived**: 6개 (deprecated)
 
-**Phase 12 완료**: 신규 프로젝트 6개 추가 (node-pnpm, owa, taiga, koel, agendav, rhymix)
+**Phase 13 완료**: Deprecated 프로젝트 archive 이동, Dockerfile 업데이트, 버전 고정
 
 ### 품질 지표
 
 | 지표 | 커버리지 | 상태 |
 |------|---------|------|
-| README.md | 54/54 (100%) | ✅ |
-| .env.example | 54/54 (100%) | ✅ |
-| VERSION 파일 | 54/54 (100%) | ✅ |
-| Makefile | 54/54 (100%) | ✅ |
-| Compose 파일 | 54/54 (100%) | ✅ |
+| README.md | 48/48 (100%) | ✅ |
+| .env.example | 48/48 (100%) | ✅ |
+| VERSION 파일 | 48/48 (100%) | ✅ |
+| Makefile | 48/48 (100%) | ✅ |
+| Compose 파일 | 48/48 (100%) | ✅ |
 
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 
-### 프로젝트 카테고리 (54개)
+### 프로젝트 카테고리 (48개 + 6 archived)
 
-#### 🚀 웹 애플리케이션 & CMS (23개)
-Wiki.js, Gitea, Flarum, Gnuboard5, Gnuboard6, WordPress, MediaWiki, Joomla, XpressEngine, Discourse, DokuWiki, Forem, FlaskBB, Misago, Django CMS, TSBoard, Drupal, Jupyter, Mailslurper, Mastodon, Nextcloud, NodeBB, OpenNamu, Solidus
+#### 🚀 웹 애플리케이션 & CMS (19개)
+Wiki.js, Gitea, Flarum, Gnuboard5, Gnuboard6, WordPress, MediaWiki, Joomla, XpressEngine, Discourse, DokuWiki, Forem, Misago, Django CMS, TSBoard, Drupal, Jupyter, Mailslurper, Mastodon, Nextcloud, NodeBB
 
 #### 🔧 개발 도구 (5개)
 - **Buildbox**: 재사용 가능한 Docker Compose 템플릿 컬렉션
@@ -134,17 +135,17 @@ make version-check
 - **Phase 11.10**: 완전한 버전 관리 시스템 구축
 
 ### 🚀 Standalone 구성
-프로덕션 준비된 독립 실행 구성 (23개 프로젝트, 24개 파일):
+프로덕션 준비된 독립 실행 구성 (19개 프로젝트, 20개 파일):
 - 완전한 스택 (DB, Cache, Application)
 - Health check 설정
 - 자동 재시작 정책
 - 상세한 README 포함
-- **검증 완료**: 24개 파일 100% 통과
+- **검증 완료**: 20개 파일 100% 통과
 
 위치: `<project>/standalone/`
 
-**Standalone 전용 프로젝트** (9개):
-- drupal, jupyter, mailslurper, mastodon, nextcloud, nodebb, openNamu, solidus, squid
+**Standalone 전용 프로젝트** (5개):
+- drupal, jupyter, mailslurper, mastodon, nextcloud, nodebb, squid
 
 ### 🔌 포트 할당 가이드
 프로젝트 간 포트 충돌 방지:
@@ -251,25 +252,25 @@ docker compose up -d
 
 ```
 images/
-├── analytics/     (1개)  - 웹 분석 ⭐ NEW
+├── analytics/     (1개)  - 웹 분석
+├── archive/       (6개)  - Deprecated 프로젝트 (archived)
 ├── cms/           (9개)  - CMS 및 컨텐츠 플랫폼
-├── community/     (6개)  - 커뮤니티 및 포럼
-├── wiki/          (5개)  - 위키 시스템
-├── devtools/      (8개)  - 개발 도구 (+2)
-├── media/         (1개)  - 미디어 스트리밍 ⭐ NEW
-├── groupware/     (1개)  - 그룹웨어 ⭐ NEW
+├── community/     (5개)  - 커뮤니티 및 포럼
+├── wiki/          (4개)  - 위키 시스템
+├── devtools/      (8개)  - 개발 도구
+├── media/         (1개)  - 미디어 스트리밍
+├── groupware/     (1개)  - 그룹웨어
 ├── database/      (4개)  - 데이터베이스 및 캐시
 ├── infrastructure/(4개)  - 인프라 서비스
 ├── auth/          (2개)  - 인증 및 보안
 ├── blockchain/    (3개)  - 블록체인 플랫폼
 ├── registry/      (1개)  - 패키지 레지스트리
 ├── vcs/           (1개)  - 버전 관리 시스템
-├── ecommerce/     (2개)  - 전자상거래
 ├── feed/          (1개)  - RSS/피드
-└── social/        (4개)  - 소셜 네트워크 & 팀 메신저
+└── social/        (2개)  - 소셜 네트워크
 ```
 
-**총 54개 프로젝트** (카테고리별 자동 분류)
+**총 48개 활성 프로젝트** + 6개 archived (카테고리별 자동 분류)
 
 ## 카테고리별 프로젝트 목록
 
@@ -278,13 +279,13 @@ images/
 - drupal, wordpress, joomla, nextcloud
 - django-cms, gnuboard5, gnuboard6, rhymix, xpressengine
 
-### 💬 Community (6개)
+### 💬 Community (5개)
 `images/community/` - 커뮤니티 및 포럼 플랫폼
-- discourse, flarum, nodebb, misago, flaskbb, tsboard
+- discourse, flarum, nodebb, misago, tsboard
 
-### 📖 Wiki (5개)
+### 📖 Wiki (4개)
 `images/wiki/` - 위키 및 문서화 시스템
-- wikijs, mediawiki, gollum, dokuwiki, openNamu
+- wikijs, mediawiki, gollum, dokuwiki
 
 ### 🔧 Development Tools (8개)
 `images/devtools/` - 개발 및 CI/CD 도구
@@ -328,9 +329,10 @@ images/
 `images/vcs/` - 버전 관리 시스템
 - gitea
 
-### 🛒 E-commerce (2개)
-`images/ecommerce/` - 전자상거래
-- solidus, spree
+### 📦 Archive (6개)
+`images/archive/` - Deprecated 프로젝트
+- flaskbb, openNamu, spree, solidus (upstream 개발 중단)
+- discourse_fast_switch, discourse_bench (7년+ 오래된 이미지)
 
 ### 📡 Feed (1개)
 `images/feed/` - RSS 및 피드
@@ -360,13 +362,11 @@ images/
 - devtools: jupyter, jupyter2
 - auth: home-assistant (참조용, Docker 비권장 - HA OS 사용 권장)
 
-**Deprecated / 아카이브 예정**:
-- xpressengine (레거시 XE3, 공식 지원 종료)
-- flaskbb (개발 중단)
-- openNamu (개발 중단)
-- spree/solidus (테스트만 진행)
+**Deprecated / Archived**:
+- xpressengine (레거시 XE3, 공식 지원 종료 - 아직 활성)
+- **Archived** (6개): flaskbb, openNamu, spree, solidus, discourse_fast_switch, discourse_bench
 
-> 아카이브 예정 프로젝트는 필요 시 `archive/` 디렉토리로 이동
+> Deprecated 프로젝트는 `images/archive/` 디렉토리로 이동됨 (Phase 13)
 
 ## REF
 https://github.com/docker/build-push-action/issues/561

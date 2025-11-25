@@ -2,7 +2,7 @@
 
 커뮤니티 및 포럼 플랫폼 - 온라인 토론 및 커뮤니티 구축
 
-## 📚 프로젝트 목록 (6개)
+## 📚 프로젝트 목록 (5개)
 
 ### [Discourse](discourse/)
 **현대적인 오픈소스 포럼 플랫폼**
@@ -17,12 +17,6 @@
 - 확장 가능한 구조
 - 우아한 UI/UX
 - Apache/Nginx 구성 지원
-
-### [FlaskBB](flaskbb/)
-**Python Flask 기반 포럼 (Deprecated)**
-- 경량 포럼 솔루션
-- ⚠️ 개발 중단됨
-- Standalone 구성 제공
 
 ### [Misago](misago/)
 **Django 기반 포럼 플랫폼**
@@ -81,8 +75,8 @@ docker compose exec web rake admin:create
 - **Flarum** - 빠른 성장 중
 - **NodeBB** - 실시간 기능 강점
 
-### Deprecated 프로젝트
-- **FlaskBB** - 개발 중단, 참고용
+### Archived 프로젝트
+- **FlaskBB** - 개발 중단, `images/archive/flaskbb/`로 이동됨
 
 ### 데이터베이스 요구사항
 - Discourse: PostgreSQL, Redis

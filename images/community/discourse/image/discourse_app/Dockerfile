@@ -1,7 +1,12 @@
+# Base Image: discourse/base
+# Version: 2.0.20241022-0018
+# Last Verified: 2025-11-25
+# Docker Hub: https://hub.docker.com/r/discourse/base/tags
 #ARG RUBY_VERSION=3.3
 #ARG DEBIAN_RELEASE=bookworm
 #FROM ruby:${RUBY_VERSION}-${DEBIAN_RELEASE}
-FROM discourse/base
+ARG DISCOURSE_BASE_VERSION=2.0.20241022-0018
+FROM discourse/base:${DISCOURSE_BASE_VERSION}
 
 ARG DEBIAN_RELEASE
 ARG RUBY_VERSION

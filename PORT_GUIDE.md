@@ -25,7 +25,7 @@
 | 8100 | WordPress | wordpress | Web UI |
 | 8110 | Joomla | joomla | Web UI |
 | 8120 | Drupal | drupal | Web UI |
-| 8250 | **충돌** | flaskbb | Web UI |
+| 8250 | **Available** | (was flaskbb - archived) | - |
 | 8332 | Bitcoin RPC | docker-bitcoin | RPC |
 | 8333 | Bitcoin P2P | docker-bitcoin | P2P Network |
 | 8443 | Discourse HTTPS | discourse | HTTPS |
@@ -168,8 +168,8 @@ MEMCACHED_PORT=11212 docker compose up -d
 - nextcloud: 8210
 - nodebb: 8220
 - notebook: 8230
-- opennamu: 8240
-- solidus: 8260
+- (8240: was opennamu - archived)
+- (8260: was solidus - archived)
 - xpressengine: 8270
 - owa: 8280
 - koel: 8290
@@ -201,8 +201,7 @@ MEMCACHED_PORT=11212 docker compose up -d
 - flarum phpMyAdmin: 8081 (유지)
 
 **8250 포트:**
-- flaskbb: 8250 (기본)
-- flaskbb/standalone: 8251 (변경 완료)
+- (was flaskbb: 8250 - archived)
 
 **11211 포트 (Memcached):**
 - memcached: 11211 (독립 실행)

@@ -1,4 +1,10 @@
-ARG BASE_CONTAINER=jupyter/minimal-notebook
+# Base Image: jupyter/minimal-notebook
+# Version: 2024-10-07
+# Last Verified: 2025-11-25
+# Docker Hub: https://hub.docker.com/r/jupyter/minimal-notebook/tags
+# Note: Jupyter Docker Stacks uses date-based tags
+ARG JUPYTER_VERSION=2024-10-07
+ARG BASE_CONTAINER=jupyter/minimal-notebook:${JUPYTER_VERSION}
 FROM $BASE_CONTAINER
 
 ARG SCALA_11_VERSION=2.11.12

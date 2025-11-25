@@ -1,6 +1,11 @@
 # Chef Workstation Development Environment
 # Migrated from deprecated ChefDK to Chef Workstation (2024)
-ARG CHEF_VERSION=latest
+#
+# Base Image: chef/chefworkstation
+# Version: 24.10.1098
+# Last Verified: 2025-11-25
+# Docker Hub: https://hub.docker.com/r/chef/chefworkstation/tags
+ARG CHEF_VERSION=24.10.1098
 
 FROM chef/chefworkstation:${CHEF_VERSION}
 LABEL maintainer="archmagece@gmail.com"

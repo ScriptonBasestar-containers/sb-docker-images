@@ -1,5 +1,11 @@
+# Base Image: jupyter/all-spark-notebook
+# Version: 2024-10-07
+# Last Verified: 2025-11-25
+# Docker Hub: https://hub.docker.com/r/jupyter/all-spark-notebook/tags
+# Note: Jupyter Docker Stacks uses date-based tags
 ARG OWNER=jupyter
-ARG BASE_CONTAINER=$OWNER/all-spark-notebook
+ARG JUPYTER_VERSION=2024-10-07
+ARG BASE_CONTAINER=$OWNER/all-spark-notebook:${JUPYTER_VERSION}
 FROM $BASE_CONTAINER
 
 LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"

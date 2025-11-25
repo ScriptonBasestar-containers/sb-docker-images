@@ -2,7 +2,7 @@
 
 위키 및 지식 관리 시스템 - 협업 문서화 및 지식베이스 구축
 
-## 📚 프로젝트 목록 (6개)
+## 📚 프로젝트 목록 (5개)
 
 ### [DokuWiki](dokuwiki/)
 **파일 기반 경량 위키**
@@ -24,13 +24,6 @@
 - 대규모 문서 관리
 - 확장 기능 풍부
 - PHP 기반
-
-### [openNamu](openNamu/)
-**한국형 위키 엔진**
-- 나무위키 스타일
-- 한국어 최적화
-- Python Flask 기반
-- 간편한 설치
 
 ### [Outline](outline/)
 **현대적인 팀 지식 베이스**
@@ -88,7 +81,9 @@ docker compose up -d
 - DokuWiki: 없음 (파일 기반)
 - MediaWiki: MySQL/PostgreSQL
 - Wiki.js: PostgreSQL/MySQL/SQLite
-- openNamu: SQLite (기본)
+
+### Archived 프로젝트
+- **openNamu** - 개발 중단, `images/archive/openNamu/`로 이동됨
 
 ### 프로덕션 배포 시
 1. 정기 백업 설정 (문서 손실 방지)

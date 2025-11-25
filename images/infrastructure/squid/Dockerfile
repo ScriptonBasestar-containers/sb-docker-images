@@ -1,4 +1,9 @@
-FROM ubuntu:focal
+# Base Image: ubuntu
+# Version: 20.04 (Focal Fossa LTS)
+# Last Verified: 2025-11-25
+# Docker Hub: https://hub.docker.com/_/ubuntu/tags
+ARG UBUNTU_VERSION=20.04
+FROM ubuntu:${UBUNTU_VERSION}
 
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

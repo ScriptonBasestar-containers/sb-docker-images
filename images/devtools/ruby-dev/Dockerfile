@@ -1,5 +1,8 @@
-ARG RUBY_VERSION
-
+# Base Image: ruby
+# Version: 3.3
+# Last Verified: 2025-11-25
+# Docker Hub: https://hub.docker.com/_/ruby/tags
+ARG RUBY_VERSION=3.3
 
 FROM ruby:${RUBY_VERSION}
 LABEL maintainer="archmagece@gmail.com"
