@@ -5,9 +5,8 @@ RUN apt-get -yq update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN gem update --system
-RUN gem install github-linguist \
-    install gollum \
-    install org-ruby asciidoctor wikicloth RedCloth
+RUN gem install github-linguist gollum \
+    org-ruby asciidoctor wikicloth RedCloth
 
 WORKDIR /wiki
 
