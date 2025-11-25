@@ -174,6 +174,7 @@ MEMCACHED_PORT=11212 docker compose up -d
 - owa: 8280
 - koel: 8290
 - agendav: 8300
+- rhymix: 8310
 - taiga: 9000
 
 ### ✅ 기타 포트 충돌 해결 완료

@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 #### New Categories
-**3개 신규 카테고리 생성**:
+**3개 신규 카테고리 생성 + CMS 카테고리 확장**:
 
 - **analytics/** - 웹 분석 솔루션
   - OWA (Open Web Analytics) 포함
@@ -22,8 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **groupware/** - 그룹웨어 및 협업 도구
   - AgenDAV (CalDAV web client) 포함
 
-#### New Projects (5개)
-**총 프로젝트 수: 48 → 53개**
+#### New Projects (6개)
+**총 프로젝트 수: 48 → 54개**
 
 1. **node-pnpm** (devtools/)
    - Node.js with pnpm 패키지 매니저
@@ -59,14 +59,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
    - 공식 Docker 이미지 없음 대응
    - Port: 8300
 
+6. **Rhymix** (cms/)
+   - 한국형 오픈소스 CMS (XpressEngine 포크)
+   - PHP 8.2 + nginx + MariaDB
+   - 국내 PHP CMS 3종 세트 완성 (Gnuboard5, Gnuboard6, Rhymix)
+   - Port: 8310
+
 ### Changed
 
 #### Documentation Updates
-- README.md: 프로젝트 수 48 → 53개 반영
+- README.md: 프로젝트 수 48 → 54개 반영
 - README.md: 신규 카테고리 추가 (analytics, media, groupware)
-- PORT_GUIDE.md: 신규 포트 할당 (owa: 8280, koel: 8290, agendav: 8300, taiga: 9000)
+- PORT_GUIDE.md: 신규 포트 할당 (owa: 8280, koel: 8290, agendav: 8300, rhymix: 8310, taiga: 9000)
 - devtools/INDEX.md: node-pnpm, taiga 추가
 - groupware/INDEX.md: agendav 추가
+- cms/INDEX.md: rhymix 추가
 
 ---
 

@@ -1,0 +1,56 @@
+services:
+  rhymix:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PHP_VERSION=${PHP_VERSION:-8.2}
+        - RHYMIX_BRANCH=${RHYMIX_BRANCH:-master}
+    image: rhymix:${RHYMIX_VERSION:-latest}
+    container_name: ${CONTAINER_NAME:-rhymix}
+    ports:
+      - "${RHYMIX_PORT:-8310}:80"
+    volumes:
+      - rhymix-files:/var/www/rhymix/files
+    environment:
+      - TZ=${TZ:-Asia/Seoul}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - rhymix-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  db:
+    image: mariadb:${MARIADB_VERSION:-10.11}
+    container_name: ${CONTAINER_NAME:-rhymix}-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-rootpassword}
+      - MYSQL_DATABASE=${DB_DATABASE:-rhymix}
+      - MYSQL_USER=${DB_USERNAME:-rhymix}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-rhymix_password}
+    volumes:
+      - rhymix-db:/var/lib/mysql
+    networks:
+      - rhymix-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  rhymix-files:
+  rhymix-db:
+
+networks:
+  rhymix-network:
+    driver: bridge
