@@ -57,10 +57,7 @@ services:
       - intra-network
 
   kratos-ui-node:
-    image: kratos-ui-node
-    build:
-      context: ./ory-kratos-selfservice-ui-node
-      dockerfile: Dockerfile
+    image: oryd/kratos-selfservice-ui-node:v1.3.0
     container_name: kratos-ui-node
     ports:
       - "4455:4455"
@@ -75,6 +72,8 @@ services:
     networks:
       - intra-network
     restart: on-failure
+    depends_on:
+      - kratos
 #  kratos-ui-nextjs:
 #    image: kratos-ui-nextjs
 #    build:

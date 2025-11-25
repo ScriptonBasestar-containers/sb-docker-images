@@ -1,10 +1,7 @@
+# Forem - Community Platform (dev.to)
+# Using official GitHub Container Registry image
 x-app: &app
-  build:
-    target: development
-    context: .
-    args:
-      PG_MAJOR: '13'
-  image: ghcr.io/forem/forem:1.0.0-development
+  image: ghcr.io/forem/forem:latest
   environment: &env
     NODE_ENV: ${NODE_ENV:-development}
     RAILS_ENV: ${RAILS_ENV:-development}

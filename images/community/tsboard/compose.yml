@@ -2,27 +2,44 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: frontend-tsboard.dockerfile
+      dockerfile: dockerfiles/frontend-tsboard.dockerfile
+    container_name: ${CONTAINER_NAME:-tsboard}-frontend
     ports:
-      - "8095:80"
+      - "${FRONTEND_PORT:-8095}:80"
     depends_on:
       - backend
+    restart: unless-stopped
 
   backend:
     build:
       context: .
-      dockerfile: backend-goapi.dockerfile
+      dockerfile: dockerfiles/backend-goapi.dockerfile
+    container_name: ${CONTAINER_NAME:-tsboard}-backend
     ports:
-      - "3100:3100"
+      - "${BACKEND_PORT:-3100}:3100"
     environment:
-      - DATABASE_URL=${DATABASE_URL:-mysql://root:example@db:3306/tsboard}
+      - DATABASE_URL=${DATABASE_URL:-root:example@tcp(db:3306)/tsboard?charset=utf8mb4&parseTime=True&loc=Local}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
   db:
     image: mysql:8.4
+    container_name: ${CONTAINER_NAME:-tsboard}-db
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: tsboard
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-example}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tsboard}
     ports:
-      - "3307:3306"
+      - "${DB_PORT:-3307}:3306"
+    volumes:
+      - tsboard-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  tsboard-db:

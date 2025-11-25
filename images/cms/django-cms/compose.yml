@@ -1,41 +1,48 @@
-# Live Mode
-# firstly remove /static_collected from .dockerignore
-# then follow the guide - https://docs.divio.com/en/latest/how-to/local-in-live-configuration/
+# Django CMS Development Setup
+# NOTE: Requires cloning django-cms-quickstart first
+# See: https://github.com/django-cms/django-cms-quickstart
+#
+# Quick Start:
+#   git clone https://github.com/django-cms/django-cms-quickstart.git app
+#   docker compose up -d
 services:
-    web:
-        build:
-            context: '.'
-            dockerfile: Dockerfile
-        ports:
-            - '8093:80'
-        volumes:
-            - '.:/app:rw'
-            - './data:/data:rw'
-        command: python manage.py runserver 0.0.0.0:80
-        # env_file: backend/.local-env  # Optional: create if needed
+  web:
+    image: python:3.11-slim
+    container_name: ${CONTAINER_NAME:-django-cms}
+    ports:
+      - "${WEB_PORT:-8093}:8000"
+    volumes:
+      - ./app:/app:rw
+      - ./data:/data:rw
+    working_dir: /app
+    command: >
+      sh -c "pip install -r requirements.txt &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/django_cms
+    restart: unless-stopped
 
-    frontend:
-        build:
-            context: '.'
-            dockerfile: frontend.Dockerfile
-        ports:
-            - '8094:8090'
-        volumes:
-            - './frontend:/app:rw'
-            # We want to ignore an existing frontend/node_modules
-            # this allows a host-system yarn install and a docker based yarn work
-            # side by side
-            # read more at https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
-            - '/app/node_modules/'  # remove node_modules from the volume content
-        working_dir: /app
-        command: yarn webpack-dev-server-in-docker
+  db:
+    image: postgres:15-alpine
+    container_name: ${CONTAINER_NAME:-django-cms}-db
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: django_cms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - django-cms-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
-    db:
-        image: postgres:13.5-alpine
-        ports:
-            - '5432:5432'
-        environment:
-            POSTGRES_DB: 'db'
-            POSTGRES_HOST_AUTH_METHOD: trust
-        volumes:
-            - '.:/app:rw'
+volumes:
+  django-cms-db:
