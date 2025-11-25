@@ -2,7 +2,7 @@ services:
   # Discourse - Modern Community Forum Platform
   # https://hub.docker.com/r/discourse/base
   discourse:
-    image: discourse/base:2.0.20241119-0129
+    image: discourse/base:release
     container_name: ${DISCOURSE_CONTAINER_NAME:-discourse}
     restart: unless-stopped
     ports:

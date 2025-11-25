@@ -4,7 +4,7 @@ Complete standalone Discourse setup with PostgreSQL and Redis.
 
 ## Features
 
-- **Discourse**: Official base image `discourse/base:2.0.20241119-0129`
+- **Discourse**: Official base image `discourse/base:release`
 - **PostgreSQL**: Database server with health check
 - **Redis**: Cache and session backend
 

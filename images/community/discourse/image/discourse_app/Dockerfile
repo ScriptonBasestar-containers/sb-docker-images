@@ -1,11 +1,12 @@
 # Base Image: discourse/base
-# Version: 2.0.20241022-0018
+# Version: release (verified 2025-11-25)
 # Last Verified: 2025-11-25
 # Docker Hub: https://hub.docker.com/r/discourse/base/tags
+# Note: Specific version tags (2.0.20241022-0018) are not available, using 'release' tag instead
 #ARG RUBY_VERSION=3.3
 #ARG DEBIAN_RELEASE=bookworm
 #FROM ruby:${RUBY_VERSION}-${DEBIAN_RELEASE}
-ARG DISCOURSE_BASE_VERSION=2.0.20241022-0018
+ARG DISCOURSE_BASE_VERSION=release
 FROM discourse/base:${DISCOURSE_BASE_VERSION}
 
 ARG DEBIAN_RELEASE

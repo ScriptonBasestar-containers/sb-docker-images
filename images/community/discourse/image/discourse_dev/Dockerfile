@@ -2,11 +2,12 @@
 # VERSION:  release
 #
 # Base Image: discourse/base
-# Version: 2.0.20241022-0018
+# Version: release (verified 2025-11-25)
 # Last Verified: 2025-11-25
 # Docker Hub: https://hub.docker.com/r/discourse/base/tags
-ARG DISCOURSE_BASE_VERSION=2.0.20241022-0018
-ARG from_tag=${DISCOURSE_BASE_VERSION}-slim
+# Note: Specific version tags are not available, using 'release' tag
+ARG DISCOURSE_BASE_VERSION=release
+ARG from_tag=${DISCOURSE_BASE_VERSION}
 
 FROM discourse/base:$from_tag AS repo-fetcher
 WORKDIR /repo

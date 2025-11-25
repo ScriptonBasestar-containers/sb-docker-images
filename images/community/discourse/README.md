@@ -26,7 +26,7 @@ make up  # or: docker compose up -d
 ```
 
 **What's included:**
-- ✅ Discourse (discourse/base:2.0.20241119-0129)
+- ✅ Discourse (discourse/base:release)
 - ✅ PostgreSQL 15 with health check
 - ✅ Redis 7 for cache and sessions
 - ✅ Network isolation (app-network, data-network)
