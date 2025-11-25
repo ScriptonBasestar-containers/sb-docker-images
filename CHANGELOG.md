@@ -6,6 +6,59 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-25] - Phase 12: New Project Categories & Images
+
+### Added
+
+#### New Categories
+**2개 신규 카테고리 생성**:
+
+- **analytics/** - 웹 분석 솔루션
+  - OWA (Open Web Analytics) 포함
+
+- **media/** - 미디어 스트리밍 솔루션
+  - Koel (Personal music streaming) 포함
+
+#### New Projects (4개)
+**총 프로젝트 수: 48 → 52개**
+
+1. **node-pnpm** (devtools/)
+   - Node.js with pnpm 패키지 매니저
+   - 공식 pnpm Docker 이미지 없음 대응
+   - 3가지 변형: Debian slim, Alpine, Builder
+   - Multi-arch 지원 (amd64, arm64)
+   - Port: N/A (개발 도구)
+
+2. **OWA** (analytics/)
+   - Open Web Analytics - 경량 웹 분석
+   - PHP 8.2 + nginx + MariaDB
+   - Matomo 대안
+   - Port: 8280
+
+3. **Taiga** (devtools/)
+   - 애자일 프로젝트 관리 플랫폼
+   - Jira/Trello 오픈소스 대안
+   - 공식 taigaio/* 이미지 기반
+   - 8개 서비스 구성 (back, async, front, events, protected, db, rabbitmq, gateway)
+   - Port: 9000
+
+4. **Koel** (media/)
+   - Personal music streaming server
+   - PHP 8.2 + ffmpeg + MariaDB + Redis
+   - Spotify/Apple Music 대안
+   - 트랜스코딩 지원
+   - Port: 8290
+
+### Changed
+
+#### Documentation Updates
+- README.md: 프로젝트 수 48 → 52개 반영
+- README.md: 신규 카테고리 추가 (analytics, media)
+- PORT_GUIDE.md: 신규 포트 할당 (owa: 8280, koel: 8290, taiga: 9000)
+- devtools/INDEX.md: node-pnpm, taiga 추가
+
+---
+
 ## [2025-11-25] - Phase 11.11: Docker Build Testing & Bug Fixes
 
 ### Fixed
