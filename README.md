@@ -10,8 +10,8 @@
 
 ## 검증 상태
 
-총 48개 프로젝트 (+ 6개 archived):
-- ✅ **완전 성공**: 48개 (100%)
+총 49개 프로젝트 (+ 6개 archived):
+- ✅ **완전 성공**: 49개 (100%)
 - ⚠️ **이슈 발견**: 0개 (0%)
 - 🔄 **미검증**: 0개 (0%)
 - 📦 **Archived**: 6개 (deprecated)
@@ -22,15 +22,15 @@
 
 | 지표 | 커버리지 | 상태 |
 |------|---------|------|
-| README.md | 48/48 (100%) | ✅ |
-| .env.example | 48/48 (100%) | ✅ |
-| VERSION 파일 | 48/48 (100%) | ✅ |
-| Makefile | 48/48 (100%) | ✅ |
-| Compose 파일 | 48/48 (100%) | ✅ |
+| README.md | 49/49 (100%) | ✅ |
+| .env.example | 49/49 (100%) | ✅ |
+| VERSION 파일 | 49/49 (100%) | ✅ |
+| Makefile | 49/49 (100%) | ✅ |
+| Compose 파일 | 49/49 (100%) | ✅ |
 
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 
-### 프로젝트 카테고리 (48개 + 6 archived)
+### 프로젝트 카테고리 (49개 + 6 archived)
 
 #### 🚀 웹 애플리케이션 & CMS (19개)
 Wiki.js, Gitea, Flarum, Gnuboard5, Gnuboard6, WordPress, MediaWiki, Joomla, XpressEngine, Discourse, DokuWiki, Forem, Misago, Django CMS, TSBoard, Drupal, Jupyter, Mailslurper, Mastodon, Nextcloud, NodeBB
@@ -261,7 +261,7 @@ images/
 ├── media/         (1개)  - 미디어 스트리밍
 ├── groupware/     (1개)  - 그룹웨어
 ├── database/      (4개)  - 데이터베이스 및 캐시
-├── infrastructure/(4개)  - 인프라 서비스
+├── infrastructure/(5개)  - 인프라 서비스
 ├── auth/          (2개)  - 인증 및 보안
 ├── blockchain/    (3개)  - 블록체인 플랫폼
 ├── registry/      (1개)  - 패키지 레지스트리
@@ -270,7 +270,7 @@ images/
 └── social/        (2개)  - 소셜 네트워크
 ```
 
-**총 48개 활성 프로젝트** + 6개 archived (카테고리별 자동 분류)
+**총 49개 활성 프로젝트** + 6개 archived (카테고리별 자동 분류)
 
 ## 카테고리별 프로젝트 목록
 
@@ -309,9 +309,9 @@ images/
 `images/database/` - 데이터베이스 및 캐시
 - postgres-exts, mariadb, redis, memcached
 
-### 🏗️ Infrastructure (4개)
+### 🏗️ Infrastructure (5개)
 `images/infrastructure/` - 인프라 서비스
-- minio, squid, rtmp-proxy, mailslurper
+- minio, squid, rtmp-proxy, mailslurper, supabase
 
 ### 🔐 Auth & Security (2개)
 `images/auth/` - 인증 및 보안

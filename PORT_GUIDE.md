@@ -8,7 +8,7 @@
 | 포트 | 서비스 | 프로젝트 | 용도 |
 |------|--------|----------|------|
 | 3306 | MariaDB/MySQL | buildbox, tsboard | MySQL 프로토콜 |
-| 3000 | Discourse | discourse | Web UI |
+| 3000 | **충돌** | discourse, supabase | Web UI, Studio |
 | 3002 | BTC RPC Explorer | docker-bitcoin | Bitcoin Explorer |
 | 3100 | Backend | tsboard | Backend API |
 | 3141 | DevPI | devpi | Python Package Index |
@@ -17,9 +17,9 @@
 ### 웹 애플리케이션 (8000-8999)
 | 포트 | 서비스 | 프로젝트 | 용도 |
 |------|--------|----------|------|
-| 8000 | Django CMS | django-cms | Web UI |
+| 8000 | **충돌** | django-cms, supabase | Web UI, Kong HTTP |
 | 8025 | Mailhog | flarum | Mail testing |
-| 8080 | **충돌** | discourse, dokuwiki, flarum, gnuboard5, gnuboard6, gollum, ignite, joomla, jupyter, mediawiki, nextcloud, nodebb, notebook, opennamu, solidus, xpressengine | Web UI |
+| 8080 | **충돌** | discourse, dokuwiki, flarum, gnuboard5, gnuboard6, gollum, ignite, joomla, jupyter, mediawiki, nextcloud, nodebb, notebook, opennamu, solidus, xpressengine, supabase | Web UI, Meta API |
 | 8081 | phpMyAdmin | flarum | DB Admin |
 | 8090 | Django CMS | django-cms | Additional port |
 | 8100 | WordPress | wordpress | Web UI |
@@ -28,7 +28,7 @@
 | 8250 | **Available** | (was flaskbb - archived) | - |
 | 8332 | Bitcoin RPC | docker-bitcoin | RPC |
 | 8333 | Bitcoin P2P | docker-bitcoin | P2P Network |
-| 8443 | Discourse HTTPS | discourse | HTTPS |
+| 8443 | **충돌** | discourse, supabase | HTTPS, Kong HTTPS |
 | 8545 | Ethereum HTTP | docker-ethereum | HTTP RPC |
 | 8546 | Ethereum WS | docker-ethereum | WebSocket RPC |
 
@@ -38,15 +38,18 @@
 | 80 | **충돌** | misago, nextcloud | HTTP |
 | 443 | Nginx Proxy | misago | HTTPS |
 | 1935 | RTMP | rtmp-proxy | RTMP Streaming |
-| 4000 | Blockscout | docker-ethereum | Blockchain Explorer |
+| 4000 | **충돌** | docker-ethereum, supabase | Blockchain Explorer, Realtime/Analytics |
 | 4433 | Kratos Public | kratos | Public API |
 | 4434 | Kratos Admin | kratos | Admin API |
 | 4436 | Mailslurper SMTP | kratos | SMTP |
 | 4437 | Mailslurper Web | kratos | Web UI |
 | 4455 | Kratos UI | kratos | Self-service UI |
 | 4567 | **충돌** | gollum | Web UI |
-| 5432 | PostgreSQL | buildbox, django-cms | PostgreSQL |
+| 5000 | Storage API | supabase | Storage API |
+| 5432 | **충돌** | buildbox, django-cms, supabase | PostgreSQL |
 | 6379 | **충돌** | redis, buildbox, nextcloud | Redis |
+| 9001 | Vector | supabase | Log collection |
+| 9999 | Auth (Internal) | supabase | GoTrue Auth |
 | 10800 | Ignite | ignite | Ignite service |
 | 11211 | **충돌** | memcached, ignite | Memcached |
 | 30303 | **충돌** | geth | Ethereum P2P |
