@@ -21,6 +21,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   - Alpine 패키지가 아닌 PHP 확장으로 설치
   - `docker-php-ext-install -j$(nproc) gd pdo_mysql mysqli`
 
+#### Compose.yml Fixes for Failed Build Projects
+**5개 프로젝트 공식 이미지로 전환**:
+
+- **django-cms**: 커스텀 빌드 제거, `python:3.11-slim` + quickstart clone 방식
+- **tsboard**: Dockerfile 경로 수정 (`dockerfiles/` 디렉토리)
+- **misago**: nginx-proxy 빌드 제거, `rafalp/misago:latest` 사용
+- **kratos**: 커스텀 UI 빌드 제거, `oryd/kratos-selfservice-ui-node:v1.3.0` 사용
+- **forem**: 빌드 섹션 제거, `ghcr.io/forem/forem:latest` 사용
+
+### Changed
+
+#### Chef Development Environment Migration
+**chef-dev: ChefDK → Chef Workstation 마이그레이션**:
+
+- 기존 이미지 `chef/chefdk` Docker Hub에서 삭제됨
+- 새 이미지 `chef/chefworkstation:${CHEF_VERSION}` 사용
+- Dockerfile 전면 재작성 (최적화된 구조)
+- compose.yml, .env, .env.example, README.md 업데이트
+
 ### Added
 
 #### Deprecated Project Warnings
@@ -39,7 +58,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 | 상태 | 프로젝트 |
 |------|---------|
 | ✅ 성공 | ansible-dev, devpi, rtmp-proxy, gnuboard5, gnuboard6, gollum, discourse |
-| ❌ 실패 | chef-dev (공식 이미지 삭제됨), django-cms, tsboard, misago, kratos, forem, xpressengine (Dockerfile/컨텍스트 누락) |
+| ✅ 수정 후 성공 | chef-dev (마이그레이션), django-cms, tsboard, misago, kratos, forem |
+| ⚠️ 제외 | xpressengine (DEPRECATED)
 
 ## [2025-11-24] - Phase 11.10: Complete Version Management System
 

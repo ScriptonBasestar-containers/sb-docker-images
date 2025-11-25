@@ -370,13 +370,18 @@ Recommendations:               0 ✅
 
 ### Phase 11.11: Docker 빌드 테스트 및 Dockerfile 버그 수정
 
-**작업 범위:** 커스텀 빌드 프로젝트 실제 빌드 테스트
+**작업 범위:** 커스텀 빌드 프로젝트 실제 빌드 테스트 및 수정
 
 **주요 성과:**
 - ✅ **Docker 빌드 테스트 완료** (16개 커스텀 빌드 프로젝트)
 - ✅ **Dockerfile 버그 2건 수정**
   - gollum: gem install 구문 오류 수정
   - gnuboard5: mysqli PHP 확장 설치 방식 수정
+- ✅ **chef-dev ChefDK → Chef Workstation 마이그레이션**
+  - Docker Hub에서 삭제된 `chef/chefdk` 이미지 대체
+  - `chef/chefworkstation` 기반으로 전면 재작성
+- ✅ **5개 프로젝트 compose.yml 수정** (공식 이미지 전환)
+  - django-cms, tsboard, misago, kratos, forem
 - ✅ **Deprecated 프로젝트 경고 추가** (4개 프로젝트)
 
 **빌드 테스트 결과:**
@@ -384,14 +389,17 @@ Recommendations:               0 ✅
 | 상태 | 프로젝트 | 비고 |
 |------|---------|------|
 | ✅ 성공 | ansible-dev, devpi, rtmp-proxy, gnuboard6, discourse | 정상 빌드 |
-| ✅ 성공 | gollum, gnuboard5 | 버그 수정 후 성공 |
-| ❌ 실패 | chef-dev | 공식 이미지 없음 (Docker Hub에서 삭제됨) |
-| ❌ 실패 | django-cms, tsboard, misago, kratos, forem, xpressengine | Dockerfile/컨텍스트 누락 |
+| ✅ 성공 | gollum, gnuboard5 | Dockerfile 버그 수정 후 성공 |
+| ✅ 성공 | chef-dev | ChefDK → Chef Workstation 마이그레이션 |
+| ✅ 성공 | django-cms, tsboard, misago, kratos, forem | 공식 이미지 전환 |
+| ⚠️ 제외 | xpressengine | DEPRECATED 프로젝트 |
 
-**커밋 수:** 4개
+**커밋 수:** 7개
 - docs(deprecated): add DEPRECATED warnings to unmaintained projects
 - fix(gollum): correct gem install syntax in Dockerfile
 - fix(gnuboard5): install mysqli as PHP extension not Alpine package
+- feat(chef-dev): migrate from ChefDK to Chef Workstation
+- fix(compose): switch failed build projects to official images
 
 ---
 
