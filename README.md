@@ -10,40 +10,47 @@
 
 ## 검증 상태
 
-총 48개 프로젝트:
-- ✅ **완전 성공**: 48개 (100%)
+총 51개 프로젝트:
+- ✅ **완전 성공**: 51개 (100%)
 - ⚠️ **이슈 발견**: 0개 (0%)
 - 🔄 **미검증**: 0개 (0%)
 
-**Phase 11.10 완성**: 완전한 버전 관리 시스템 구축 ✅
+**Phase 12 진행 중**: 신규 프로젝트 추가 (node-pnpm, owa, taiga)
 
 ### 품질 지표
 
 | 지표 | 커버리지 | 상태 |
 |------|---------|------|
-| README.md | 48/48 (100%) | ✅ |
-| .env.example | 48/48 (100%) | ✅ |
-| VERSION 파일 | 48/48 (100%) | ✅ **NEW** |
-| Makefile | 48/48 (100%) | ✅ |
-| Compose 파일 | 48/48 (100%) | ✅ |
+| README.md | 51/51 (100%) | ✅ |
+| .env.example | 51/51 (100%) | ✅ |
+| VERSION 파일 | 51/51 (100%) | ✅ |
+| Makefile | 51/51 (100%) | ✅ |
+| Compose 파일 | 51/51 (100%) | ✅ |
 
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 
-### 프로젝트 카테고리 (48개)
+### 프로젝트 카테고리 (51개)
 
 #### 🚀 웹 애플리케이션 & CMS (23개)
 Wiki.js, Gitea, Flarum, Gnuboard5, Gnuboard6, WordPress, MediaWiki, Joomla, XpressEngine, Discourse, DokuWiki, Forem, FlaskBB, Misago, Django CMS, TSBoard, Drupal, Jupyter, Mailslurper, Mastodon, Nextcloud, NodeBB, OpenNamu, Solidus
 
-#### 🔧 개발 도구 (3개)
-- **Buildbox**: 재사용 가능한 Docker Compose 템플릿 컬렉션 ⭐ **NEW**
+#### 🔧 개발 도구 (5개)
+- **Buildbox**: 재사용 가능한 Docker Compose 템플릿 컬렉션
   - PostgreSQL, MariaDB, Redis 등 모듈식 서비스 제공
   - Django/Rails/PHP 스택 사전 구성
-- **Ansible-dev**: Ansible 2.18 개발 환경 ⭐ **NEW**
-  - Alpine 3.20 기반 경량 이미지
-  - Playbook 실행 및 개발 지원
-- **Chef-dev**: Chef DK 3.4.28 개발 환경 ⭐ **NEW**
-  - Cookbook 개발 및 테스트
-  - Test Kitchen, Berkshelf 포함
+- **Node-pnpm**: Node.js with pnpm 패키지 매니저 ⭐ **NEW**
+  - 공식 pnpm Docker 이미지 없음 대응
+  - Debian, Alpine, Builder 3가지 변형
+- **Taiga**: 애자일 프로젝트 관리 플랫폼 ⭐ **NEW**
+  - Jira/Trello 오픈소스 대안
+  - Scrum & Kanban 지원
+- **Ansible-dev**: Ansible 2.18 개발 환경
+- **Chef-dev**: Chef DK 3.4.28 개발 환경
+
+#### 📊 웹 분석 (1개) ⭐ **NEW**
+- **OWA**: Open Web Analytics (8280)
+  - 경량 웹 분석 (Matomo 대안)
+  - PHP 8.2 + MariaDB
 
 #### 🗄️ 인프라 서비스 (3개)
 - **Redis**: In-memory data store (6379)
@@ -87,10 +94,10 @@ Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
 
 ### 📝 환경변수 템플릿
 모든 프로젝트에 `.env.example` 파일 제공:
-- 48개 프로젝트 100% 커버리지
+- 51개 프로젝트 100% 커버리지
 - 상세한 설명과 기본값 포함
 - 프로덕션 배포 시 필수 설정 가이드
-- **Phase 11.10**: home-assistant, minio, gitea 추가
+- **Phase 12**: node-pnpm, owa, taiga 추가
 
 ### 🏷️ 버전 관리 시스템
 표준화된 프로젝트 버전 관리:
@@ -110,7 +117,7 @@ make version-check
 ```
 
 **Features**:
-- 48개 프로젝트 VERSION 파일 (100%)
+- 51개 프로젝트 VERSION 파일 (100%)
 - Semantic versioning (MAJOR.MINOR.PATCH)
 - Git 태그 자동 생성 지원
 - CD 파이프라인 통합 준비
@@ -234,10 +241,11 @@ docker compose up -d
 
 ```
 images/
+├── analytics/     (1개)  - 웹 분석 ⭐ NEW
 ├── cms/           (8개)  - CMS 및 컨텐츠 플랫폼
 ├── community/     (6개)  - 커뮤니티 및 포럼
-├── wiki/          (6개)  - 위키 시스템
-├── devtools/      (6개)  - 개발 도구
+├── wiki/          (5개)  - 위키 시스템
+├── devtools/      (8개)  - 개발 도구 (+2)
 ├── database/      (4개)  - 데이터베이스 및 캐시
 ├── infrastructure/(4개)  - 인프라 서비스
 ├── auth/          (2개)  - 인증 및 보안
@@ -249,7 +257,7 @@ images/
 └── social/        (4개)  - 소셜 네트워크 & 팀 메신저
 ```
 
-**총 48개 프로젝트** (카테고리별 자동 분류)
+**총 51개 프로젝트** (카테고리별 자동 분류)
 
 ## 카테고리별 프로젝트 목록
 
@@ -266,10 +274,15 @@ images/
 `images/wiki/` - 위키 및 문서화 시스템
 - wikijs, mediawiki, gollum, dokuwiki, openNamu
 
-### 🔧 Development Tools (6개)
+### 🔧 Development Tools (8개)
 `images/devtools/` - 개발 및 CI/CD 도구
 - ansible-dev, chef-dev, ruby-dev, jenkins
 - jupyter, jupyter2
+- node-pnpm, taiga ⭐ **NEW**
+
+### 📊 Analytics (1개) ⭐ **NEW**
+`images/analytics/` - 웹 분석
+- owa
 
 ### 🗄️ Database (4개)
 `images/database/` - 데이터베이스 및 캐시

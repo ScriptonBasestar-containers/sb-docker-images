@@ -1,0 +1,52 @@
+services:
+  owa:
+    build:
+      context: .
+      args:
+        PHP_VERSION: ${PHP_VERSION:-8.2}
+        OWA_VERSION: ${OWA_VERSION:-1.7.8}
+    image: ${DOCKER_REPONAME:-scriptonbasestar}/owa:${OWA_VERSION:-1.7.8}
+    container_name: owa
+    ports:
+      - "${OWA_PORT:-8280}:80"
+    environment:
+      - OWA_DB_HOST=${OWA_DB_HOST:-db}
+      - OWA_DB_NAME=${OWA_DB_NAME:-owa}
+      - OWA_DB_USER=${OWA_DB_USER:-owa}
+      - OWA_DB_PASSWORD=${OWA_DB_PASSWORD:-owa_password}
+    volumes:
+      - owa-data:/var/www/html/owa-data
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/index.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  db:
+    image: mariadb:10.11
+    container_name: owa-db
+    environment:
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:-root_password}
+      - MARIADB_DATABASE=${OWA_DB_NAME:-owa}
+      - MARIADB_USER=${OWA_DB_USER:-owa}
+      - MARIADB_PASSWORD=${OWA_DB_PASSWORD:-owa_password}
+    volumes:
+      - owa-db:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  owa-data:
+    name: owa-data
+  owa-db:
+    name: owa-db

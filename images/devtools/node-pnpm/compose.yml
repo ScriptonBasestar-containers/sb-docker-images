@@ -1,0 +1,64 @@
+services:
+  node-pnpm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NODE_VERSION: ${NODE_VERSION:-22}
+        PNPM_VERSION: ${PNPM_VERSION:-9}
+    image: ${DOCKER_REPONAME:-scriptonbasestar}/node-pnpm:${NODE_VERSION:-22}
+    container_name: node-pnpm
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - pnpm-store:/pnpm
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+    command: ["pnpm", "start"]
+    restart: unless-stopped
+
+  # Alpine variant (smaller)
+  node-pnpm-alpine:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpine
+      args:
+        NODE_VERSION: ${NODE_VERSION:-22}
+        PNPM_VERSION: ${PNPM_VERSION:-9}
+    image: ${DOCKER_REPONAME:-scriptonbasestar}/node-pnpm:${NODE_VERSION:-22}-alpine
+    profiles:
+      - alpine
+    container_name: node-pnpm-alpine
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - pnpm-store:/pnpm
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+    command: ["pnpm", "start"]
+    restart: unless-stopped
+
+  # Builder variant (with build tools)
+  node-pnpm-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.builder
+      args:
+        NODE_VERSION: ${NODE_VERSION:-22}
+        PNPM_VERSION: ${PNPM_VERSION:-9}
+    image: ${DOCKER_REPONAME:-scriptonbasestar}/node-pnpm:${NODE_VERSION:-22}-builder
+    profiles:
+      - builder
+    container_name: node-pnpm-builder
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - pnpm-store:/pnpm
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+    command: ["pnpm", "build"]
+    restart: "no"
+
+volumes:
+  pnpm-store:
+    name: node-pnpm-store

@@ -1,0 +1,35 @@
+# Node.js with pnpm - Alpine variant (smaller image)
+# Multi-arch: amd64, arm64
+ARG NODE_VERSION=22
+
+FROM node:${NODE_VERSION}-alpine
+LABEL maintainer="archmagece@gmail.com"
+LABEL org.opencontainers.image.title="node-pnpm-alpine"
+LABEL org.opencontainers.image.description="Node.js with pnpm package manager (Alpine)"
+LABEL org.opencontainers.image.source="https://github.com/scriptonbasestar/sb-docker-images"
+
+ARG PNPM_VERSION=9
+
+# Install dependencies
+RUN apk add --no-cache \
+    git \
+    tini \
+    ca-certificates \
+    curl
+
+# Install pnpm globally via corepack
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+
+# Verify installations
+RUN node --version && pnpm --version
+
+# Set pnpm store directory
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN mkdir -p /pnpm
+
+# Create workspace directory
+WORKDIR /app
+
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node"]

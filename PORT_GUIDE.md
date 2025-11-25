@@ -171,6 +171,8 @@ MEMCACHED_PORT=11212 docker compose up -d
 - opennamu: 8240
 - solidus: 8260
 - xpressengine: 8270
+- owa: 8280
+- taiga: 9000
 
 ### ✅ 기타 포트 충돌 해결 완료
 
