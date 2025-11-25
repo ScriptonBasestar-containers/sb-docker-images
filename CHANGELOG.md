@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-25] - Phase 11.11: Docker Build Testing & Bug Fixes
+
+### Fixed
+
+#### Dockerfile Bug Fixes
+**2개 프로젝트의 빌드 버그 수정**:
+
+- **gollum**: `gem install` 구문 오류 수정
+  - 잘못된 `install` 키워드 반복 제거
+  - `gem install github-linguist gollum org-ruby asciidoctor wikicloth RedCloth`
+
+- **gnuboard5**: mysqli PHP 확장 설치 방식 수정
+  - Alpine 패키지가 아닌 PHP 확장으로 설치
+  - `docker-php-ext-install -j$(nproc) gd pdo_mysql mysqli`
+
+### Added
+
+#### Deprecated Project Warnings
+**4개 프로젝트에 DEPRECATED 경고 추가**:
+
+- FlaskBB: 업스트림 개발 중단 (대안: Discourse, Flarum, NodeBB)
+- openNAMU: 업스트림 개발 중단 (대안: MediaWiki, Wiki.js, DokuWiki)
+- Spree: 테스트 목적만 (대안: Solidus, Shopify, Medusa)
+- Solidus: 테스트 목적만 (대안: Shopify, Medusa, Saleor)
+
+### Tested
+
+#### Docker Build Verification
+**16개 커스텀 빌드 프로젝트 테스트 완료**:
+
+| 상태 | 프로젝트 |
+|------|---------|
+| ✅ 성공 | ansible-dev, devpi, rtmp-proxy, gnuboard5, gnuboard6, gollum, discourse |
+| ❌ 실패 | chef-dev (공식 이미지 삭제됨), django-cms, tsboard, misago, kratos, forem, xpressengine (Dockerfile/컨텍스트 누락) |
+
 ## [2025-11-24] - Phase 11.10: Complete Version Management System
 
 ### Added
