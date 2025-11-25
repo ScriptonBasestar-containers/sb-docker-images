@@ -4,9 +4,9 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - CHEF_VERSION=${CHEF_VERSION:-3.4.28}
+        - CHEF_VERSION=${CHEF_VERSION:-latest}
         - CUSTOM_USER=${CUSTOM_USER:-developer}
-    image: chef-dev:3.4.28
+    image: chef-dev:latest
     container_name: ${CONTAINER_NAME:-chef-dev}
     environment:
       - CHEF_LICENSE=${CHEF_LICENSE:-accept}

@@ -1,5 +1,7 @@
 # Chef Development Environment
 
+> **Migration Notice (2024)**: ChefDK has been deprecated. This project now uses **Chef Workstation** which is actively maintained.
+
 ## 🚀 Quick Start
 
 ### Option 1: Docker Compose (Recommended)
@@ -36,19 +38,19 @@ chef-client --local-mode --runlist 'recipe[hello]'
 
 ```bash
 # 이미지 빌드
-docker build -t chef-dev:3.4.28 .
+docker build -t chef-dev:latest .
 
 # 개발 셸 시작
 docker run -it --rm \
   -v $(pwd)/cookbooks:/work/cookbooks \
-  chef-dev:3.4.28
+  chef-dev:latest
 ```
 
 ## 개요
 
-Chef Development Kit (ChefDK)와 knife-solo가 포함된 개발 환경입니다:
+Chef Workstation이 포함된 개발 환경입니다:
 
-- 👨‍🍳 **Chef DK**: Chef Development Kit 전체 도구 세트
+- 👨‍🍳 **Chef Workstation**: Chef 개발 도구 전체 세트 (ChefDK 후속)
 - 🔪 **knife-solo**: Solo 모드로 Chef 레시피 실행
 - 🧪 **Test Kitchen**: 통합 테스트 프레임워크
 - 📚 **Berkshelf**: Cookbook 의존성 관리 도구
@@ -73,7 +75,7 @@ Chef Development Kit (ChefDK)와 knife-solo가 포함된 개발 환경입니다:
 
 Environment variables:
 ```bash
-CHEF_VERSION=3.4.28                   # Chef DK version
+CHEF_VERSION=latest                   # Chef Workstation version
 CUSTOM_USER=developer                 # Container username
 CHEF_LICENSE=accept                   # Chef license acceptance
 ```
@@ -193,13 +195,13 @@ sudo apt-get install package-name
 
 ## 버전 관리
 
-Dockerfile의 `ARG CHEF_VERSION`을 수정하여 Chef DK 버전 변경:
+Dockerfile의 `ARG CHEF_VERSION`을 수정하여 Chef Workstation 버전 변경:
 
 ```dockerfile
-ARG CHEF_VERSION=3.4.28  # 원하는 버전으로 변경
+ARG CHEF_VERSION=latest  # 원하는 버전으로 변경
 ```
 
-사용 가능한 버전은 [Docker Hub](https://hub.docker.com/r/chef/chefdk/tags)에서 확인하세요.
+사용 가능한 버전은 [Docker Hub](https://hub.docker.com/r/chef/chefworkstation/tags)에서 확인하세요.
 
 ## 문제 해결
 
@@ -424,7 +426,8 @@ chef-client --local-mode --why-run --runlist 'recipe[my_cookbook]'
 ## 참고 자료
 
 - [Chef 공식 문서](https://docs.chef.io/)
-- [Chef DK](https://docs.chef.io/workstation/)
+- [Chef Workstation](https://docs.chef.io/workstation/)
+- [Chef Workstation Docker Hub](https://hub.docker.com/r/chef/chefworkstation)
 - [knife-solo](https://github.com/matschaffer/knife-solo)
 - [Test Kitchen](https://kitchen.ci/)
 - [Berkshelf](https://docs.chef.io/berkshelf/)

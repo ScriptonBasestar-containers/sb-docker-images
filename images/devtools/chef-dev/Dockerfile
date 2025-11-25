@@ -1,32 +1,35 @@
-ARG CHEF_VERSION=3.4.28
+# Chef Workstation Development Environment
+# Migrated from deprecated ChefDK to Chef Workstation (2024)
+ARG CHEF_VERSION=latest
 
-
-FROM chef/chefdk:${CHEF_VERSION}
+FROM chef/chefworkstation:${CHEF_VERSION}
 LABEL maintainer="archmagece@gmail.com"
 
-ARG CUSTOM_USER=$CUSTOM_USER
+ARG CUSTOM_USER=${CUSTOM_USER:-developer}
 
-RUN gem install knife-solo --pre
+# Install additional tools
+RUN apt-get update -qq && \
+    apt-get -y install --no-install-recommends \
+    sudo tree nano && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN sed -i 's@http://archive.ubuntu.com/@http://mirror.kakao.com/@g' /etc/apt/sources.list
-RUN sed -i 's@http://security.ubuntu.com/@http://mirror.kakao.com/@g' /etc/apt/sources.list
-RUN apt-get update -qq && apt-get -y upgrade
-
-RUN apt-get -y install sudo tree nano build-essential
-RUN apt-get clean
-
+# Create entrypoint directory
 RUN mkdir -p /docker-entrypoint.d
 COPY docker-entrypoint.sh /
-RUN ln -s /docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh && \
+    ln -sf /docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-#sudo chown 1000:1000 /work -R
-RUN useradd -ms /bin/bash ${CUSTOM_USER} && echo ${CUSTOM_USER}:${CUSTOM_USER} | chpasswd && adduser ${CUSTOM_USER} sudo
-#usermod -aG sudo ${CUSTOM_USER}
-RUN echo "${CUSTOM_USER} ALL=NOPASSWD: ALL" >> /etc/sudoers
+# Create non-root user with sudo access
+RUN useradd -ms /bin/bash ${CUSTOM_USER} && \
+    echo "${CUSTOM_USER}:${CUSTOM_USER}" | chpasswd && \
+    usermod -aG sudo ${CUSTOM_USER} && \
+    echo "${CUSTOM_USER} ALL=NOPASSWD: ALL" >> /etc/sudoers
 
-RUN mkdir -p /work
-RUN chown ${CUSTOM_USER}:${CUSTOM_USER} /work -R
+# Setup workspace
+RUN mkdir -p /work && \
+    chown ${CUSTOM_USER}:${CUSTOM_USER} /work -R
 WORKDIR /work
 USER ${CUSTOM_USER}
 
