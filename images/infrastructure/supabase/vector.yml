@@ -1,0 +1,208 @@
+# Vector Configuration for Supabase Log Collection
+# See: https://vector.dev/docs/reference/configuration/
+
+api:
+  enabled: true
+  address: "0.0.0.0:9001"
+  playground: false
+
+sources:
+  docker_host:
+    type: docker_logs
+    docker_host: "unix:///var/run/docker.sock"
+    exclude_containers:
+      - supabase-vector
+
+transforms:
+  project_logs:
+    type: remap
+    inputs:
+      - docker_host
+    source: |-
+      .project = "default"
+      .event_message = del(.message)
+      .appname = del(.container_name)
+      del(.container_created_at)
+      del(.container_id)
+      del(.source_type)
+      del(.stream)
+      del(.label)
+      del(.image)
+      del(.host)
+      del(.timestamp)
+
+  router:
+    type: route
+    inputs:
+      - project_logs
+    route:
+      kong: '.appname == "supabase-kong"'
+      auth: '.appname == "supabase-auth"'
+      rest: '.appname == "supabase-rest"'
+      realtime: '.appname == "supabase-realtime"'
+      storage: '.appname == "supabase-storage"'
+      functions: '.appname == "supabase-functions"'
+      db: '.appname == "supabase-db"'
+
+  # Kong specific parsing
+  kong_logs:
+    type: remap
+    inputs:
+      - router.kong
+    source: |-
+      parsed, err = parse_json(.event_message)
+      if err == null {
+          .metadata.request.cf.ipcountry = parsed.request.headers.cf-ipcountry
+          .metadata.request.method = parsed.request.method
+          .metadata.request.path = parsed.request.uri
+          .metadata.request.headers.user_agent = parsed.request.headers.user-agent
+          .metadata.request.headers.cf_connecting_ip = parsed.request.headers.cf-connecting-ip
+          .metadata.response.status_code = parsed.response.status
+          .metadata.request.headers.referer = parsed.request.headers.referer
+          .metadata.response.size = parsed.response.size
+      }
+      .metadata.host = .host
+
+  # Auth logs
+  auth_logs:
+    type: remap
+    inputs:
+      - router.auth
+    source: |-
+      parsed, err = parse_json(.event_message)
+      if err == null {
+          .metadata = parsed
+      }
+
+  # REST logs
+  rest_logs:
+    type: remap
+    inputs:
+      - router.rest
+    source: |-
+      parsed, err = parse_json(.event_message)
+      if err == null {
+          .metadata = parsed
+      }
+
+  # Realtime logs
+  realtime_logs:
+    type: remap
+    inputs:
+      - router.realtime
+    source: |-
+      parsed, err = parse_json(.event_message)
+      if err == null {
+          .metadata = parsed
+      }
+
+  # Storage logs
+  storage_logs:
+    type: remap
+    inputs:
+      - router.storage
+    source: |-
+      parsed, err = parse_json(.event_message)
+      if err == null {
+          .metadata = parsed
+      }
+
+  # Functions logs
+  functions_logs:
+    type: remap
+    inputs:
+      - router.functions
+    source: |-
+      parsed, err = parse_json(.event_message)
+      if err == null {
+          .metadata = parsed
+      }
+
+  # DB logs
+  db_logs:
+    type: remap
+    inputs:
+      - router.db
+    source: |-
+      parsed, err = parse_csv(.event_message)
+      if err == null {
+          .metadata.parsed = parsed
+      }
+
+sinks:
+  logflare_kong:
+    type: "http"
+    inputs:
+      - kong_logs
+    encoding:
+      codec: "json"
+    method: "post"
+    request:
+      retry_max_duration_secs: 10
+    uri: "http://analytics:4000/api/logs?source_name=kong_logs&api_key=${LOGFLARE_API_KEY}"
+
+  logflare_auth:
+    type: "http"
+    inputs:
+      - auth_logs
+    encoding:
+      codec: "json"
+    method: "post"
+    request:
+      retry_max_duration_secs: 10
+    uri: "http://analytics:4000/api/logs?source_name=gotrue_logs&api_key=${LOGFLARE_API_KEY}"
+
+  logflare_rest:
+    type: "http"
+    inputs:
+      - rest_logs
+    encoding:
+      codec: "json"
+    method: "post"
+    request:
+      retry_max_duration_secs: 10
+    uri: "http://analytics:4000/api/logs?source_name=postgres_logs&api_key=${LOGFLARE_API_KEY}"
+
+  logflare_realtime:
+    type: "http"
+    inputs:
+      - realtime_logs
+    encoding:
+      codec: "json"
+    method: "post"
+    request:
+      retry_max_duration_secs: 10
+    uri: "http://analytics:4000/api/logs?source_name=realtime_logs&api_key=${LOGFLARE_API_KEY}"
+
+  logflare_storage:
+    type: "http"
+    inputs:
+      - storage_logs
+    encoding:
+      codec: "json"
+    method: "post"
+    request:
+      retry_max_duration_secs: 10
+    uri: "http://analytics:4000/api/logs?source_name=storage_logs&api_key=${LOGFLARE_API_KEY}"
+
+  logflare_functions:
+    type: "http"
+    inputs:
+      - functions_logs
+    encoding:
+      codec: "json"
+    method: "post"
+    request:
+      retry_max_duration_secs: 10
+    uri: "http://analytics:4000/api/logs?source_name=deno_relay_logs&api_key=${LOGFLARE_API_KEY}"
+
+  logflare_db:
+    type: "http"
+    inputs:
+      - db_logs
+    encoding:
+      codec: "json"
+    method: "post"
+    request:
+      retry_max_duration_secs: 10
+    uri: "http://analytics:4000/api/logs?source_name=postgres_logs&api_key=${LOGFLARE_API_KEY}"
