@@ -1,5 +1,7 @@
 # Jupyter Lab - Multi-Language
 
+> ⚠️ **DEPRECATION NOTICE**: The `Dockerfile-debian` has been deprecated due to build issues. It has been renamed to `Dockerfile-debian.deprecated`. Please use the main `Dockerfile` (based on official jupyter images) or official Jupyter Docker Stacks: https://github.com/jupyter/docker-stacks
+
 > 💡 **Quick Start**: This project does not have a standalone setup. Use the basic setup below for development and testing.
 
 ## 개요

@@ -1,3 +1,22 @@
+# ⚠️ DEPRECATED: This Dockerfile is deprecated and cannot build successfully
+#
+# REASON: Multiple structural issues prevent successful build:
+# - `sdk` command used without proper PATH configuration
+# - `rbenv` command used without proper PATH configuration
+# - `conda` command used but conda is not installed in the image
+# - Complex multi-runtime setup (Java, Scala, Ruby, R, Python) needs complete rewrite
+#
+# ALTERNATIVE: Use official Jupyter Docker images instead:
+# - quay.io/jupyter/datascience-notebook (recommended)
+# - quay.io/jupyter/scipy-notebook
+# - quay.io/jupyter/r-notebook
+# - See: https://github.com/jupyter/docker-stacks
+#
+# Last Verified: 2025-11-25 (build failed)
+# Deprecated: 2025-11-25
+#
+# ---
+# Original header (kept for reference):
 # Base Image: debian
 # Version: bookworm (12)
 # Last Verified: 2025-11-25
