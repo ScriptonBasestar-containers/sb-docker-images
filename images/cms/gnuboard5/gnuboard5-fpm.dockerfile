@@ -8,11 +8,11 @@ RUN docker-php-ext-configure gd \
     --with-freetype=/usr/include/ \
     --with-jpeg=/usr/include/
 
-RUN docker-php-ext-install -j$(nproc) gd pdo_mysql
+RUN docker-php-ext-install -j$(nproc) gd pdo_mysql mysqli
 
 RUN apk --no-cache update \
     && apk --no-cache upgrade \
-    && apk add --no-cache mysqli mysql-client
+    && apk add --no-cache mysql-client
 
 #RUN curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg https://packages.sury.org/php/apt.gpg
 #RUN echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
