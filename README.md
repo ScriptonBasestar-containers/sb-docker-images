@@ -10,28 +10,28 @@
 
 ## 검증 상태
 
-총 54개 프로젝트 (+ 6개 archived):
-- ✅ **완전 성공**: 54개 (100%)
+총 55개 프로젝트 (+ 6개 archived):
+- ✅ **완전 성공**: 55개 (100%)
 - ⚠️ **이슈 발견**: 0개 (0%)
 - 🔄 **미검증**: 0개 (0%)
 - 📦 **Archived**: 6개 (deprecated)
 
-**Phase 14 완료**: 팀 협업, 자동화, 모니터링 도구 추가 (5개 이미지)
+**Phase 14 완료**: 팀 협업, 자동화, 모니터링, 분석 도구 추가 (6개 이미지)
 **Phase 13 완료**: Deprecated 프로젝트 archive 이동, Dockerfile 업데이트, 버전 고정
 
 ### 품질 지표
 
 | 지표 | 커버리지 | 상태 |
 |------|---------|------|
-| README.md | 54/54 (100%) | ✅ |
-| .env.example | 54/54 (100%) | ✅ |
-| VERSION 파일 | 54/54 (100%) | ✅ |
-| Makefile | 54/54 (100%) | ✅ |
-| Compose 파일 | 54/54 (100%) | ✅ |
+| README.md | 55/55 (100%) | ✅ |
+| .env.example | 55/55 (100%) | ✅ |
+| VERSION 파일 | 55/55 (100%) | ✅ |
+| Makefile | 55/55 (100%) | ✅ |
+| Compose 파일 | 55/55 (100%) | ✅ |
 
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 
-### 프로젝트 카테고리 (54개 + 6 archived)
+### 프로젝트 카테고리 (55개 + 6 archived)
 
 #### 🚀 웹 애플리케이션 & CMS (19개)
 Wiki.js, Gitea, Flarum, Gnuboard5, Gnuboard6, WordPress, MediaWiki, Joomla, XpressEngine, Discourse, DokuWiki, Forem, Misago, Django CMS, TSBoard, Drupal, Jupyter, Mailslurper, Mastodon, Nextcloud, NodeBB
@@ -254,7 +254,7 @@ docker compose up -d
 
 ```
 images/
-├── analytics/     (1개)  - 웹 분석
+├── analytics/     (2개)  - 웹 분석 및 BI ⭐ **Phase 14**
 ├── archive/       (6개)  - Deprecated 프로젝트 (archived)
 ├── cms/           (9개)  - CMS 및 컨텐츠 플랫폼
 ├── collaboration/ (3개)  - 팀 협업 도구 ⭐ **Phase 14**
@@ -275,7 +275,7 @@ images/
 └── social/        (2개)  - 소셜 네트워크
 ```
 
-**총 54개 활성 프로젝트** + 6개 archived (카테고리별 자동 분류)
+**총 55개 활성 프로젝트** + 6개 archived (카테고리별 자동 분류)
 
 ## 카테고리별 프로젝트 목록
 
@@ -312,9 +312,10 @@ images/
 - jupyter, jupyter2
 - node-pnpm, taiga ⭐ **NEW**
 
-### 📊 Analytics (1개) ⭐ **NEW**
-`images/analytics/` - 웹 분석
-- owa
+### 📊 Analytics (2개) ⭐ **Phase 14**
+`images/analytics/` - 웹 분석 및 Business Intelligence
+- owa (8280): 경량 웹 분석 (Matomo 대안)
+- metabase (3020): BI 및 데이터 분석 플랫폼, 다중 데이터베이스 지원
 
 ### 🎵 Media (1개) ⭐ **NEW**
 `images/media/` - 미디어 스트리밍
