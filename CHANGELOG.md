@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-#### New Docker Images (4개)
+#### New Docker Images (5개)
 
 **Collaboration Tools** (`images/collaboration/`):
 
@@ -21,7 +21,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
    - Mobile app support, enterprise-grade security
    - README: 220 lines with SMTP/SSO/plugin setup
 
-2. **BookStack** (Port: 8390)
+2. **Rocket.Chat** (Port: 8340)
+   - Open source team communication platform (Slack/Teams alternative)
+   - MongoDB 6 with replica set configuration
+   - Real-time messaging, video/audio calls (Jitsi integration)
+   - LiveChat, OAuth/SSO, End-to-End encryption
+   - Unlimited users and channels, marketplace integrations
+   - README: 460+ lines with production deployment guide
+
+3. **BookStack** (Port: 8390)
    - Wiki and documentation platform (LinuxServer.io image)
    - MariaDB 11.5 database
    - Hierarchical structure: Shelves → Books → Chapters → Pages
@@ -30,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 **Automation Tools** (`images/automation/`):
 
-3. **n8n** (Port: 5678)
+4. **n8n** (Port: 5678)
    - Workflow automation platform (Zapier/Make alternative)
    - 200+ service integrations, visual workflow editor
    - Webhook triggers, cron scheduling, code execution (JS/Python)
@@ -39,14 +47,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 **Monitoring Tools** (`images/monitoring/`):
 
-4. **Uptime Kuma** (Port: 3011)
+5. **Uptime Kuma** (Port: 3011)
    - Self-hosted monitoring and alerting platform (Uptime Robot alternative)
    - HTTP/HTTPS, TCP, Ping, DNS, Docker monitoring
    - 60+ notification channels (Slack, Discord, Telegram, Email, etc.)
    - Status page functionality, multi-language support (Korean included)
    - README: 430+ lines with notification setup
 
-**Total**: 1,660 lines of implementation code, 18 files created
+**Total**: 2,312 lines of implementation code, 24 files created
 
 #### New Categories (3개)
 
@@ -112,14 +120,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 #### Project Statistics
-- Total active projects: 49 → 53 (+4)
-- Quality metrics coverage: 49/49 → 53/53 (100% maintained)
-- Phase 14 progress: 4/7 images complete (57%)
+- Total active projects: 49 → 54 (+5)
+- Quality metrics coverage: 49/49 → 54/54 (100% maintained)
+- Phase 14 progress: 5/7 images complete (71%)
 
 #### Documentation Structure
 - README.md: Updated project counts, added 3 new categories with descriptions
 - CONTRIBUTING.md: Added "0. 이미지 추가 기준 확인" section (85 lines)
-- PORT_GUIDE.md: Added 4 new port assignments (8350, 8390, 5678, 3011)
+- PORT_GUIDE.md: Added 5 new port assignments (8340, 8350, 8390, 5678, 3011)
 - Table of contents updated with new sections
 
 ### Removed
