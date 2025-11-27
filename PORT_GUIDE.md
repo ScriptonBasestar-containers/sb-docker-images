@@ -29,6 +29,7 @@
 | 8250 | **Available** | (was flaskbb - archived) | - |
 | 8332 | Bitcoin RPC | docker-bitcoin | RPC |
 | 8333 | Bitcoin P2P | docker-bitcoin | P2P Network |
+| 8340 | Rocket.Chat | rocketchat | Web UI |
 | 8350 | Mattermost | mattermost | Web UI |
 | 8390 | BookStack | bookstack | Web UI |
 | 8443 | **충돌** | discourse, supabase | HTTPS, Kong HTTPS |

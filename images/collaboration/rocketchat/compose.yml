@@ -1,0 +1,79 @@
+services:
+  rocketchat:
+    image: registry.rocket.chat/rocketchat/rocket.chat:${ROCKETCHAT_VERSION:-latest}
+    container_name: rocketchat
+    restart: always
+    ports:
+      - "${WEB_PORT:-8340}:3000"
+    environment:
+      TZ: Asia/Seoul
+      MONGO_URL: mongodb://mongodb:27017/rocketchat?replicaSet=rs0
+      MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0
+      ROOT_URL: ${ROOT_URL:-http://localhost:8340}
+      PORT: 3000
+      DEPLOY_METHOD: docker
+      # Optional: SMTP settings
+      # MAIL_URL: smtp://smtp.gmail.com:587
+      # OVERWRITE_SETTING_SMTP_Host: smtp.gmail.com
+      # OVERWRITE_SETTING_SMTP_Port: 587
+      # OVERWRITE_SETTING_SMTP_Username: your-email@gmail.com
+      # OVERWRITE_SETTING_SMTP_Password: your-app-password
+    volumes:
+      - rocketchat-uploads:/app/uploads
+    networks:
+      - rocketchat-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  mongodb:
+    image: mongo:${MONGO_VERSION:-6}
+    container_name: rocketchat-mongodb
+    restart: always
+    command: mongod --oplogSize 128 --replSet rs0
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+    networks:
+      - rocketchat-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB replica set initialization (runs once)
+  mongo-init-replica:
+    image: mongo:${MONGO_VERSION:-6}
+    container_name: rocketchat-mongo-init
+    restart: "no"
+    command: >
+      mongosh --host mongodb:27017 --eval "
+        try {
+          rs.status();
+          print('Replica set already initialized');
+        } catch (err) {
+          print('Initializing replica set...');
+          rs.initiate({
+            _id: 'rs0',
+            members: [{ _id: 0, host: 'mongodb:27017' }]
+          });
+          print('Replica set initialized successfully');
+        }
+      "
+    networks:
+      - rocketchat-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+networks:
+  rocketchat-network:
+    driver: bridge
+
+volumes:
+  rocketchat-uploads:
+  mongodb-data:
+  mongodb-config:
