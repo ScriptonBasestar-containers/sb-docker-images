@@ -162,6 +162,7 @@ make version-check
 - [PORT_GUIDE.md](./PORT_GUIDE.md) - 포트 할당 및 충돌 방지
 - [VERSIONING.md](./docs/VERSIONING.md) - 프로젝트별 버전 관리 전략 ⭐ **NEW**
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - 기여 가이드라인
+  - [이미지 추가 기준](./CONTRIBUTING.md#0-이미지-추가-기준-확인) - 새 Docker 이미지 추가 규칙 ⭐ **NEW**
 
 ### 고급 가이드
 - [**Buildbox 통합 가이드**](docs/BUILDBOX_INTEGRATION.md) - 프레임워크별 통합 패턴

@@ -5,6 +5,7 @@ sb-docker-images 프로젝트에 기여해 주셔서 감사합니다!
 ## 목차
 
 - [새 프로젝트 추가하기](#새-프로젝트-추가하기)
+  - [이미지 추가 기준 확인](#0-이미지-추가-기준-확인)
 - [Compose 파일 작성 규칙](#compose-파일-작성-규칙)
 - [포트 할당 정책](#포트-할당-정책)
 - [환경변수 템플릿](#환경변수-템플릿)
@@ -13,6 +14,90 @@ sb-docker-images 프로젝트에 기여해 주셔서 감사합니다!
 - [테스트 및 검증](#테스트-및-검증)
 
 ## 새 프로젝트 추가하기
+
+### 0. 이미지 추가 기준 확인
+
+새 Docker 이미지를 추가하기 전에 다음 기준을 검토하세요:
+
+#### ✅ 추가해야 하는 경우
+
+다음 조건 중 **하나 이상** 해당하면 새 이미지를 추가합니다:
+
+1. **공식 이미지가 없는 경우**
+   - Docker Hub에 공식 이미지가 없음
+   - 커뮤니티 이미지만 존재하고 신뢰할 수 없음
+   - 예: Discourse, Taiga, TSBoard
+
+2. **공식 이미지 품질이 낮은 경우**
+   - 오래된 버전만 제공 (1년 이상 업데이트 없음)
+   - 보안 취약점이 있음 (Trivy 스캔 결과 High/Critical)
+   - 문서화가 부족하거나 실행이 어려움
+   - Health check가 없음
+   - 예: 일부 레거시 CMS, 개인 개발자 이미지
+
+3. **특수 설정이 필요한 경우**
+   - 한국 환경 특화 설정 (locale, timezone, 한글 폰트)
+   - 복잡한 멀티 서비스 통합 (DB, Cache, Queue)
+   - Buildbox 통합이 필요한 개발 환경
+   - 예: Gnuboard, XpressEngine, Rhymix
+
+4. **교육/실험 목적**
+   - 새로운 기술 스택 테스트
+   - 프로토타이핑용 환경
+   - 예: Jupyter, Chef-dev, Ansible-dev
+
+#### ❌ 추가하지 말아야 하는 경우
+
+다음 경우에는 새 이미지를 **추가하지 않습니다**:
+
+1. **공식 이미지가 충분히 좋은 경우**
+   - Docker Hub 공식 이미지 (Library Images)
+   - 잘 관리되는 Verified Publisher 이미지
+   - 최신 버전 유지, 문서화 충실, 보안 패치 정기 제공
+   - 예: `postgres`, `redis`, `nginx`, `mysql`, `node`, `python`
+
+2. **공식/커뮤니티 이미지로 충분한 경우**
+   - 간단한 Compose 파일로 실행 가능
+   - 특별한 설정 불필요
+   - 예: Portainer, Grafana, Prometheus (공식 이미지 사용 권장)
+
+3. **활발히 유지보수되는 서드파티 이미지**
+   - 신뢰할 수 있는 조직/커뮤니티 관리
+   - 정기 업데이트 및 보안 패치
+   - 충분한 스타/다운로드 수
+   - 예: `linuxserver/*` 이미지들
+
+#### 🔍 검증 프로세스
+
+새 이미지 추가 전 다음을 확인하세요:
+
+```bash
+# 1. Docker Hub에서 공식 이미지 확인
+https://hub.docker.com/_/<project-name>
+
+# 2. 커뮤니티 이미지 검색 및 평가
+docker search <project-name> --filter is-official=false
+
+# 3. 보안 스캔 (있는 경우)
+trivy image <existing-image>
+
+# 4. 이미지 메타데이터 확인
+docker inspect <existing-image>
+docker history <existing-image>
+```
+
+#### 📋 추가 결정 체크리스트
+
+- [ ] Docker Hub에서 공식 이미지 검색 완료
+- [ ] 커뮤니티 이미지 품질 평가 완료 (stars, pulls, last update)
+- [ ] 보안 취약점 확인 (가능한 경우)
+- [ ] 특수 요구사항 확인 (한국 환경, 복잡한 설정 등)
+- [ ] 유사 프로젝트와 중복 확인 (예: Koel vs Navidrome)
+- [ ] 유지보수 계획 수립 (업스트림 추적, 업데이트 주기)
+
+**참고**: 의심스러운 경우 Issue를 열어 커뮤니티와 논의하세요.
+
+---
 
 ### 1. 디렉토리 구조 생성
 
