@@ -29,6 +29,7 @@
 | 8332 | Bitcoin RPC | docker-bitcoin | RPC |
 | 8333 | Bitcoin P2P | docker-bitcoin | P2P Network |
 | 8350 | Mattermost | mattermost | Web UI |
+| 8390 | BookStack | bookstack | Web UI |
 | 8443 | **충돌** | discourse, supabase | HTTPS, Kong HTTPS |
 | 8545 | Ethereum HTTP | docker-ethereum | HTTP RPC |
 | 8546 | Ethereum WS | docker-ethereum | WebSocket RPC |
