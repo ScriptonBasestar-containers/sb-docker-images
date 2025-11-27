@@ -48,6 +48,7 @@
 | 4455 | Kratos UI | kratos | Self-service UI |
 | 4567 | **충돌** | gollum | Web UI |
 | 5000 | Storage API | supabase | Storage API |
+| 5678 | n8n | n8n | Web UI & Webhooks |
 | 5432 | **충돌** | buildbox, django-cms, supabase | PostgreSQL |
 | 6379 | **충돌** | redis, buildbox, nextcloud | Redis |
 | 9001 | Vector | supabase | Log collection |
