@@ -6,9 +6,53 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [2025-11-27] - Phase 14: Preparation for New Collaboration Tools
+## [2025-11-27] - Phase 14: Team Collaboration, Automation & Monitoring Tools
 
 ### Added
+
+#### New Docker Images (4개)
+
+**Collaboration Tools** (`images/collaboration/`):
+
+1. **Mattermost** (Port: 8350)
+   - Open source team collaboration platform (Slack alternative)
+   - PostgreSQL 16-alpine database
+   - Real-time messaging, file sharing, channel-based communication
+   - Mobile app support, enterprise-grade security
+   - README: 220 lines with SMTP/SSO/plugin setup
+
+2. **BookStack** (Port: 8390)
+   - Wiki and documentation platform (LinuxServer.io image)
+   - MariaDB 11.5 database
+   - Hierarchical structure: Shelves → Books → Chapters → Pages
+   - WYSIWYG/Markdown editor, RBAC, LDAP/SAML/OAuth support
+   - README: 320+ lines with comprehensive guides
+
+**Automation Tools** (`images/automation/`):
+
+3. **n8n** (Port: 5678)
+   - Workflow automation platform (Zapier/Make alternative)
+   - 200+ service integrations, visual workflow editor
+   - Webhook triggers, cron scheduling, code execution (JS/Python)
+   - SQLite database (PostgreSQL optional)
+   - README: 410+ lines with integration examples
+
+**Monitoring Tools** (`images/monitoring/`):
+
+4. **Uptime Kuma** (Port: 3011)
+   - Self-hosted monitoring and alerting platform (Uptime Robot alternative)
+   - HTTP/HTTPS, TCP, Ping, DNS, Docker monitoring
+   - 60+ notification channels (Slack, Discord, Telegram, Email, etc.)
+   - Status page functionality, multi-language support (Korean included)
+   - README: 430+ lines with notification setup
+
+**Total**: 1,660 lines of implementation code, 18 files created
+
+#### New Categories (3개)
+
+- `images/collaboration/` - Team collaboration and communication tools
+- `images/automation/` - Workflow automation platforms
+- `images/monitoring/` - Monitoring and alerting systems
 
 #### Image Addition Criteria Documentation
 **New Docker image addition guidelines added to CONTRIBUTING.md**:
@@ -67,10 +111,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+#### Project Statistics
+- Total active projects: 49 → 53 (+4)
+- Quality metrics coverage: 49/49 → 53/53 (100% maintained)
+- Phase 14 progress: 4/7 images complete (57%)
+
 #### Documentation Structure
-- README.md: Added link to image addition criteria
+- README.md: Updated project counts, added 3 new categories with descriptions
 - CONTRIBUTING.md: Added "0. 이미지 추가 기준 확인" section (85 lines)
-- Table of contents updated with new section
+- PORT_GUIDE.md: Added 4 new port assignments (8350, 8390, 5678, 3011)
+- Table of contents updated with new sections
 
 ### Removed
 - Root `compose.yml`: Removed empty file (cleanup)
