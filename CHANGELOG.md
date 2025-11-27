@@ -6,13 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [2025-11-27] - Phase 14: Team Collaboration, Automation, Monitoring & Analytics (Complete)
+## [2025-11-27] - Phase 14: Team Collaboration, Automation, Monitoring, Analytics & Community (Complete)
 
-**Summary**: Successfully implemented 6 Docker images across 4 categories (collaboration, automation, monitoring, analytics). Added 2,883 lines of production-ready code with comprehensive documentation.
+**Summary**: Successfully implemented 7 Docker images across 5 categories (collaboration, automation, monitoring, analytics, community). Added 3,436 lines of production-ready code with comprehensive documentation.
 
 ### Added
 
-#### New Docker Images (6개)
+#### New Docker Images (7개)
 
 **Collaboration Tools** (`images/collaboration/`):
 
@@ -67,14 +67,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
    - Email/Slack alerts, secure embedding support
    - README: 390+ lines with deployment and setup guide
 
-**Total**: 2,883 lines of implementation code, 30 files created
+**Community/Q&A Tools** (`images/community/`):
 
-#### Enhanced Categories (4개)
+7. **Answer** (Port: 8400)
+   - Open source Q&A community platform (Stack Overflow alternative)
+   - PostgreSQL 16-alpine database
+   - Question & Answer with voting, tag-based categorization
+   - User reputation system, markdown editor with syntax highlighting
+   - Multi-language support (Korean included), self-hosted
+   - Apache Software Foundation project
+   - Installation wizard at first run (http://localhost:8400/install)
+   - Admin panel with comprehensive settings
+   - README: 380+ lines with installation wizard steps and troubleshooting
+
+**Total**: 3,436 lines of implementation code, 35 files created
+
+#### Enhanced Categories (5개)
 
 - `images/collaboration/` - Team collaboration and communication tools (3 images)
 - `images/automation/` - Workflow automation platforms (1 image)
 - `images/monitoring/` - Monitoring and alerting systems (1 image)
 - `images/analytics/` - Web analytics and Business Intelligence (2 images, +1 from Phase 14)
+- `images/community/` - Community and Q&A platforms (6 images, +1 from Phase 14)
 
 #### Image Addition Criteria Documentation
 **New Docker image addition guidelines added to CONTRIBUTING.md**:
