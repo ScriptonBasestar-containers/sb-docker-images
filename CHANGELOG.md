@@ -6,6 +6,77 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2025-11-27] - Phase 14: Preparation for New Collaboration Tools
+
+### Added
+
+#### Image Addition Criteria Documentation
+**New Docker image addition guidelines added to CONTRIBUTING.md**:
+
+- **Inclusion Criteria**: 4 clear conditions for adding new images
+  1. No official Docker image available
+  2. Poor quality official images (outdated, insecure, poorly documented)
+  3. Special configuration needs (Korean locale, complex multi-service setup)
+  4. Educational/experimental purposes
+
+- **Exclusion Criteria**: 3 conditions for NOT adding images
+  1. Good official images exist (Docker Hub Library, Verified Publishers)
+  2. Simple compose files sufficient
+  3. Well-maintained third-party images available (e.g., linuxserver/*)
+
+- **Verification Process**: Docker Hub search, security scans, metadata inspection
+- **Decision Checklist**: 6-point evaluation guide
+
+**Impact**:
+- Clear, documented standards for project contributions
+- Prevents duplication of well-maintained official images
+- Focuses effort on value-added custom images
+
+#### New Category: Collaboration Tools
+**Created `images/collaboration/` category**:
+
+- **Purpose**: Team collaboration and communication tools
+- **INDEX.md Features**:
+  - Category overview and comparison table
+  - Quick start guide
+  - Production deployment best practices
+  - Security, performance, backup considerations
+  - Troubleshooting guide
+
+**Planned Projects** (Phase 14 implementation):
+- Mattermost (Port: 8350) - Slack alternative, PostgreSQL-based
+- Rocket.Chat (Port: 8340) - Open source team chat, MongoDB-based
+
+#### Task Documentation
+**Created comprehensive Phase 14 task documents** (`tmp/tasks/`):
+
+- `add-new-images-phase-14.md` (265 lines) - Master implementation plan
+  - 7 images planned (5 high priority, 2 medium)
+  - 3 new categories (collaboration, automation, monitoring)
+  - 2-3 week timeline with weekly milestones
+  - Complete checklist for each image
+
+- **Detailed Setup Guides** (3 created):
+  - `mattermost-setup.md` (304 lines) - PostgreSQL integration
+  - `rocketchat-setup.md` (366 lines) - MongoDB replica set setup
+  - `bookstack-setup.md` (363 lines) - MariaDB integration
+
+- `README.md` (121 lines) - Task documentation index
+
+**Total**: 1,419 lines of implementation documentation
+
+### Changed
+
+#### Documentation Structure
+- README.md: Added link to image addition criteria
+- CONTRIBUTING.md: Added "0. 이미지 추가 기준 확인" section (85 lines)
+- Table of contents updated with new section
+
+### Removed
+- Root `compose.yml`: Removed empty file (cleanup)
+
+---
+
 ## [2025-11-25] - Phase 13: Project Maintenance & Archive
 
 ### Changed
