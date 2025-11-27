@@ -1,0 +1,51 @@
+services:
+  metabase:
+    image: metabase/metabase:${METABASE_VERSION:-latest}
+    container_name: metabase
+    restart: always
+    ports:
+      - "${WEB_PORT:-3020}:3000"
+    environment:
+      TZ: Asia/Seoul
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: ${POSTGRES_DB:-metabase}
+      MB_DB_PORT: 5432
+      MB_DB_USER: ${POSTGRES_USER:-metabase}
+      MB_DB_PASS: ${POSTGRES_PASSWORD:-changeme}
+      MB_DB_HOST: postgres
+      # Java options
+      JAVA_TIMEZONE: Asia/Seoul
+    volumes:
+      - metabase-data:/metabase-data
+    networks:
+      - metabase-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-16-alpine}
+    container_name: metabase-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-metabase}
+      POSTGRES_USER: ${POSTGRES_USER:-metabase}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      TZ: Asia/Seoul
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - metabase-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-metabase}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  metabase-network:
+    driver: bridge
+
+volumes:
+  metabase-data:
+  postgres-data:

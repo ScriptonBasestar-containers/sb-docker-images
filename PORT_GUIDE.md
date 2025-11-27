@@ -11,6 +11,7 @@
 | 3000 | **충돌** | discourse, supabase | Web UI, Studio |
 | 3002 | BTC RPC Explorer | docker-bitcoin | Bitcoin Explorer |
 | 3011 | Uptime Kuma | uptime-kuma | Web UI |
+| 3020 | Metabase | metabase | Web UI |
 | 3100 | Backend | tsboard | Backend API |
 | 3141 | DevPI | devpi | Python Package Index |
 | 3333 | Chrome | forem | Chrome DevTools |
