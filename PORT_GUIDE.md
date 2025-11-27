@@ -33,6 +33,7 @@
 | 8340 | Rocket.Chat | rocketchat | Web UI |
 | 8350 | Mattermost | mattermost | Web UI |
 | 8390 | BookStack | bookstack | Web UI |
+| 8400 | Answer | answer | Web UI |
 | 8443 | **충돌** | discourse, supabase | HTTPS, Kong HTTPS |
 | 8545 | Ethereum HTTP | docker-ethereum | HTTP RPC |
 | 8546 | Ethereum WS | docker-ethereum | WebSocket RPC |

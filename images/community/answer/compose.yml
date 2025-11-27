@@ -1,0 +1,43 @@
+services:
+  answer:
+    image: apache/answer:${ANSWER_VERSION:-latest}
+    container_name: answer
+    restart: always
+    ports:
+      - "${WEB_PORT:-8400}:80"
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - answer-data:/data
+    networks:
+      - answer-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION:-16-alpine}
+    container_name: answer-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-answer}
+      POSTGRES_USER: ${POSTGRES_USER:-answer}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      TZ: Asia/Seoul
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - answer-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-answer}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  answer-network:
+    driver: bridge
+
+volumes:
+  answer-data:
+  postgres-data:
