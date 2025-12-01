@@ -27,8 +27,12 @@
 | .env.example | 56/56 (100%) | ✅ |
 | VERSION 파일 | 56/56 (100%) | ✅ |
 | Git 버전 태그 | 62/64 (98%) | ✅ ⭐ **NEW** |
+| Multi-Arch 배포 | 60/62 (97%) | ✅ 🍎🥧 **NEW** |
 | Makefile | 56/56 (100%) | ✅ |
 | Compose 파일 | 86/86 (100%) | ✅ |
+
+**Multi-Architecture Support**: 🍎 Apple Silicon (M1/M2/M3) | 🥧 Raspberry Pi 4/5 | ☁️ AWS Graviton
+All images now support both **AMD64** and **ARM64** architectures!
 
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 

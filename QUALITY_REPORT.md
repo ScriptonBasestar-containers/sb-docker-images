@@ -134,6 +134,20 @@ git tag | grep -E "^(metabase|answer|bookstack)-v"
 # metabase-v1.0.0
 ```
 
+**Multi-Arch Deployment Status:** ✅ **DEPLOYED (2025-12-01)**
+```
+Tags pushed:       60/62 (97%)
+Multi-arch builds: AMD64 + ARM64
+CI/CD triggered:   60 workflows
+```
+
+- ✅ **Pilot projects deployed** (5): node-pnpm, ansible-dev, rhymix, postgres-exts, devpi
+- ✅ **Full rollout complete** (55): All remaining active projects
+- ✅ **postgres-exts ARM64 fix**: Wildcard library patterns for multi-arch compatibility
+- 🍎 **Apple Silicon support**: All images now available for M1/M2/M3 Macs
+- 🥧 **Raspberry Pi support**: ARM64 images ready for Pi 4/5
+- ☁️ **AWS Graviton**: Native ARM64 support for cost-effective deployments
+
 **검증 방법:** `git tag | wc -l`
 
 **Benefits:**
