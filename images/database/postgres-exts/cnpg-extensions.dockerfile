@@ -3,8 +3,17 @@
 # Extensions: pgvector, PostGIS, TimescaleDB, pg_cron, pg_repack, pgAudit
 FROM postgres:16 AS base
 
+# Enable multi-architecture support
+ARG TARGETARCH
+
 # Build stage: Compile extensions
 FROM base AS builder
+
+# Re-declare TARGETARCH for this stage
+ARG TARGETARCH
+
+# Log build architecture
+RUN echo "Building PostgreSQL extensions for architecture: ${TARGETARCH:-unknown}"
 
 # Install build dependencies
 RUN apt-get update && \
@@ -119,11 +128,11 @@ RUN apt-get update && \
         postgresql-client \
         curl \
         ca-certificates \
-        # PostGIS runtime
-        libgeos-c1v5 \
-        libproj25 \
-        libgdal34 \
-        libjson-c5 \
+        # PostGIS runtime (wildcard patterns for multi-arch compatibility)
+        libgeos-c1* \
+        libproj2* \
+        libgdal3* \
+        libjson-c* \
         libxml2 \
         libprotobuf-c1 && \
     rm -rf /var/lib/apt/lists/*
