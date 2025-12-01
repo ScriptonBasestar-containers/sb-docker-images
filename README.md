@@ -26,8 +26,9 @@
 | README.md | 56/56 (100%) | ✅ |
 | .env.example | 56/56 (100%) | ✅ |
 | VERSION 파일 | 56/56 (100%) | ✅ |
+| Git 버전 태그 | 62/64 (98%) | ✅ ⭐ **NEW** |
 | Makefile | 56/56 (100%) | ✅ |
-| Compose 파일 | 56/56 (100%) | ✅ |
+| Compose 파일 | 86/86 (100%) | ✅ |
 
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 
@@ -111,8 +112,8 @@ Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
 - 프로덕션 배포 시 필수 설정 가이드
 - **Phase 12**: node-pnpm, owa, taiga 추가
 
-### 🏷️ 버전 관리 시스템
-표준화된 프로젝트 버전 관리:
+### 🏷️ 버전 관리 시스템 ⭐ **완료 (2025-12-01)**
+표준화된 프로젝트 버전 관리 및 자동 배포:
 
 ```bash
 # 모든 프로젝트 버전 목록
@@ -124,16 +125,27 @@ make version-show PROJECT=wikijs
 # 버전 파일 검증
 make version-check
 
-# 버전 태그 생성 (dry-run)
-./scripts/version-tag.sh outline 1.0.0 --dry-run
+# 버전 태그 생성 및 배포
+git tag <project>-v1.0.0
+git push origin <project>-v1.0.0  # CD 파이프라인 자동 트리거
 ```
 
 **Features**:
-- 54개 프로젝트 VERSION 파일 (100%)
-- Semantic versioning (MAJOR.MINOR.PATCH)
-- Git 태그 자동 생성 지원
-- CD 파이프라인 통합 준비
-- **Phase 11.10**: 완전한 버전 관리 시스템 구축
+- ✅ 56개 프로젝트 VERSION 파일 (100%)
+- ✅ 62개 Git 버전 태그 생성 완료 (98% - 2 archived 제외)
+- ✅ Semantic versioning (MAJOR.MINOR.PATCH)
+- ✅ CD 파이프라인 통합 완료 (tag-triggered builds)
+- ✅ Docker Hub 자동 배포 준비 완료
+- **Phase 11.10**: 버전 관리 시스템 구축
+- **Phase 12**: 버전 태그 롤아웃 완료 (2025-12-01)
+
+**자동 배포 프로세스**:
+1. 로컬에서 버전 태그 생성 (`git tag <project>-v1.0.0`)
+2. 태그를 GitHub로 푸시 (`git push origin <project>-v1.0.0`)
+3. CD 워크플로우 자동 실행 (Docker 이미지 빌드 & 테스트)
+4. Docker Hub에 자동 배포 (`:latest`, `:1.0.0`, `:1.0`, `:1` 태그)
+
+상세 가이드: [`docs/VERSIONING.md`](./docs/VERSIONING.md)
 
 ### 🚀 Standalone 구성
 프로덕션 준비된 독립 실행 구성 (19개 프로젝트, 20개 파일):
