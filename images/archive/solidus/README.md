@@ -67,7 +67,7 @@ make run
 
 ## Default Configuration
 
-**Default port:** 8410 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8410 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** solidus-web
 
@@ -85,7 +85,7 @@ RAILS_ENV=development
 | 8410 | web | Solidus application (basic setup) |
 | 8411 | web | Solidus application (standalone) |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 디렉토리 구조
 

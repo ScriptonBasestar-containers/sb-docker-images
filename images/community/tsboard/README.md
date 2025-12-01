@@ -22,7 +22,7 @@ TSBoard는 TypeScript로 개발된 현대적인 게시판 시스템입니다. �
 
 ## Default Configuration
 
-**Default port:** 8910 (recommended - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8910 (recommended - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Current port:** 80 (needs configuration)
 
@@ -43,7 +43,7 @@ DATABASE_URL=root:example@tcp(db:3306)/tsboard?charset=utf8mb4&parseTime=True&lo
 
 > ⚠️ **Port Conflict Warning**: Currently using port 80.
 >
-> **Recommended port**: 8910 ([PORT_GUIDE.md](../PORT_GUIDE.md) reference)
+> **Recommended port**: 8910 ([PORT_STATUS.md](../PORT_STATUS.md) reference)
 >
 > **Change port method**:
 > ```bash
@@ -54,7 +54,7 @@ DATABASE_URL=root:example@tcp(db:3306)/tsboard?charset=utf8mb4&parseTime=True&lo
 > #   - "8910:80"
 > ```
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 빠른 시작
 
@@ -273,7 +273,7 @@ services:
 
 ## 포트 변경 방법
 
-PORT_GUIDE.md의 표준 포트(8910)로 변경:
+PORT_STATUS.md의 표준 포트(8910)로 변경:
 
 ```yaml
 # compose.yml 수정

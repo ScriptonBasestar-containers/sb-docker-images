@@ -76,7 +76,7 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 ## Default Configuration
 
-**Default port:** 8150 (recommended port - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8150 (recommended port - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container names:** nginx, php, mariadb, phpmyadmin
 
@@ -98,7 +98,7 @@ NGINX_PORT=8150  # Customizable
 | 8150 | nginx | Gnuboard5 web application |
 | 8201 | phpmyadmin | Database management |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 환경 변수
 

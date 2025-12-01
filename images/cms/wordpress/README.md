@@ -71,7 +71,7 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 ## Default Configuration
 
-**Default port:** 8100 (recommended port - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8100 (recommended port - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** wordpress
 
@@ -528,7 +528,7 @@ define('BLOG_ID_CURRENT_SITE', 1);
 
 ## Port Information
 
-See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation strategy.
+See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation strategy.
 
 **Default port:**
 - WordPress: 8100

@@ -53,7 +53,7 @@ make up
 
 ## Default Configuration
 
-**Default port:** 3128 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 3128 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** squid-proxy
 
@@ -70,7 +70,7 @@ TZ=Asia/Seoul
 | 3128 | HTTP | Default proxy port |
 | 3129 | ICP | Inter-cache communication (optional) |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 빠른 시작
 
@@ -134,9 +134,9 @@ curl -x http://localhost:3128 http://example.com
 | 3128 | TCP | HTTP | 기본 프록시 포트 (권장 포트 사용 중) |
 | 3129 | TCP | ICP | 캐시 간 통신 (선택) |
 
-> ✅ **포트 설정**: 이미 권장 포트(3128)를 사용하고 있습니다. ([포트 가이드](../PORT_GUIDE.md) 참조)
+> ✅ **포트 설정**: 이미 권장 포트(3128)를 사용하고 있습니다. ([포트 가이드](../PORT_STATUS.md) 참조)
 
-포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
+포트 충돌 방지: [포트 가이드](../PORT_STATUS.md)
 
 ## 디렉토리 구조
 

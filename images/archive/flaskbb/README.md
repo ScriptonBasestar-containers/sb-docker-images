@@ -49,7 +49,7 @@ make up
 
 ## Default Configuration
 
-**Default port:** 8250 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8250 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** flaskbb
 
@@ -69,7 +69,7 @@ FLASKBB_REDIS_URL=redis://redis:6379/0
 |------|---------|---------|
 | 8250 | flaskbb | FlaskBB web server |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 서비스 구성
 
@@ -96,9 +96,9 @@ docker-compose.yml에는 다음 서비스들이 포함되어 있습니다:
 |------|--------|------|
 | 8250 | flaskbb | FlaskBB 웹 서버 (권장 포트 사용 중) |
 
-> ✅ **포트 설정**: 이미 권장 포트(8250)를 사용하고 있습니다. ([포트 가이드](../PORT_GUIDE.md) 참조)
+> ✅ **포트 설정**: 이미 권장 포트(8250)를 사용하고 있습니다. ([포트 가이드](../PORT_STATUS.md) 참조)
 
-포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
+포트 충돌 방지: [포트 가이드](../PORT_STATUS.md)
 
 ## 환경 변수
 

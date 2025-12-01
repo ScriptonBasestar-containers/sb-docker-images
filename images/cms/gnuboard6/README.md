@@ -57,7 +57,7 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 **Default port:** 8080 (⚠️ conflicts with other services)
 
-**Recommended port:** 8210 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Recommended port:** 8210 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container names:** gnuboard6, mariadb, phpmyadmin
 
@@ -91,7 +91,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 sed -i 's/"8080:8000"/"8210:8000"/' docker-compose.yml
 ```
 
-See [PORT_GUIDE.md](../PORT_GUIDE.md) for details.
+See [PORT_STATUS.md](../PORT_STATUS.md) for details.
 
 ## 환경 변수
 
@@ -306,7 +306,7 @@ docker-compose exec mariadb mysql -u root -prootpass gnuboard6 -e "
 
 ## 포트 변경 방법
 
-PORT_GUIDE.md의 표준 포트(8210)로 변경:
+PORT_STATUS.md의 표준 포트(8210)로 변경:
 
 ```yaml
 # docker-compose.yml 수정

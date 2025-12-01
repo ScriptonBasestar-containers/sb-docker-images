@@ -411,7 +411,7 @@ Successfully deployed 60 Docker projects with dual-architecture support in a sin
 ### Documentation
 - **Quality Report**: QUALITY_REPORT.md
 - **Version Guide**: docs/VERSIONING.md
-- **Port Guide**: PORT_GUIDE.md
+- **Port Guide**: PORT_STATUS.md
 
 ---
 

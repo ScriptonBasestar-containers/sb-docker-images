@@ -96,7 +96,7 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 > sed -i 's/8080:80/different-port:80/' compose.yml
 > ```
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 환경 변수
 

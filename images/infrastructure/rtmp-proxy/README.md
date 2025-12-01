@@ -31,7 +31,7 @@ OBS 등의 방송 소프트웨어에서 한 번만 스트리밍하면 여러 플
 
 ## Default Configuration
 
-**Default port:** 1935 (RTMP standard port - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 1935 (RTMP standard port - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** rtmp-proxy
 
@@ -53,7 +53,7 @@ APPNAME=live
 | 80 | HTTP | Health check and statistics |
 | 8080 | HTTP | Management interface (optional) |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 빠른 시작
 
@@ -117,13 +117,13 @@ docker run --rm -d \
 | 80 | TCP | HTTP | Health check 및 통계 (선택사항) |
 | 8080 | TCP | HTTP | 관리 인터페이스 (선택사항) |
 
-> ✅ **포트 설정**: 이미 RTMP 표준 포트(1935)를 사용하고 있습니다. ([포트 가이드](../PORT_GUIDE.md) 참조)
+> ✅ **포트 설정**: 이미 RTMP 표준 포트(1935)를 사용하고 있습니다. ([포트 가이드](../PORT_STATUS.md) 참조)
 >
 > **참고**: HTTP 포트(80)는 health check 용도로 사용되며, 필요에 따라 8080으로 변경할 수 있습니다.
 
 **중요**: 방화벽 사용 시 포트 1935를 반드시 열어야 합니다.
 
-포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
+포트 충돌 방지: [포트 가이드](../PORT_STATUS.md)
 
 ## 환경 변수
 

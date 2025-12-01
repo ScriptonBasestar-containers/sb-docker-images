@@ -51,7 +51,7 @@ make up
 **Default ports:**
 - SMTP: 2500
 - API: 8080
-- Web UI: 8085 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+- Web UI: 8085 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** mailslurper
 
@@ -70,7 +70,7 @@ WEB_PORT=8085
 | 8080 | API | REST API endpoint |
 | 8085 | Web UI | Email viewing interface |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 빠른 시작
 
@@ -132,7 +132,7 @@ MailSlurper는 단일 서비스로 다음 컴포넌트를 포함합니다:
 
 > ⚠️ **포트 충돌 주의**: 현재 8085 포트를 Web UI에 사용하고 있습니다.
 >
-> **권장 포트**: 8810 ([포트 가이드](../PORT_GUIDE.md) 참조)
+> **권장 포트**: 8810 ([포트 가이드](../PORT_STATUS.md) 참조)
 >
 > **포트 변경 방법**:
 > ```bash
@@ -145,7 +145,7 @@ MailSlurper는 단일 서비스로 다음 컴포넌트를 포함합니다:
 >   scriptonbasestar/mailslurper
 > ```
 
-포트 충돌 방지: [포트 가이드](../PORT_GUIDE.md)
+포트 충돌 방지: [포트 가이드](../PORT_STATUS.md)
 
 ## 환경 변수
 

@@ -24,7 +24,7 @@ RSSHub는 오픈소스 RSS 피드 생성기입니다. RSS를 지원하지 않는
 
 ## Default Configuration
 
-**Default port:** 1200 (권장: 8700, see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 1200 (권장: 8700, see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** rsshub
 
@@ -42,11 +42,11 @@ REDIS_URL=redis://localhost:6379/
 |------|---------|---------|
 | 1200 | rsshub | RSSHub 웹 서버 (기본 포트) |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 > ⚠️ **포트 설정 주의**: 현재 1200 포트를 기본값으로 사용합니다.
 >
-> **권장 포트**: 8700 (프로덕션 환경, [포트 가이드](../PORT_GUIDE.md) 참조)
+> **권장 포트**: 8700 (프로덕션 환경, [포트 가이드](../PORT_STATUS.md) 참조)
 >
 > **포트 변경 방법**:
 > ```bash

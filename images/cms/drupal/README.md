@@ -80,7 +80,7 @@ standalone/compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 ## Default Configuration
 
-**Default port:** 8120 (recommended port - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8120 (recommended port - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** drupal
 
@@ -601,7 +601,7 @@ crontab -e
 
 ## Port Information
 
-See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation strategy.
+See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation strategy.
 
 **Default port:**
 - Drupal: 8120

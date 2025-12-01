@@ -47,7 +47,7 @@ make up
 
 ## Default Configuration
 
-**Default port:** 8180 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8180 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** jenkins
 
@@ -65,7 +65,7 @@ JENKINS_OPTS=--prefix=/jenkins        # Jenkins URL path (optional)
 | 8180 | Web UI | Jenkins web interface (configurable via JENKINS_HTTP_PORT) |
 | 50000 | Agent | Jenkins Agent communication port (JNLP, configurable via JENKINS_AGENT_PORT) |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ### 볼륨
 

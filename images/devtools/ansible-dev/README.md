@@ -89,7 +89,7 @@ EDITOR=nano                                    # Default editor
 |------|---------|---------|
 | N/A | Client Tool | Ansible uses SSH (port 22) to connect to target servers |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 > **Note:** For web-based management, consider AWX (open-source version of Ansible Tower).
 

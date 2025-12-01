@@ -429,7 +429,7 @@ $wgAPIModules['login'] = 'ApiLogin';
 
 ## Port Information
 
-See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation strategy.
+See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation strategy.
 
 **Default port:**
 - MediaWiki: 8200

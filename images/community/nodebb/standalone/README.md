@@ -322,7 +322,7 @@ docker compose down -v
 
 ## Port Information
 
-See [PORT_GUIDE.md](../../docs/PORT_GUIDE.md) for port allocation strategy.
+See [PORT_STATUS.md](../../docs/PORT_STATUS.md) for port allocation strategy.
 
 **Default ports:**
 - NodeBB: 4567

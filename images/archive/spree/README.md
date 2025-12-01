@@ -44,7 +44,7 @@ docker compose up -d
 
 ## Default Configuration
 
-**Default port:** 8400 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8400 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** spree-web
 
@@ -62,7 +62,7 @@ SECRET_KEY_BASE=your-secret-key-here
 |------|---------|---------|
 | 8400 | web | Spree application |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 디렉토리 구조
 

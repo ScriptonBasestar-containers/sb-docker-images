@@ -68,11 +68,11 @@ REDIS_HOST=redis
 | 5432 | PostgreSQL | 데이터베이스 (내부) |
 | 6379 | Redis | 캐시 서버 (내부) |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 > ⚠️ **포트 충돌 주의**: 현재 3000, 4000 포트를 사용하고 있습니다.
 >
-> **권장 포트**: 8500 (Web), 8501 (Streaming) ([포트 가이드](../PORT_GUIDE.md) 참조)
+> **권장 포트**: 8500 (Web), 8501 (Streaming) ([포트 가이드](../PORT_STATUS.md) 참조)
 >
 > **포트 변경 방법**:
 > ```bash

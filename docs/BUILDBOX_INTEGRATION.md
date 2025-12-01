@@ -723,7 +723,7 @@ cd buildbox && make django-stack
 ## Related Documentation
 
 - [Buildbox README](../buildbox/README.md) - Main Buildbox documentation
-- [PORT_GUIDE.md](../PORT_GUIDE.md) - Port allocation guide
+- [PORT_STATUS.md](../PORT_STATUS.md) - Port allocation guide
 - [ansible-dev](../ansible-dev/README.md) - Infrastructure automation
 - [chef-dev](../chef-dev/README.md) - Configuration management
 

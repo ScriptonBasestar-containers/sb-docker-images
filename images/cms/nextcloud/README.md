@@ -45,7 +45,7 @@ make up
 
 ## Default Configuration
 
-**Default port:** 8210 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8210 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** nextcloud
 
@@ -64,7 +64,7 @@ NEXTCLOUD_ADMIN_PASSWORD=passw0rd
 | 6379 | redis | Redis (FPM 버전, 내부) |
 | 9020 | phpmyadmin | phpMyAdmin (MariaDB 사용 시, 선택사항) |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 > ✅ **포트 설정**: 기본 포트는 8210입니다. WEB_PORT 환경변수로 변경 가능합니다.
 

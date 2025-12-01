@@ -44,7 +44,7 @@ Jupyter Lab은 Jupyter Notebook의 차세대 인터페이스로, 더 강력하�
 
 ## Default Configuration
 
-**Default port:** 8889 (recommended port - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8889 (recommended port - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** sb-jupyter
 
@@ -57,7 +57,7 @@ Jupyter Lab은 Jupyter Notebook의 차세대 인터페이스로, 더 강력하�
 | 8889 | Jupyter Lab | Web interface (host port) |
 | 8888 | Internal | Container internal port |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 **Note:** jupyter uses port 8888, jupyter2 uses port 8889 to avoid conflicts.
 

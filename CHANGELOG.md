@@ -327,7 +327,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 #### Documentation Structure
 - README.md: Updated project counts, enhanced analytics category
 - CONTRIBUTING.md: Added "0. 이미지 추가 기준 확인" section (85 lines)
-- PORT_GUIDE.md: Added 6 new port assignments (8340, 8350, 8390, 5678, 3011, 3020)
+- PORT_STATUS.md: Added 6 new port assignments (8340, 8350, 8390, 5678, 3011, 3020)
 - Table of contents updated with new sections
 
 ### Removed
@@ -407,7 +407,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 #### Documentation Updates
 - README.md: 프로젝트 수 54 → 48개 반영, archive 카테고리 추가
-- PORT_GUIDE.md: archived 프로젝트 포트 정보 업데이트
+- PORT_STATUS.md: archived 프로젝트 포트 정보 업데이트
 - images/archive/INDEX.md: 새로 생성
 
 ---
@@ -476,7 +476,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 #### Documentation Updates
 - README.md: 프로젝트 수 48 → 54개 반영
 - README.md: 신규 카테고리 추가 (analytics, media, groupware)
-- PORT_GUIDE.md: 신규 포트 할당 (owa: 8280, koel: 8290, agendav: 8300, rhymix: 8310, taiga: 9000)
+- PORT_STATUS.md: 신규 포트 할당 (owa: 8280, koel: 8290, agendav: 8300, rhymix: 8310, taiga: 9000)
 - devtools/INDEX.md: node-pnpm, taiga 추가
 - groupware/INDEX.md: agendav 추가
 - cms/INDEX.md: rhymix 추가
@@ -1043,7 +1043,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 #### 포트 충돌 해결 완료 문서화
 
-**PORT_GUIDE.md 확장**:
+**PORT_STATUS.md 확장**:
 - 선택적 구성 포트 충돌 상세 설명 (4개)
   * Flarum: Apache vs Nginx 선택
   * Nextcloud: Apache vs FPM 선택
@@ -1114,7 +1114,7 @@ COMPOSE_FILES=-f compose.yml \
 - 명명 규칙 통일 (server-*, docker_* → 표준)
 
 #### Port 표준화
-**PORT_GUIDE.md 정확성 개선:**
+**PORT_STATUS.md 정확성 개선:**
 - 각 프로젝트별 기본 포트 문서화
 - 포트 충돌 방지 가이드
 - 표준 포트 범위 정의

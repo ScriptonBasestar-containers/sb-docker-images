@@ -778,7 +778,7 @@ docker compose logs app > app.log
 
 **Related Documentation**:
 - [Buildbox Integration Guide](./BUILDBOX_INTEGRATION.md)
-- [Port Guide](../PORT_GUIDE.md)
+- [Port Guide](../PORT_STATUS.md)
 - [Contributing Guide](../CONTRIBUTING.md)
 
 **Last Updated:** 2025-11-23

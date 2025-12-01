@@ -416,7 +416,7 @@ curl http://localhost:11211/ignite?cmd=node
 - [REST API](https://ignite.apache.org/docs/latest/restapi)
 - [Thin Clients](https://ignite.apache.org/docs/latest/thin-clients/getting-started-with-thin-clients)
 - [Docker Hub](https://hub.docker.com/r/apacheignite/ignite)
-- [포트 가이드](../../docs/PORT_GUIDE.md)
+- [포트 가이드](../../docs/PORT_STATUS.md)
 
 ## 라이센스
 

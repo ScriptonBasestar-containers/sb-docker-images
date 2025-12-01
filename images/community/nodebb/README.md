@@ -45,7 +45,7 @@ make up
 
 ## Default Configuration
 
-**Default port:** 8240 (recommended - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8240 (recommended - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Current port:** 4567 (needs configuration)
 
@@ -72,7 +72,7 @@ Redis Port: 6379
 
 > ⚠️ **Port Conflict Warning**: Currently using port 4567.
 >
-> **Recommended port**: 8240 ([PORT_GUIDE.md](../PORT_GUIDE.md) reference)
+> **Recommended port**: 8240 ([PORT_STATUS.md](../PORT_STATUS.md) reference)
 >
 > **Change port method**:
 > ```bash
@@ -81,7 +81,7 @@ Redis Port: 6379
 > #   - "8240:4567"
 > ```
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 빠른 시작
 

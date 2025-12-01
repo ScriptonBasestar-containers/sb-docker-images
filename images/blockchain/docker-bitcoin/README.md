@@ -65,9 +65,9 @@ TESTNET=0                 # 0=mainnet, 1=testnet
 | 8333 | bitcoind | P2P Network |
 | 3002 | btc-rpc-explorer | Web UI |
 
-> ✅ **Port Setting**: This project uses the recommended ports (8332, 8333). See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+> ✅ **Port Setting**: This project uses the recommended ports (8332, 8333). See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
-**Port conflict prevention:** See [PORT_GUIDE.md](../PORT_GUIDE.md)
+**Port conflict prevention:** See [PORT_STATUS.md](../PORT_STATUS.md)
 
 ## 빠른 시작
 

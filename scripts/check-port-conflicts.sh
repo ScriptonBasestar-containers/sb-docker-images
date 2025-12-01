@@ -101,7 +101,7 @@ if [ $CONFLICTS -gt 0 ]; then
     echo -e "${YELLOW}⚠ Port conflicts detected${NC}"
     echo ""
     echo "Recommendations:"
-    echo "1. Review PORT_GUIDE.md for recommended port assignments"
+    echo "1. Review PORT_STATUS.md for recommended port assignments"
     echo "2. Use environment variables for flexible port configuration"
     echo "3. Update conflicting services to use different ports"
     echo ""

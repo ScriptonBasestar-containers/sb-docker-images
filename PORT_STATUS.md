@@ -1,6 +1,8 @@
-# Port Assignment Guide
+# Port Status
 
-이 문서는 sb-docker-images 저장소의 포트 할당 가이드입니다. 각 프로젝트가 고유한 포트를 사용하도록 하여 동시에 여러 서비스를 실행할 수 있습니다.
+이 문서는 sb-docker-images 저장소의 **현재 포트 할당 상태**를 보여줍니다. 각 프로젝트가 고유한 포트를 사용하도록 하여 동시에 여러 서비스를 실행할 수 있습니다.
+
+> **참고**: 포트 관리 방법론과 충돌 해결 방법은 [docs/PORT_MANAGEMENT_GUIDE.md](docs/PORT_MANAGEMENT_GUIDE.md)를 참조하세요.
 
 ## 포트 범위 할당
 

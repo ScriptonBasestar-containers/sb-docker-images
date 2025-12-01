@@ -25,7 +25,7 @@ Ruby on Rails 애플리케이션 개발을 위한 완전한 Docker 환경입니�
 
 ## Default Configuration
 
-**Default port:** 3000 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 3000 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** ruby-dev
 
@@ -45,7 +45,7 @@ DATABASE_PASSWORD=password            # Database password
 |------|---------|---------|
 | 3000 | Rails Server | Default Rails development server port |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 > ⚠️ **Port Conflict Warning**: Port 3000 is commonly used. Recommended port: 8640.
 >

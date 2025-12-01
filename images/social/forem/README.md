@@ -22,7 +22,7 @@ Forem은 커뮤니티 플랫폼을 구축하기 위한 오픈소스 소프트웨
 
 ## Default Configuration
 
-**Default port:** 8520 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8520 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** forem-web
 
@@ -44,7 +44,7 @@ PG_MAJOR=13
 | 6379 | redis | Redis (internal) |
 | 3333 | chrome | Chrome for testing |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 빠른 시작
 

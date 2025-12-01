@@ -49,11 +49,11 @@ POSTGRES_DB=kratos
 | 4436 | MailSlurper API | 메일 테스트 API |
 | 4437 | MailSlurper Web | 메일 확인 웹 UI |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 > ℹ️ **포트 설정**: Ory Kratos 공식 기본 포트(4433, 4434)를 사용하고 있습니다.
 >
-> **참고**: [포트 가이드](../PORT_GUIDE.md)에서는 8800, 8801 포트를 제안하지만, Ory Kratos의 공식 기본 포트를 그대로 사용하는 것이 일반적입니다.
+> **참고**: [포트 가이드](../PORT_STATUS.md)에서는 8800, 8801 포트를 제안하지만, Ory Kratos의 공식 기본 포트를 그대로 사용하는 것이 일반적입니다.
 
 ## 빠른 시작
 

@@ -74,7 +74,7 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 ## Default Configuration
 
-**Default port:** 8110 (recommended port - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8110 (recommended port - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** joomla
 
@@ -93,7 +93,7 @@ JOOMLA_DB_NAME=db01
 |------|---------|---------|
 | 8110 | joomla | Joomla web application |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 환경 변수
 

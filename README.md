@@ -86,7 +86,7 @@ Wiki.js, Gitea, Flarum, Gnuboard5, Gnuboard6, WordPress, MediaWiki, Joomla, Xpre
 #### 📦 기타 도구 (19개)
 Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
 
-**전체 프로젝트 목록**: [`PORT_GUIDE.md`](./PORT_GUIDE.md) 참조
+**전체 프로젝트 목록**: [`PORT_STATUS.md`](./PORT_STATUS.md) 참조
 
 ## 주요 기능
 
@@ -170,13 +170,13 @@ git push origin <project>-v1.0.0  # CD 파이프라인 자동 트리거
 - 충돌 해결 계획 문서화
 - 자동 충돌 감지 스크립트
 
-문서: [`PORT_GUIDE.md`](./PORT_GUIDE.md) | [`docs/PORT_GUIDE.md`](./docs/PORT_GUIDE.md)
+문서: [`PORT_STATUS.md`](./PORT_STATUS.md) | [`docs/PORT_STATUS.md`](./docs/PORT_STATUS.md)
 
 ## 📚 문서
 
 ### 시작하기
 - [빠른 시작](#빠른-시작) - 프로젝트 실행 기본 가이드
-- [PORT_GUIDE.md](./PORT_GUIDE.md) - 포트 할당 및 충돌 방지
+- [PORT_STATUS.md](./PORT_STATUS.md) - 포트 할당 및 충돌 방지
 - [VERSIONING.md](./docs/VERSIONING.md) - 프로젝트별 버전 관리 전략 ⭐ **NEW**
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - 기여 가이드라인
   - [이미지 추가 기준](./CONTRIBUTING.md#0-이미지-추가-기준-확인) - 새 Docker 이미지 추가 규칙 ⭐ **NEW**

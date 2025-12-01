@@ -56,7 +56,7 @@ compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 ## Default Configuration
 
-**Default port:** 8270 (recommended port - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8270 (recommended port - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** xe
 
@@ -89,7 +89,7 @@ XE_PORT=8270  # Customizable
 | 3306 | mariadb | Database (internal) |
 | 6379 | redis | Cache/Session/Queue (internal) |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 환경 변수
 
@@ -331,7 +331,7 @@ services:
 
 ## 포트 변경 방법
 
-PORT_GUIDE.md의 표준 포트(8270)로 변경:
+PORT_STATUS.md의 표준 포트(8270)로 변경:
 
 ```yaml
 # docker-compose.yml 수정

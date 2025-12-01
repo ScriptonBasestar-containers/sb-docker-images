@@ -73,7 +73,7 @@ docker-compose.yml에는 다음 서비스들이 포함되어 있습니다:
 
 **Default port:** 80 (⚠️ conflicts with common HTTP port)
 
-**Recommended port:** 8320 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Recommended port:** 8320 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Port change method:**
 ```bash
@@ -345,7 +345,7 @@ db:
 
 ## Port Information
 
-See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation strategy.
+See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation strategy.
 
 **Default port:**
 - Wiki.js: 80 (⚠️ **Conflicts** with standard HTTP port)

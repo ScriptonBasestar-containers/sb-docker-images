@@ -535,5 +535,5 @@ This standalone configuration uses a custom-built image:
 - [Squid Documentation](http://www.squid-cache.org/Doc/)
 - [Configuration Guide](https://wiki.squid-cache.org/SquidFaq/ConfiguringSquid)
 - [ACL Guide](https://wiki.squid-cache.org/SquidFaq/SquidAcl)
-- [Port Guide](../../docs/PORT_GUIDE.md)
+- [Port Guide](../../docs/PORT_STATUS.md)
 - [Main README](../README.md)

@@ -77,7 +77,7 @@ docker compose -f compose.nginx.yml up -d
 
 ## Default Configuration
 
-**Default port:** 8140 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8140 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** flarum
 
@@ -103,7 +103,7 @@ MARIADB_PASSWORD=passw0rd
 | 8025 | mailhog | Email testing UI |
 | 1025 | mailhog | SMTP server |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## Default Credentials
 

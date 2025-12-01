@@ -104,7 +104,7 @@ docker run --rm \
 
 ## Default Configuration
 
-**Default port:** 8888 (recommended port - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8888 (recommended port - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** jupyter-fullbook
 
@@ -116,7 +116,7 @@ docker run --rm \
 |------|---------|---------|
 | 8888 | Jupyter Notebook | Web interface |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 **Note:** jupyter2 uses port 8889 to avoid conflicts.
 

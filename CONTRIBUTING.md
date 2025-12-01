@@ -131,9 +131,9 @@ cd <project-name>
     └── README.md
 ```
 
-### 3. PORT_GUIDE.md 확인
+### 3. PORT_STATUS.md 확인
 
-포트 충돌을 방지하기 위해 [`PORT_GUIDE.md`](./PORT_GUIDE.md)를 확인하고 사용 가능한 포트를 할당받으세요.
+포트 충돌을 방지하기 위해 [`PORT_STATUS.md`](./PORT_STATUS.md)를 확인하고 사용 가능한 포트를 할당받으세요.
 
 ```bash
 # 포트 충돌 확인
@@ -170,7 +170,7 @@ services:
     container_name: app-name
     restart: always
     ports:
-      - "8XXX:80"  # PORT_GUIDE.md 참조
+      - "8XXX:80"  # PORT_STATUS.md 참조
     environment:
       # 환경변수 설정
     volumes:
@@ -229,9 +229,9 @@ volumes:
 
 ### 할당 절차
 
-1. [`PORT_GUIDE.md`](./PORT_GUIDE.md) 확인
+1. [`PORT_STATUS.md`](./PORT_STATUS.md) 확인
 2. 사용 가능한 포트 선택
-3. `PORT_GUIDE.md`에 등록
+3. `PORT_STATUS.md`에 등록
 4. 충돌 검사 실행
 
 ```bash

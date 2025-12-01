@@ -72,9 +72,9 @@ POSTGRES_PASSWORD=changeme    # Database password (change in production!)
 | 4000 | blockscout | Web UI |
 | 5432 | postgres | PostgreSQL (internal) |
 
-> ✅ **Port Setting**: This project uses the recommended ports (8545, 8546, 30303). See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+> ✅ **Port Setting**: This project uses the recommended ports (8545, 8546, 30303). See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
-**Port conflict prevention:** See [PORT_GUIDE.md](../PORT_GUIDE.md)
+**Port conflict prevention:** See [PORT_STATUS.md](../PORT_STATUS.md)
 
 ## 빠른 시작
 

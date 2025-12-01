@@ -25,7 +25,7 @@ DevPI는 Python 패키지를 위한 강력한 프라이빗 패키지 인덱스 �
 
 ## Default Configuration
 
-**Default port:** 3141 (see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 3141 (see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Container name:** devpi
 
@@ -52,7 +52,7 @@ INSTALL_LOCKDOWN=false                # Lockdown plugin
 |------|---------|---------|
 | 3141 | HTTP | DevPI web interface and API |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 > **Note:** DevPI's traditional port number 3141 is an approximation of π (pi).
 
@@ -344,7 +344,7 @@ INSTALL_WEB=true docker compose up --build -d
 ```yaml
 # compose.yml 수정
 ports:
-  - "8610:3141"  # 8610 사용 (PORT_GUIDE.md 참조)
+  - "8610:3141"  # 8610 사용 (PORT_STATUS.md 참조)
 ```
 
 또는:

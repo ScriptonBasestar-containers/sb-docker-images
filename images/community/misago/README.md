@@ -22,7 +22,7 @@ Misago는 Python과 Django로 작성된 현대적인 포럼 시스템입니다. 
 
 ## Default Configuration
 
-**Default port:** 8260 (recommended - see [PORT_GUIDE.md](../PORT_GUIDE.md))
+**Default port:** 8260 (recommended - see [PORT_STATUS.md](../PORT_STATUS.md))
 
 **Current port:** 80/443 (needs configuration)
 
@@ -46,7 +46,7 @@ REDIS_URL=redis://redis:6379/0
 
 > ⚠️ **Port Conflict Warning**: Currently using port 80.
 >
-> **Recommended port**: 8260 ([PORT_GUIDE.md](../PORT_GUIDE.md) reference)
+> **Recommended port**: 8260 ([PORT_STATUS.md](../PORT_STATUS.md) reference)
 >
 > **Change port method**:
 > ```bash
@@ -58,7 +58,7 @@ REDIS_URL=redis://redis:6379/0
 > #   - "8443:443"
 > ```
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 ## 빠른 시작
 

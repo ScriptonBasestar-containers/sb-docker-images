@@ -86,7 +86,7 @@ CHEF_LICENSE=accept                   # Chef license acceptance
 |------|---------|---------|
 | N/A | Development Tool | Chef is used for cookbook development, no ports exposed |
 
-**Port conflicts:** See [PORT_GUIDE.md](../PORT_GUIDE.md) for port allocation details.
+**Port conflicts:** See [PORT_STATUS.md](../PORT_STATUS.md) for port allocation details.
 
 > **Note:** If you need to expose ports for testing, use `-p` flag when running the container.
 

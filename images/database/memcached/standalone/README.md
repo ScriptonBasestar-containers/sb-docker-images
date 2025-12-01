@@ -557,7 +557,7 @@ echo "Evictions: $evictions"
 - [Memcached Wiki](https://github.com/memcached/memcached/wiki)
 - [Protocol 문서](https://github.com/memcached/memcached/blob/master/doc/protocol.txt)
 - [Docker Hub](https://hub.docker.com/_/memcached)
-- [포트 가이드](../../docs/PORT_GUIDE.md)
+- [포트 가이드](../../docs/PORT_STATUS.md)
 
 ## 라이센스
 
