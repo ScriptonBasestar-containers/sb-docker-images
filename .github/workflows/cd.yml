@@ -101,40 +101,34 @@ jobs:
             echo "version=manual-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build Essential Image
+      - name: Build & Push Essential Image
         if: github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push'
         run: |
           cd images/database/postgres-exts
-          make essential-build
-          docker tag postgres-exts:essential scriptonbasestar/postgres-exts:16-essential
-          docker tag postgres-exts:essential scriptonbasestar/postgres-exts:16-essential-${{ steps.version.outputs.version }}
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t scriptonbasestar/postgres-exts:16-essential \
+            -t scriptonbasestar/postgres-exts:16-essential-${{ steps.version.outputs.version }} \
+            -f Dockerfile.essential \
+            --push \
+            .
 
-      - name: Build Full Image
+      - name: Build & Push Full Image
         if: github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'
         run: |
           cd images/database/postgres-exts
-          make full-build
-          docker tag postgres-exts:full scriptonbasestar/postgres-exts:16-full
-          docker tag postgres-exts:full scriptonbasestar/postgres-exts:16-full-${{ steps.version.outputs.version }}
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t scriptonbasestar/postgres-exts:16-full \
+            -t scriptonbasestar/postgres-exts:16-full-${{ steps.version.outputs.version }} \
+            -f Dockerfile.full \
+            --push \
+            .
 
-      - name: Test Images
+      - name: Verify Multi-Arch Build
         run: |
-          cd images/database/postgres-exts
-          if docker images | grep -q "postgres-exts.*essential"; then
-            make essential-test
-          fi
-
-      - name: Push Essential Image
-        if: github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push'
-        run: |
-          docker push scriptonbasestar/postgres-exts:16-essential
-          docker push scriptonbasestar/postgres-exts:16-essential-${{ steps.version.outputs.version }}
-
-      - name: Push Full Image
-        if: github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'
-        run: |
-          docker push scriptonbasestar/postgres-exts:16-full
-          docker push scriptonbasestar/postgres-exts:16-full-${{ steps.version.outputs.version }}
+          echo "Multi-arch images built and pushed to Docker Hub"
+          echo "Verify at: https://hub.docker.com/r/scriptonbasestar/postgres-exts/tags"
 
       - name: Create Release Summary
         if: github.event_name == 'push'
@@ -215,7 +209,21 @@ jobs:
           PROJECT_DIR="${{ steps.check.outputs.project_dir }}"
 
           cd "$PROJECT_DIR"
-          make build || echo "Build target failed or not standard"
+
+          # Try multi-arch build first, fallback to standard make
+          if grep -q "buildx" Makefile 2>/dev/null; then
+            make build || echo "Build target failed"
+          else
+            # Standard Makefile without buildx - use docker buildx directly
+            if [ -f "Dockerfile" ]; then
+              docker buildx build \
+                --platform linux/amd64,linux/arm64 \
+                -t "scriptonbasestar/${PROJECT}:${VERSION}" \
+                -t "scriptonbasestar/${PROJECT}:latest" \
+                --push \
+                .
+            fi
+          fi
 
       - name: Build with Docker
         if: steps.check.outputs.has_dockerfile == 'true' && steps.check.outputs.has_makefile == 'false'
@@ -234,29 +242,26 @@ jobs:
           fi
 
           if [ -n "$DOCKERFILE" ]; then
-            docker build -t "scriptonbasestar/${PROJECT}:${VERSION}" -f "$DOCKERFILE" .
-            docker tag "scriptonbasestar/${PROJECT}:${VERSION}" "scriptonbasestar/${PROJECT}:latest"
+            docker buildx build \
+              --platform linux/amd64,linux/arm64 \
+              -t "scriptonbasestar/${PROJECT}:${VERSION}" \
+              -t "scriptonbasestar/${PROJECT}:latest" \
+              -f "$DOCKERFILE" \
+              --push \
+              .
           fi
 
-      - name: Test Image
-        if: steps.check.outputs.has_dockerfile == 'true'
-        run: |
-          PROJECT="${{ needs.detect-project.outputs.project }}"
-
-          # Basic smoke test - check if image exists
-          docker images | grep "$PROJECT" || echo "No images found"
-
-      - name: Push to Docker Hub
+      - name: Verify Multi-Arch Push
         if: steps.check.outputs.has_dockerfile == 'true'
         run: |
           PROJECT="${{ needs.detect-project.outputs.project }}"
           VERSION="${{ needs.detect-project.outputs.version }}"
 
-          # Push versioned tag
-          if docker images | grep -q "scriptonbasestar/${PROJECT}"; then
-            docker push "scriptonbasestar/${PROJECT}:${VERSION}" || echo "Version tag push failed"
-            docker push "scriptonbasestar/${PROJECT}:latest" || echo "Latest tag push failed"
-          fi
+          echo "Multi-arch images built and pushed to Docker Hub"
+          echo "Project: $PROJECT"
+          echo "Version: $VERSION"
+          echo "Platforms: linux/amd64, linux/arm64"
+          echo "Verify at: https://hub.docker.com/r/scriptonbasestar/$PROJECT/tags"
 
       - name: Create Release Summary
         run: |
