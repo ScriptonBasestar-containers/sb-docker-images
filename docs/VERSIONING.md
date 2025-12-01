@@ -142,34 +142,119 @@ See [tmp/VERSION_INVENTORY.md](../tmp/VERSION_INVENTORY.md) for:
 
 ## Tagging Workflow
 
+### Quick Reference
+
+```bash
+# Create tag locally
+git tag <project>-v<version>
+
+# Verify tag before pushing
+git tag | grep <project>
+
+# Push tag to trigger CD pipeline
+git push origin <project>-v<version>
+
+# Monitor build on GitHub Actions
+# https://github.com/scriptonbasestar/sb-docker-images/actions
+```
+
 ### Using Helper Scripts
 
 ```bash
 # Tag a new project version
 ./scripts/version-tag.sh discourse 1.2.3
 
+# Dry-run to preview (recommended first)
+./scripts/version-tag.sh discourse 1.2.3 --dry-run
+
 # List all project versions
 ./scripts/list-versions.sh
 
 # List versions for specific project
 ./scripts/list-versions.sh discourse
+
+# Show only latest versions
+./scripts/list-versions.sh --latest
 ```
 
-### Manual Tagging
+### Manual Tagging (Complete Workflow)
+
+#### Step 1: Commit Changes
 
 ```bash
-# 1. Commit your changes
-git add discourse/
-git commit -m "feat(discourse): add Redis caching support"
+# 1a. Stage your changes
+git add images/<category>/<project>/
 
-# 2. Tag with project version
+# 1b. Commit with descriptive message
+git commit -m "feat(<project>): add Redis caching support"
+
+# 1c. Push commits first (recommended)
+git push origin master
+```
+
+#### Step 2: Create and Verify Tag
+
+```bash
+# 2a. Create lightweight tag
 git tag discourse-v1.2.3
 
-# 3. Push commit and tag
-git push origin master
+# OR: Create annotated tag (recommended for releases)
+git tag -a discourse-v1.2.3 -m "Release v1.2.3: Redis caching support"
+
+# 2b. Verify tag was created correctly
+git tag | grep discourse
+# Expected output: discourse-v1.2.3
+
+# 2c. Check tag points to correct commit
+git show discourse-v1.2.3 --stat
+```
+
+#### Step 3: Push Tag (Triggers CD Pipeline)
+
+```bash
+# 3a. Push single tag
 git push origin discourse-v1.2.3
 
-# 4. CD workflow automatically builds and pushes to Docker Hub
+# OR: Push all new tags (use with caution!)
+# git push origin --tags
+
+# 3b. Verify tag was pushed
+git ls-remote --tags origin | grep discourse
+```
+
+#### Step 4: Monitor CD Pipeline
+
+```bash
+# 4a. Open GitHub Actions page
+# https://github.com/scriptonbasestar/sb-docker-images/actions
+
+# 4b. Look for workflow run with tag name
+# Workflow: "CD - Continuous Deployment"
+# Trigger: "push of tag discourse-v1.2.3"
+
+# 4c. Wait for completion (typically 5-15 minutes)
+# - Build steps
+# - Test steps
+# - Docker Hub push
+
+# 4d. Verify image on Docker Hub
+# https://hub.docker.com/r/scriptonbasestar/discourse/tags
+```
+
+#### Step 5: Verify Deployment
+
+```bash
+# 5a. Pull the new image
+docker pull scriptonbasestar/discourse:1.2.3
+
+# 5b. Verify image tags
+docker images | grep scriptonbasestar/discourse
+
+# Expected output:
+# scriptonbasestar/discourse  1.2.3   <image-id>  <timestamp>
+# scriptonbasestar/discourse  1.2     <image-id>  <timestamp>
+# scriptonbasestar/discourse  1       <image-id>  <timestamp>
+# scriptonbasestar/discourse  latest  <image-id>  <timestamp>
 ```
 
 ## Migration from v11.7
@@ -191,6 +276,127 @@ git push origin discourse-v1.2.3
 - Existing `v11.7` tag preserved as `phase-11.7`
 - No breaking changes to current deployments
 - New tagging adds capability, doesn't remove old structure
+
+### Batch Tagging (Multiple Projects)
+
+For releasing multiple projects at once (e.g., Phase completion):
+
+```bash
+# Create all tags locally first
+git tag metabase-v1.0.0
+git tag owa-v1.0.0
+git tag n8n-v1.0.0
+git tag bookstack-v1.0.0
+git tag answer-v1.0.0
+
+# Verify all tags created
+git tag | grep -E "(metabase|owa|n8n|bookstack|answer)-v1.0.0"
+
+# Push tags one by one (recommended for monitoring)
+git push origin metabase-v1.0.0
+# Wait for CD completion, verify success
+git push origin owa-v1.0.0
+# Repeat...
+
+# OR: Push all at once (only if confident)
+git push origin --tags
+# Note: This triggers CD for ALL new tags simultaneously
+# May cause resource contention on GitHub Actions runners
+```
+
+### Troubleshooting
+
+#### Tag Already Exists
+
+```bash
+# Error: tag 'discourse-v1.2.3' already exists
+git tag | grep discourse-v1.2.3
+
+# Solution 1: Use next version
+git tag discourse-v1.2.4
+
+# Solution 2: Delete and recreate (local only, before push)
+git tag -d discourse-v1.2.3
+git tag discourse-v1.2.3
+
+# Solution 3: Force overwrite (use with extreme caution!)
+git tag -f discourse-v1.2.3
+git push origin discourse-v1.2.3 --force
+```
+
+#### Tag Pushed But CD Not Triggering
+
+```bash
+# Check tag format matches pattern
+git tag | grep discourse
+# Must match: <project>-v<MAJOR>.<MINOR>.<PATCH>
+
+# Common issues:
+# ❌ discourse-1.2.3     (missing 'v')
+# ❌ discourse_v1.2.3    (underscore instead of hyphen)
+# ❌ v1.2.3              (missing project name)
+# ✅ discourse-v1.2.3    (correct)
+
+# Verify CD workflow pattern
+cat .github/workflows/cd.yml | grep "tags:"
+# Should include: '*-v*.*.*'
+```
+
+#### CD Build Failed
+
+```bash
+# 1. Check GitHub Actions logs
+# https://github.com/scriptonbasestar/sb-docker-images/actions
+
+# 2. Common failures:
+# - Dockerfile syntax error → Fix and re-tag with patch version
+# - Missing dependencies → Update Dockerfile
+# - Test failures → Fix tests and re-tag
+# - Docker Hub auth → Check repository secrets
+
+# 3. Delete failed tag (if needed)
+git tag -d discourse-v1.2.3
+git push origin :refs/tags/discourse-v1.2.3  # Delete remote tag
+
+# 4. Fix issue and create new tag
+git tag discourse-v1.2.4
+git push origin discourse-v1.2.4
+```
+
+#### Wrong Tag Pushed
+
+```bash
+# Delete remote tag immediately
+git push origin :refs/tags/discourse-v1.2.3
+
+# Delete local tag
+git tag -d discourse-v1.2.3
+
+# Create correct tag
+git tag discourse-v1.2.3
+git push origin discourse-v1.2.3
+```
+
+#### Docker Hub Image Not Updating
+
+```bash
+# 1. Verify CD workflow completed successfully
+# Check GitHub Actions for green checkmark
+
+# 2. Check CD logs for push step
+# Look for: "docker push scriptonbasestar/discourse:1.2.3"
+
+# 3. Verify Docker Hub credentials
+# Repository Settings → Secrets → DOCKER_USERNAME, DOCKER_PASSWORD
+
+# 4. Check Docker Hub API rate limits
+# https://hub.docker.com/settings/general
+
+# 5. Manual verification
+docker pull scriptonbasestar/discourse:1.2.3
+# If fails: Image wasn't pushed (check CD logs)
+# If succeeds: Image exists (may be cache issue)
+```
 
 ## Best Practices
 
