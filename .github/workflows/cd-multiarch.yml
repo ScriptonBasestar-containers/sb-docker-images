@@ -1,0 +1,423 @@
+name: CD - Multi-Arch Native Build
+
+on:
+  push:
+    tags:
+      - '*-v*.*.*'        # All project tags (discourse-v1.0.0, wikijs-v2.0.0, etc.)
+      - 'phase-*'         # Phase tags (phase-11.7, phase-12.0, etc.)
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project to build and push'
+        required: true
+        type: choice
+        options:
+          - postgres-exts-essential
+          - postgres-exts-full
+          - discourse
+          - wikijs
+          - wordpress
+          - gitea
+          - flarum
+          - all
+
+jobs:
+  # Detect project from tag
+  detect-project:
+    name: Detect Project and Version
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    outputs:
+      project: ${{ steps.parse.outputs.project }}
+      version: ${{ steps.parse.outputs.version }}
+      is_phase: ${{ steps.parse.outputs.is_phase }}
+      should_build: ${{ steps.parse.outputs.should_build }}
+
+    steps:
+      - name: Parse tag
+        id: parse
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "Full tag: $TAG"
+
+          # Check if phase tag
+          if [[ "$TAG" =~ ^phase- ]]; then
+            echo "is_phase=true" >> $GITHUB_OUTPUT
+            echo "should_build=false" >> $GITHUB_OUTPUT
+            echo "Phase tag detected - no build required"
+            exit 0
+          fi
+
+          # Extract project and version from tag (format: project-vX.Y.Z)
+          if [[ "$TAG" =~ ^(.+)-v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            PROJECT="${BASH_REMATCH[1]}"
+            VERSION="${BASH_REMATCH[2]}"
+
+            echo "project=$PROJECT" >> $GITHUB_OUTPUT
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "is_phase=false" >> $GITHUB_OUTPUT
+            echo "should_build=true" >> $GITHUB_OUTPUT
+
+            echo "Detected project: $PROJECT"
+            echo "Detected version: $VERSION"
+          else
+            echo "Invalid tag format: $TAG"
+            echo "should_build=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+  # Build PostgreSQL Extensions - AMD64 Native
+  build-postgres-amd64:
+    name: Build PostgreSQL (AMD64)
+    runs-on: ubuntu-latest
+    needs: [detect-project]
+    if: |
+      (github.event_name == 'push' && needs.detect-project.outputs.project == 'postgres-exts') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'))
+
+    strategy:
+      matrix:
+        variant: [essential, full]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            VERSION="${{ needs.detect-project.outputs.version }}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=manual-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build AMD64 Image
+        run: |
+          cd images/database/postgres-exts
+          docker buildx build \
+            --platform linux/amd64 \
+            -t scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-amd64 \
+            -f Dockerfile.${{ matrix.variant }} \
+            --push \
+            .
+
+      - name: Save image digest
+        run: |
+          docker buildx imagetools inspect scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-amd64 --raw > /tmp/digest-${{ matrix.variant }}-amd64.txt
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v5
+        with:
+          name: digest-${{ matrix.variant }}-amd64
+          path: /tmp/digest-${{ matrix.variant }}-amd64.txt
+          retention-days: 1
+
+  # Build PostgreSQL Extensions - ARM64 Native
+  build-postgres-arm64:
+    name: Build PostgreSQL (ARM64)
+    runs-on: ubuntu-latest-arm64  # ARM64 native runner (GitHub-hosted or self-hosted)
+    needs: [detect-project]
+    if: |
+      (github.event_name == 'push' && needs.detect-project.outputs.project == 'postgres-exts') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'))
+
+    strategy:
+      matrix:
+        variant: [essential, full]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            VERSION="${{ needs.detect-project.outputs.version }}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=manual-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build ARM64 Image
+        run: |
+          cd images/database/postgres-exts
+          docker buildx build \
+            --platform linux/arm64 \
+            -t scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-arm64 \
+            -f Dockerfile.${{ matrix.variant }} \
+            --push \
+            .
+
+      - name: Save image digest
+        run: |
+          docker buildx imagetools inspect scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-arm64 --raw > /tmp/digest-${{ matrix.variant }}-arm64.txt
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v5
+        with:
+          name: digest-${{ matrix.variant }}-arm64
+          path: /tmp/digest-${{ matrix.variant }}-arm64.txt
+          retention-days: 1
+
+  # Merge multi-arch manifests
+  merge-postgres-manifests:
+    name: Merge PostgreSQL Manifests
+    runs-on: ubuntu-latest
+    needs: [detect-project, build-postgres-amd64, build-postgres-arm64]
+    if: |
+      (github.event_name == 'push' && needs.detect-project.outputs.project == 'postgres-exts') ||
+      (github.event_name == 'workflow_dispatch' && (github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'))
+
+    strategy:
+      matrix:
+        variant: [essential, full]
+
+    steps:
+      - name: Download AMD64 digest
+        uses: actions/download-artifact@v5
+        with:
+          name: digest-${{ matrix.variant }}-amd64
+          path: /tmp
+
+      - name: Download ARM64 digest
+        uses: actions/download-artifact@v5
+        with:
+          name: digest-${{ matrix.variant }}-arm64
+          path: /tmp
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            VERSION="${{ needs.detect-project.outputs.version }}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "version=manual-$(date +%Y%m%d)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create and push manifest
+        run: |
+          docker buildx imagetools create \
+            -t scriptonbasestar/postgres-exts:16-${{ matrix.variant }} \
+            -t scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-${{ steps.version.outputs.version }} \
+            scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-amd64 \
+            scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-arm64
+
+      - name: Verify manifest
+        run: |
+          docker buildx imagetools inspect scriptonbasestar/postgres-exts:16-${{ matrix.variant }}
+
+      - name: Create Release Summary
+        if: github.event_name == 'push'
+        run: |
+          echo "## PostgreSQL Extensions Multi-Arch Release" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Variant**: ${{ matrix.variant }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Platforms**: linux/amd64 (native), linux/arm64 (native)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Performance**: 5-10x faster than QEMU emulation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Verify at: https://hub.docker.com/r/scriptonbasestar/postgres-exts/tags" >> $GITHUB_STEP_SUMMARY
+
+  # Build Custom Projects - Matrix Strategy
+  build-custom-multiarch:
+    name: Build Custom Image
+    runs-on: ${{ matrix.arch == 'amd64' && 'ubuntu-latest' || 'ubuntu-latest-arm64' }}
+    needs: [detect-project]
+    if: |
+      github.event_name == 'push' &&
+      needs.detect-project.outputs.should_build == 'true' &&
+      needs.detect-project.outputs.project != 'postgres-exts'
+
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Check project type
+        id: check
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+
+          # Find project directory
+          PROJECT_DIR=$(find images -maxdepth 2 -mindepth 2 -type d -name "$PROJECT" | head -1)
+
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "Project directory not found: $PROJECT"
+            echo "has_dockerfile=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "project_dir=$PROJECT_DIR" >> $GITHUB_OUTPUT
+
+          # Check if project has Dockerfile
+          if [ -f "$PROJECT_DIR/Dockerfile" ] || find "$PROJECT_DIR" -name "Dockerfile" -type f 2>/dev/null | grep -q .; then
+            echo "has_dockerfile=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_dockerfile=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Native Image
+        if: steps.check.outputs.has_dockerfile == 'true'
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+          VERSION="${{ needs.detect-project.outputs.version }}"
+          PROJECT_DIR="${{ steps.check.outputs.project_dir }}"
+          ARCH="${{ matrix.arch }}"
+
+          cd "$PROJECT_DIR"
+
+          # Find Dockerfile
+          if [ -f "Dockerfile" ]; then
+            DOCKERFILE="Dockerfile"
+          else
+            DOCKERFILE=$(find . -name "Dockerfile" -type f | head -1)
+          fi
+
+          if [ -n "$DOCKERFILE" ]; then
+            docker buildx build \
+              --platform linux/$ARCH \
+              -t "scriptonbasestar/${PROJECT}:${VERSION}-${ARCH}" \
+              -t "scriptonbasestar/${PROJECT}:latest-${ARCH}" \
+              -f "$DOCKERFILE" \
+              --push \
+              .
+          fi
+
+      - name: Save image digest
+        if: steps.check.outputs.has_dockerfile == 'true'
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+          ARCH="${{ matrix.arch }}"
+          docker buildx imagetools inspect "scriptonbasestar/${PROJECT}:latest-${ARCH}" --raw > /tmp/digest-${ARCH}.txt
+
+      - name: Upload digest
+        if: steps.check.outputs.has_dockerfile == 'true'
+        uses: actions/upload-artifact@v5
+        with:
+          name: digest-custom-${{ matrix.arch }}
+          path: /tmp/digest-${{ matrix.arch }}.txt
+          retention-days: 1
+
+  # Merge custom project manifests
+  merge-custom-manifests:
+    name: Merge Custom Manifests
+    runs-on: ubuntu-latest
+    needs: [detect-project, build-custom-multiarch]
+    if: |
+      github.event_name == 'push' &&
+      needs.detect-project.outputs.should_build == 'true' &&
+      needs.detect-project.outputs.project != 'postgres-exts'
+
+    steps:
+      - name: Download AMD64 digest
+        uses: actions/download-artifact@v5
+        with:
+          name: digest-custom-amd64
+          path: /tmp
+        continue-on-error: true
+
+      - name: Download ARM64 digest
+        uses: actions/download-artifact@v5
+        with:
+          name: digest-custom-arm64
+          path: /tmp
+        continue-on-error: true
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Create and push manifest
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+          VERSION="${{ needs.detect-project.outputs.version }}"
+
+          docker buildx imagetools create \
+            -t "scriptonbasestar/${PROJECT}:${VERSION}" \
+            -t "scriptonbasestar/${PROJECT}:latest" \
+            "scriptonbasestar/${PROJECT}:latest-amd64" \
+            "scriptonbasestar/${PROJECT}:latest-arm64"
+
+      - name: Verify manifest
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+          docker buildx imagetools inspect "scriptonbasestar/${PROJECT}:latest"
+
+      - name: Create Release Summary
+        run: |
+          PROJECT="${{ needs.detect-project.outputs.project }}"
+          VERSION="${{ needs.detect-project.outputs.version }}"
+
+          echo "## $PROJECT Multi-Arch Release" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Project**: $PROJECT" >> $GITHUB_STEP_SUMMARY
+          echo "**Version**: $VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "**Platforms**: linux/amd64 (native), linux/arm64 (native)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Build Performance**:" >> $GITHUB_STEP_SUMMARY
+          echo "- Native ARM64 build: 5-10x faster than QEMU" >> $GITHUB_STEP_SUMMARY
+          echo "- Parallel native builds: Both architectures built simultaneously" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Docker Hub: https://hub.docker.com/r/scriptonbasestar/$PROJECT" >> $GITHUB_STEP_SUMMARY
+
+  # Summary for phase tags
+  phase-summary:
+    name: Phase Tag Summary
+    runs-on: ubuntu-latest
+    needs: [detect-project]
+    if: github.event_name == 'push' && needs.detect-project.outputs.is_phase == 'true'
+
+    steps:
+      - name: Create Summary
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "## Phase Tag: $TAG" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "This is a repository-wide milestone tag." >> $GITHUB_STEP_SUMMARY
+          echo "No Docker images are built for phase tags." >> $GITHUB_STEP_SUMMARY

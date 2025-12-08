@@ -112,7 +112,67 @@ jobs:
           echo "=== Quality Checks Complete ==="
           echo "All quality validation scripts executed successfully"
 
-  # Job 5: Security Scan (Optional)
+  # Job 5: Comprehensive Validation Suite
+  validation-suite:
+    name: CI Validation Suite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
+      - name: Install jq for JSON reports
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Run Validation Suite
+        run: |
+          ./scripts/ci-validation-suite.sh --verbose --report ci-validation-report.json
+
+      - name: Upload Validation Report
+        uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: ci-validation-report
+          path: ci-validation-report.json
+          retention-days: 30
+
+      - name: Display Quality Score
+        if: always()
+        run: |
+          if [ -f ci-validation-report.json ]; then
+            QUALITY_SCORE=$(jq -r '.quality_score' ci-validation-report.json)
+            echo "## CI Quality Score: $QUALITY_SCORE/100" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            # Add test summary
+            TOTAL=$(jq -r '.summary.total' ci-validation-report.json)
+            PASSED=$(jq -r '.summary.passed' ci-validation-report.json)
+            FAILED=$(jq -r '.summary.failed' ci-validation-report.json)
+            WARNED=$(jq -r '.summary.warned' ci-validation-report.json)
+
+            echo "**Test Results:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Total: $TOTAL" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
+            echo "- ❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "- ⚠️ Warned: $WARNED" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            # Quality rating
+            if [ $QUALITY_SCORE -ge 90 ]; then
+              echo "**Rating:** 🌟 Excellent" >> $GITHUB_STEP_SUMMARY
+            elif [ $QUALITY_SCORE -ge 75 ]; then
+              echo "**Rating:** ✅ Good" >> $GITHUB_STEP_SUMMARY
+            elif [ $QUALITY_SCORE -ge 60 ]; then
+              echo "**Rating:** ⚠️ Fair" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "**Rating:** ❌ Needs Improvement" >> $GITHUB_STEP_SUMMARY
+            fi
+          fi
+
+  # Job 6: Security Scan (Optional)
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
@@ -135,11 +195,11 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  # Job 6: Summary
+  # Job 7: Summary
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [validate-compose, test-makefile, build-postgres-exts, quality-checks]
+    needs: [validate-compose, test-makefile, build-postgres-exts, quality-checks, validation-suite]
     if: always()
 
     steps:
@@ -150,11 +210,13 @@ jobs:
           echo "Test Makefile: ${{ needs.test-makefile.result }}"
           echo "Build PostgreSQL: ${{ needs.build-postgres-exts.result }}"
           echo "Quality Checks: ${{ needs.quality-checks.result }}"
+          echo "Validation Suite: ${{ needs.validation-suite.result }}"
 
           if [ "${{ needs.validate-compose.result }}" != "success" ] || \
              [ "${{ needs.test-makefile.result }}" != "success" ] || \
              [ "${{ needs.build-postgres-exts.result }}" != "success" ] || \
-             [ "${{ needs.quality-checks.result }}" != "success" ]; then
+             [ "${{ needs.quality-checks.result }}" != "success" ] || \
+             [ "${{ needs.validation-suite.result }}" != "success" ]; then
             echo "❌ Some CI checks failed"
             exit 1
           else

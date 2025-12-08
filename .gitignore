@@ -26,3 +26,9 @@ home-assistant/grafana/
 minio/data/
 minio/certs/
 minio/cache/
+
+# CI/CD Analytics and Reports
+ci-validation-report.json
+docker-hub-analytics.json
+analytics/
+*.log

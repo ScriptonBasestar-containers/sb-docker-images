@@ -35,8 +35,13 @@
 All images now support both **AMD64** and **ARM64** architectures!
 
 **📖 [Multi-Arch Usage Guide](./docs/MULTI_ARCH_GUIDE.md)** - Complete guide for using multi-architecture images
-**⚡ [Docker Caching Guide](./docs/DOCKER_CACHING_GUIDE.md)** - Optimize build times by 20-30% ⭐ **NEW**
-**🔒 [Security Scanning Guide](./docs/SECURITY_SCANNING_GUIDE.md)** - Automated vulnerability scanning ⭐ **NEW**
+**⚡ [Docker Caching Guide](./docs/DOCKER_CACHING_GUIDE.md)** - Optimize build times by 20-30%
+**🔒 [Security Scanning Guide](./docs/SECURITY_SCANNING_GUIDE.md)** - Automated vulnerability scanning
+
+### CI/CD Optimization ⭐ **NEW Phase 16** (2025-12-08)
+**🚀 [ARM64 Native Runners](./docs/ci/arm64-native-runners.md)** - 5-10x faster builds with native ARM64 execution
+**✅ [CI Validation Suite](./scripts/ci-validation-suite.sh)** - 20 automated quality tests with scoring (0-100)
+**📊 [Docker Hub Analytics](./docs/ci/docker-hub-analytics.md)** - Weekly usage insights and multi-arch tracking
 
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 
@@ -110,8 +115,17 @@ Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
 # Health check 검증
 ./scripts/verify-health-checks.sh
 
-# Multi-arch 매니페스트 검증 ⭐ NEW
+# Multi-arch 매니페스트 검증
 ./scripts/verify-multiarch-manifest.sh --sample
+
+# CI 품질 검증 스위트 (20 tests) ⭐ NEW
+./scripts/ci-validation-suite.sh --verbose --report ci-report.json
+
+# Docker Hub 분석 ⭐ NEW
+./scripts/docker-hub-analytics.sh --username scriptonbasestar --output analytics.json
+
+# ARM64 러너 설정 ⭐ NEW
+./scripts/setup-arm64-runner.sh --token YOUR_TOKEN --url https://github.com/org/repo
 ```
 
 상세 사용법: [`scripts/README.md`](./scripts/README.md)

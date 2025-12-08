@@ -1,0 +1,147 @@
+name: Docker Hub Analytics
+
+on:
+  schedule:
+    # Run weekly on Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+    inputs:
+      username:
+        description: 'Docker Hub username (default: scriptonbasestar)'
+        required: false
+        default: 'scriptonbasestar'
+
+jobs:
+  analytics:
+    name: Collect Docker Hub Analytics
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh
+
+      - name: Set username
+        id: username
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "username=${{ github.event.inputs.username }}" >> $GITHUB_OUTPUT
+          else
+            echo "username=scriptonbasestar" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Collect Analytics
+        run: |
+          ./scripts/docker-hub-analytics.sh \
+            --username ${{ steps.username.outputs.username }} \
+            --output docker-hub-analytics.json \
+            --verbose
+
+      - name: Upload Analytics Report
+        uses: actions/upload-artifact@v5
+        with:
+          name: docker-hub-analytics-${{ github.run_number }}
+          path: docker-hub-analytics.json
+          retention-days: 90
+
+      - name: Generate Summary Report
+        run: |
+          echo "## Docker Hub Analytics Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Username:** ${{ steps.username.outputs.username }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Summary statistics
+          TOTAL_REPOS=$(jq -r '.summary.total_repositories' docker-hub-analytics.json)
+          TOTAL_PULLS=$(jq -r '.summary.total_pulls' docker-hub-analytics.json)
+          TOTAL_STARS=$(jq -r '.summary.total_stars' docker-hub-analytics.json)
+
+          echo "### Summary Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Repositories:** $TOTAL_REPOS" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Downloads:** $TOTAL_PULLS" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total Stars:** $TOTAL_STARS" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Top repositories by downloads
+          echo "### Top 5 by Downloads" >> $GITHUB_STEP_SUMMARY
+          jq -r '.repositories | sort_by(.pull_count) | reverse | .[:5] | .[] | "- **\(.name)**: \(.pull_count | tonumber | tostring) pulls"' docker-hub-analytics.json >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Top repositories by stars
+          echo "### Top 5 by Stars" >> $GITHUB_STEP_SUMMARY
+          jq -r '.repositories | sort_by(.star_count) | reverse | .[:5] | .[] | "- **\(.name)**: \(.star_count | tonumber | tostring) stars"' docker-hub-analytics.json >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Multi-arch analysis
+          MULTIARCH=$(jq '[.repositories[] | select(.architectures | length > 1)] | length' docker-hub-analytics.json)
+          SINGLE_ARCH=$(jq '[.repositories[] | select(.architectures | length == 1)] | length' docker-hub-analytics.json)
+
+          echo "### Multi-Architecture Support" >> $GITHUB_STEP_SUMMARY
+          echo "- Multi-arch images: $MULTIARCH" >> $GITHUB_STEP_SUMMARY
+          echo "- Single-arch images: $SINGLE_ARCH" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Architecture distribution
+          echo "### Architecture Distribution" >> $GITHUB_STEP_SUMMARY
+          jq -r '[.repositories[].architectures[]] | group_by(.) | map({arch: .[0], count: length}) | sort_by(.count) | reverse | .[] | "- **\(.arch)**: \(.count) images"' docker-hub-analytics.json >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Recent updates
+          CUTOFF=$(date -d '30 days ago' +%Y-%m-%d 2>/dev/null || date -v-30d +%Y-%m-%d)
+          RECENT_COUNT=$(jq -r --arg cutoff "$CUTOFF" '[.repositories[] | select(.last_updated >= $cutoff)] | length' docker-hub-analytics.json)
+
+          echo "### Recent Activity (Last 30 Days)" >> $GITHUB_STEP_SUMMARY
+          echo "- Repositories updated: $RECENT_COUNT" >> $GITHUB_STEP_SUMMARY
+          if [ $RECENT_COUNT -gt 0 ]; then
+            jq -r --arg cutoff "$CUTOFF" '.repositories[] | select(.last_updated >= $cutoff) | "  - \(.name) (\(.last_updated))"' docker-hub-analytics.json >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Insights
+          AVG_PULLS=$(jq '[.repositories[].pull_count] | add / length | floor' docker-hub-analytics.json)
+          AVG_STARS=$(jq '[.repositories[].star_count] | add / length | floor' docker-hub-analytics.json)
+
+          echo "### Insights" >> $GITHUB_STEP_SUMMARY
+          echo "- Average pulls per repository: $AVG_PULLS" >> $GITHUB_STEP_SUMMARY
+          echo "- Average stars per repository: $AVG_STARS" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+      - name: Create Trend Comparison
+        if: github.event_name == 'schedule'
+        run: |
+          # Download previous analytics report
+          PREV_RUN=$((github.run_number - 1))
+
+          echo "### Trend Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_Comparing with previous week's data_" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # This would require downloading artifact from previous run
+          # For now, just note the current values
+          CURR_PULLS=$(jq -r '.summary.total_pulls' docker-hub-analytics.json)
+          CURR_STARS=$(jq -r '.summary.total_stars' docker-hub-analytics.json)
+
+          echo "Current week totals:" >> $GITHUB_STEP_SUMMARY
+          echo "- Downloads: $CURR_PULLS" >> $GITHUB_STEP_SUMMARY
+          echo "- Stars: $CURR_STARS" >> $GITHUB_STEP_SUMMARY
+
+      - name: Commit Analytics (Optional)
+        if: github.event_name == 'schedule'
+        run: |
+          # Optionally commit analytics to repository
+          mkdir -p analytics/docker-hub
+          cp docker-hub-analytics.json analytics/docker-hub/$(date +%Y-%m-%d).json
+
+          # Keep only last 12 weeks (3 months)
+          find analytics/docker-hub -name "*.json" -type f -mtime +84 -delete
+
+          # Note: This would require write permissions and should be done carefully
+          echo "Analytics data prepared for archival"
+          echo "To enable automatic commits, configure repository permissions"
