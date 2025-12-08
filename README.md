@@ -34,6 +34,8 @@
 **Multi-Architecture Support**: 🍎 Apple Silicon (M1/M2/M3) | 🥧 Raspberry Pi 4/5 | ☁️ AWS Graviton
 All images now support both **AMD64** and **ARM64** architectures!
 
+**📖 [Multi-Arch Usage Guide](./docs/MULTI_ARCH_GUIDE.md)** - Complete guide for using multi-architecture images
+
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 
 ### 프로젝트 카테고리 (56개 + 6 archived)
@@ -105,6 +107,9 @@ Jenkins, Minio, Devpi, Gollum, Squid, 기타 프로젝트
 
 # Health check 검증
 ./scripts/verify-health-checks.sh
+
+# Multi-arch 매니페스트 검증 ⭐ NEW
+./scripts/verify-multiarch-manifest.sh --sample
 ```
 
 상세 사용법: [`scripts/README.md`](./scripts/README.md)
