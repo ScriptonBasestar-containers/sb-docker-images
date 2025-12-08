@@ -52,17 +52,29 @@ docker run -it --rm -v $(pwd):/app scriptonbasestar/node-pnpm:22 pnpm run build
 ```dockerfile
 FROM scriptonbasestar/node-pnpm:22-alpine AS builder
 WORKDIR /app
+
+# Copy dependency files first (better caching)
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+
+# Use BuildKit cache mount for faster installs
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile --prefer-offline
+
+# Copy source code
 COPY . .
+
+# Build application
 RUN pnpm build
 
+# Runtime stage
 FROM node:22-alpine
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 CMD ["node", "dist/index.js"]
 ```
+
+**💡 Performance Tip**: Using BuildKit cache mounts can reduce install time by 50-70%. See [Docker Caching Guide](../../../docs/DOCKER_CACHING_GUIDE.md) for details.
 
 ### CI/CD Pipeline
 
