@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or Discussion
+    url: https://github.com/scriptonbasestar/sb-docker-images/discussions
+    about: Ask questions or discuss ideas with the community
+  - name: Security Vulnerability
+    url: https://github.com/scriptonbasestar/sb-docker-images/security/advisories/new
+    about: Report security vulnerabilities privately (Do not open a public issue!)
+  - name: Documentation
+    url: https://github.com/scriptonbasestar/sb-docker-images/tree/master/docs
+    about: Browse the documentation for guides and examples

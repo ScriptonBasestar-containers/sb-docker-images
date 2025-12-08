@@ -1,0 +1,120 @@
+name: Bug Report
+description: Report a bug or issue with Docker images or configurations
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the sections below.
+
+  - type: dropdown
+    id: project
+    attributes:
+      label: Project/Service
+      description: Which project is affected?
+      options:
+        - PostgreSQL Extensions
+        - Discourse
+        - Wiki.js
+        - WordPress
+        - Gitea
+        - Flarum
+        - Other (please specify in description)
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: Tell us what happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Run command '...'
+        3. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: Tell us what you expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Tell us what actually happened
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide your environment details
+      value: |
+        - OS: [e.g. Ubuntu 22.04, macOS 14.0]
+        - Architecture: [e.g. AMD64, ARM64/Apple Silicon]
+        - Docker Version: [e.g. 24.0.0]
+        - Docker Compose Version: [e.g. 2.20.0]
+        - Image Version/Tag: [e.g. postgres-exts:16-essential-1.0.0]
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs
+      description: Please paste relevant logs (if any)
+      render: shell
+      placeholder: |
+        Paste logs here...
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration Files
+      description: Relevant compose.yml or .env content (redact secrets!)
+      render: yaml
+      placeholder: |
+        version: '3.8'
+        services:
+          ...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I am using the latest version of the image/configuration
+          required: false
+        - label: I have redacted any sensitive information from logs/configs
+          required: true
+        - label: I have provided enough information to reproduce the issue
+          required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem
+      placeholder: Add any other context about the problem here
