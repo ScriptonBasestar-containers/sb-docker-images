@@ -1,0 +1,240 @@
+name: Security Scan
+
+on:
+  # Weekly scans on Sunday at midnight UTC
+  schedule:
+    - cron: '0 0 * * 0'
+
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project to scan (leave empty for all)'
+        required: false
+        type: string
+      severity:
+        description: 'Minimum severity to report'
+        required: false
+        type: choice
+        options:
+          - CRITICAL,HIGH
+          - CRITICAL,HIGH,MEDIUM
+          - ALL
+        default: 'CRITICAL,HIGH'
+
+  # On new releases
+  push:
+    tags:
+      - '*-v*.*.*'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  scan-images:
+    name: Scan ${{ matrix.project }} (${{ matrix.platform }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # High-priority projects with custom Dockerfiles
+        project:
+          - node-pnpm
+          - ansible-dev
+          - rhymix
+          - discourse
+          - devpi
+        platform:
+          - linux/amd64
+          - linux/arm64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Determine image tag
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.project }}" ] && [ "${{ matrix.project }}" != "${{ github.event.inputs.project }}" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check if this is a tagged release
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+            PROJECT="${TAG%-v*}"
+            VERSION="${TAG#*-v}"
+
+            if [ "$PROJECT" == "${{ matrix.project }}" ]; then
+              echo "image=scriptonbasestar/${PROJECT}:${VERSION}" >> $GITHUB_OUTPUT
+              echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            else
+              echo "skip=true" >> $GITHUB_OUTPUT
+            fi
+          else
+            # Use latest for scheduled/manual scans
+            echo "image=scriptonbasestar/${{ matrix.project }}:latest" >> $GITHUB_OUTPUT
+            echo "version=latest" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Pull Docker image
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          docker pull --platform ${{ matrix.platform }} ${{ steps.tag.outputs.image }} || {
+            echo "::warning::Image not found: ${{ steps.tag.outputs.image }} (${{ matrix.platform }})"
+            exit 0
+          }
+
+      - name: Run Trivy vulnerability scanner
+        if: steps.tag.outputs.skip != 'true'
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.tag.outputs.image }}
+          platform: ${{ matrix.platform }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: ${{ github.event.inputs.severity || 'CRITICAL,HIGH' }}
+          timeout: '10m'
+        continue-on-error: true
+
+      - name: Upload Trivy results to GitHub Security tab
+        if: steps.tag.outputs.skip != 'true'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+          category: 'trivy-${{ matrix.project }}-${{ matrix.platform }}'
+        continue-on-error: true
+
+      - name: Generate human-readable report
+        if: steps.tag.outputs.skip != 'true'
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.tag.outputs.image }}
+          platform: ${{ matrix.platform }}
+          format: 'table'
+          output: 'trivy-report-${{ matrix.project }}-${{ matrix.platform }}.txt'
+          severity: ${{ github.event.inputs.severity || 'CRITICAL,HIGH' }}
+          timeout: '10m'
+        continue-on-error: true
+
+      - name: Upload scan report as artifact
+        if: steps.tag.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-${{ matrix.project }}-${{ matrix.platform }}
+          path: trivy-report-*.txt
+          retention-days: 30
+        continue-on-error: true
+
+      - name: Check for critical vulnerabilities
+        if: steps.tag.outputs.skip != 'true'
+        run: |
+          if docker run --rm --platform ${{ matrix.platform }} \
+             -v /var/run/docker.sock:/var/run/docker.sock \
+             aquasec/trivy:latest image \
+             --severity CRITICAL \
+             --exit-code 1 \
+             --quiet \
+             ${{ steps.tag.outputs.image }}; then
+            echo "::notice::No critical vulnerabilities found in ${{ matrix.project }} (${{ matrix.platform }})"
+          else
+            echo "::warning::Critical vulnerabilities detected in ${{ matrix.project }} (${{ matrix.platform }})"
+            echo "Review the security tab for details: https://github.com/${{ github.repository }}/security"
+          fi
+        continue-on-error: true
+
+  scan-dockerfiles:
+    name: Scan Dockerfiles
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy on Dockerfiles
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-dockerfile-results.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          timeout: '5m'
+        continue-on-error: true
+
+      - name: Upload Dockerfile scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-dockerfile-results.sarif'
+          category: 'trivy-dockerfiles'
+        continue-on-error: true
+
+      - name: Generate Dockerfile report
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'table'
+          output: 'trivy-dockerfile-report.txt'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          timeout: '5m'
+        continue-on-error: true
+
+      - name: Upload Dockerfile report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dockerfile-security-scan
+          path: trivy-dockerfile-report.txt
+          retention-days: 30
+        continue-on-error: true
+
+  summary:
+    name: Security Scan Summary
+    needs: [scan-images, scan-dockerfiles]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: scan-results
+
+      - name: Generate summary
+        run: |
+          echo "# Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -d "scan-results" ]; then
+            echo "## Scan Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            for report in scan-results/*/trivy-report-*.txt; do
+              if [ -f "$report" ]; then
+                echo "### $(basename $report .txt)" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                head -50 "$report" >> $GITHUB_STEP_SUMMARY
+                echo '```' >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          fi
+
+          echo "## View Details" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- [Security Tab](https://github.com/${{ github.repository }}/security)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Scan Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on critical findings
+        if: needs.scan-images.result == 'failure' || needs.scan-dockerfiles.result == 'failure'
+        run: |
+          echo "::warning::Critical security vulnerabilities detected. Please review the Security tab."

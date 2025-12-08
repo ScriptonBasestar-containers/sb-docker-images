@@ -36,6 +36,7 @@ All images now support both **AMD64** and **ARM64** architectures!
 
 **📖 [Multi-Arch Usage Guide](./docs/MULTI_ARCH_GUIDE.md)** - Complete guide for using multi-architecture images
 **⚡ [Docker Caching Guide](./docs/DOCKER_CACHING_GUIDE.md)** - Optimize build times by 20-30% ⭐ **NEW**
+**🔒 [Security Scanning Guide](./docs/SECURITY_SCANNING_GUIDE.md)** - Automated vulnerability scanning ⭐ **NEW**
 
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 
