@@ -30,7 +30,84 @@ jobs:
           echo "=== Checking Project Structure ==="
           make check
 
-  # Job 2: Test Makefile targets
+  # Job 2: Validate Workflows
+  validate-workflows:
+    name: Validate GitHub Actions Workflows
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Validate Workflow YAML Syntax
+        run: |
+          echo "=== Validating GitHub Actions Workflows ==="
+          FAILED=0
+
+          for workflow in .github/workflows/*.yml .github/workflows/*.yaml; do
+            if [ -f "$workflow" ]; then
+              echo -n "Checking $(basename $workflow)... "
+              if python3 -c "import yaml; yaml.safe_load(open('$workflow'))" 2>&1; then
+                echo "✓ Valid"
+              else
+                echo "✗ Invalid"
+                FAILED=1
+              fi
+            fi
+          done
+
+          if [ $FAILED -eq 1 ]; then
+            echo ""
+            echo "❌ Some workflows have invalid YAML syntax"
+            exit 1
+          else
+            echo ""
+            echo "✅ All workflows have valid YAML syntax"
+          fi
+
+      - name: Check Workflow Structure
+        run: |
+          echo "=== Checking Workflow Structure ==="
+          python3 << 'EOF'
+          import yaml
+          import sys
+          from pathlib import Path
+
+          workflows_dir = Path('.github/workflows')
+          failed = False
+
+          for workflow_file in workflows_dir.glob('*.yml'):
+              with open(workflow_file) as f:
+                  wf = yaml.safe_load(f)
+
+              # Check required keys (on: is parsed as True in YAML)
+              has_name = 'name' in wf
+              has_on = 'on' in wf or True in wf
+              has_jobs = 'jobs' in wf
+
+              if not (has_name and has_on and has_jobs):
+                  print(f"✗ {workflow_file.name}: Missing required keys")
+                  failed = True
+              else:
+                  job_count = len(wf.get('jobs', {}))
+                  print(f"✓ {workflow_file.name}: {job_count} jobs")
+
+          if failed:
+              print("\n❌ Some workflows have structural issues")
+              sys.exit(1)
+          else:
+              print("\n✅ All workflows have valid structure")
+          EOF
+
+  # Job 3: Test Makefile targets
   test-makefile:
     name: Test Makefile Targets
     runs-on: ubuntu-latest
@@ -48,7 +125,7 @@ jobs:
       - name: Test clean target
         run: make clean
 
-  # Job 3: Build PostgreSQL Extensions
+  # Job 4: Build PostgreSQL Extensions
   build-postgres-exts:
     name: Build PostgreSQL Extensions
     runs-on: ubuntu-latest
@@ -79,7 +156,7 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-  # Job 4: Run Quality Scripts
+  # Job 5: Run Quality Scripts
   quality-checks:
     name: Quality Validation Scripts
     runs-on: ubuntu-latest
@@ -112,7 +189,7 @@ jobs:
           echo "=== Quality Checks Complete ==="
           echo "All quality validation scripts executed successfully"
 
-  # Job 5: Comprehensive Validation Suite
+  # Job 6: Comprehensive Validation Suite
   validation-suite:
     name: CI Validation Suite
     runs-on: ubuntu-latest
@@ -172,7 +249,7 @@ jobs:
             fi
           fi
 
-  # Job 6: Security Scan (Optional)
+  # Job 7: Security Scan (Optional)
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
@@ -195,11 +272,11 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  # Job 7: Summary
+  # Job 8: Summary
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [validate-compose, test-makefile, build-postgres-exts, quality-checks, validation-suite]
+    needs: [validate-compose, validate-workflows, test-makefile, build-postgres-exts, quality-checks, validation-suite]
     if: always()
 
     steps:
@@ -207,12 +284,14 @@ jobs:
         run: |
           echo "=== CI Summary ==="
           echo "Validate Compose: ${{ needs.validate-compose.result }}"
+          echo "Validate Workflows: ${{ needs.validate-workflows.result }}"
           echo "Test Makefile: ${{ needs.test-makefile.result }}"
           echo "Build PostgreSQL: ${{ needs.build-postgres-exts.result }}"
           echo "Quality Checks: ${{ needs.quality-checks.result }}"
           echo "Validation Suite: ${{ needs.validation-suite.result }}"
 
           if [ "${{ needs.validate-compose.result }}" != "success" ] || \
+             [ "${{ needs.validate-workflows.result }}" != "success" ] || \
              [ "${{ needs.test-makefile.result }}" != "success" ] || \
              [ "${{ needs.build-postgres-exts.result }}" != "success" ] || \
              [ "${{ needs.quality-checks.result }}" != "success" ] || \
