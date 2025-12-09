@@ -1,6 +1,8 @@
 #!/bin/bash
-# Validate Docker Compose files syntax
+# Script: validate-compose.sh
+# Purpose: Validate Docker Compose file syntax and structure
 # Usage: ./scripts/validate-compose.sh [directory]
+# Example: ./scripts/validate-compose.sh images/database/postgres-exts
 
 set -e
 

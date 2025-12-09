@@ -1,6 +1,8 @@
 #!/bin/bash
-# Test .env.example files for validity
+# Script: test-env-examples.sh
+# Purpose: Test .env.example files for validity and syntax
 # Usage: ./scripts/test-env-examples.sh [directory]
+# Example: ./scripts/test-env-examples.sh images/cms
 
 set -e
 

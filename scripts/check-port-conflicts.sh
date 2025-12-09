@@ -1,6 +1,8 @@
 #!/bin/bash
-# Check for port conflicts across compose files
+# Script: check-port-conflicts.sh
+# Purpose: Check for port conflicts across Docker Compose files
 # Usage: ./scripts/check-port-conflicts.sh [directory]
+# Example: ./scripts/check-port-conflicts.sh /path/to/projects
 
 set -e
 

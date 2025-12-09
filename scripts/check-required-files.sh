@@ -1,6 +1,8 @@
 #!/bin/bash
-# Check for required files in each image directory
+# Script: check-required-files.sh
+# Purpose: Check for required files in each Docker image directory
 # Usage: ./scripts/check-required-files.sh [directory]
+# Example: ./scripts/check-required-files.sh images/database
 
 set -e
 
