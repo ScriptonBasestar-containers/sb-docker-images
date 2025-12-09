@@ -1,10 +1,8 @@
 #!/bin/bash
-# 스크립트명: list-versions.sh
-# 용도: 프로젝트 버전 태그 조회 및 표시
-# 사용법: ./scripts/list-versions.sh [project] [options]
-# 예시: ./scripts/list-versions.sh
-#        ./scripts/list-versions.sh discourse
-#        ./scripts/list-versions.sh --all
+# Script: list-versions.sh
+# Purpose: List and display project version tags
+# Usage: ./scripts/list-versions.sh [project] [options]
+# Example: ./scripts/list-versions.sh discourse --all
 
 set -euo pipefail
 

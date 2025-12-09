@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# 스크립트명: check-update-status.sh
-# 용도: 프로젝트별 업데이트 상태 확인 및 대시보드 표시
-# 사용법: ./scripts/check-update-status.sh [options]
-# 예시: ./scripts/check-update-status.sh --stale-days 60
+# Script: check-update-status.sh
+# Purpose: Check project update status and display dashboard
+# Usage: ./scripts/check-update-status.sh [options]
+# Example: ./scripts/check-update-status.sh --stale-days 60
 
 set -euo pipefail
 

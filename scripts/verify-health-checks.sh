@@ -1,6 +1,8 @@
 #!/bin/bash
-# Verify health checks in Docker Compose files
+# Script: verify-health-checks.sh
+# Purpose: Verify health check configuration in Docker Compose files
 # Usage: ./scripts/verify-health-checks.sh [directory]
+# Example: ./scripts/verify-health-checks.sh images/cms
 
 set -e
 

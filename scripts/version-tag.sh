@@ -1,10 +1,8 @@
 #!/bin/bash
-# 스크립트명: version-tag.sh
-# 용도: 프로젝트별 버전 태그 생성 및 관리
-# 사용법: ./scripts/version-tag.sh <project> <version> [options]
-# 예시: ./scripts/version-tag.sh discourse 1.2.3
-#        ./scripts/version-tag.sh discourse 1.2.3 --push
-#        ./scripts/version-tag.sh discourse 1.2.3 --force
+# Script: version-tag.sh
+# Purpose: Create and manage project-specific version tags
+# Usage: ./scripts/version-tag.sh <project> <version> [options]
+# Example: ./scripts/version-tag.sh discourse 1.2.3 --push
 
 set -euo pipefail
 
