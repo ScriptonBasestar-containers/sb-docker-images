@@ -118,7 +118,7 @@ jobs:
           docker buildx imagetools inspect scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-amd64 --raw > /tmp/digest-${{ matrix.variant }}-amd64.txt
 
       - name: Upload digest
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: digest-${{ matrix.variant }}-amd64
           path: /tmp/digest-${{ matrix.variant }}-amd64.txt
@@ -176,7 +176,7 @@ jobs:
           docker buildx imagetools inspect scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-arm64 --raw > /tmp/digest-${{ matrix.variant }}-arm64.txt
 
       - name: Upload digest
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: digest-${{ matrix.variant }}-arm64
           path: /tmp/digest-${{ matrix.variant }}-arm64.txt
@@ -336,7 +336,7 @@ jobs:
 
       - name: Upload digest
         if: steps.check.outputs.has_dockerfile == 'true'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: digest-custom-${{ matrix.arch }}
           path: /tmp/digest-${{ matrix.arch }}.txt
