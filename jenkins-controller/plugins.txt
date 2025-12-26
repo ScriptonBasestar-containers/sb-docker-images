@@ -1,0 +1,32 @@
+# Core
+workflow-aggregator
+credentials
+credentials-binding
+configuration-as-code
+
+# SCM
+git
+github
+gitlab-plugin
+
+# Kubernetes
+kubernetes
+
+# Pipeline
+job-dsl
+build-timeout
+pipeline-utility-steps
+pipeline-stage-view
+
+# UI
+blueocean
+
+# Integration
+generic-webhook-trigger
+prometheus
+
+# Utilities
+timestamper
+warnings-ng
+role-strategy
+ssh-credentials
