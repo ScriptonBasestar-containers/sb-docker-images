@@ -1,7 +1,7 @@
 REGISTRY ?= harbor.polypia.in
 IMAGE_NAME ?= library/jenkins-agent
 JENKINS_VERSION ?= 2.528.3-jdk21
-JENKINS_AGENT_TAG ?= latest-jdk21
+JENKINS_AGENT_TAG ?= 3355.v388858a_47b_33-4-jdk21
 TAG ?= $(JENKINS_VERSION)
 
 .PHONY: build push all clean

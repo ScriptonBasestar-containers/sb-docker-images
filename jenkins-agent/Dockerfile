@@ -1,4 +1,4 @@
-ARG JENKINS_AGENT_TAG=latest-jdk21
+ARG JENKINS_AGENT_TAG=3355.v388858a_47b_33-4-jdk21
 FROM jenkins/inbound-agent:${JENKINS_AGENT_TAG}
 
 USER root
