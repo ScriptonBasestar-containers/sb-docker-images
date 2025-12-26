@@ -1,0 +1,27 @@
+services:
+  flarum:
+    build:
+      context: .
+      dockerfile: flarum-fpm.dockerfile
+    image: flarum-fpm
+    container_name: flarum
+    volumes:
+      - ./flarum-app:/var/www
+    networks:
+      - code-network
+      - db-network
+    depends_on:
+      - mariadb
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./flarum-app:/var/www
+      - ./nginx/php-web.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/.nginx.conf:/etc/nginx/conf.d/.nginx.conf
+    ports:
+    - 8080:80
+    networks:
+      - code-network
+    depends_on:
+      - flarum

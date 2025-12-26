@@ -1,0 +1,55 @@
+services:
+  wordpress:
+    # image: wordpress:php8.3-apache
+    image: wordpress:6-php8.3-apache
+    container_name: wordpress_dev
+    # image: wordpress:6-php8-fpm
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: user01
+      WORDPRESS_DB_PASSWORD: passw0rd
+      WORDPRESS_DB_NAME: db01
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - mariadb
+      - redis
+      - wp-install
+    networks:
+      - app-network
+      - data-network
+
+  wp-install:
+    image: wordpress:cli-php8.3
+    user: 33:33
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: user01
+      WORDPRESS_DB_PASSWORD: passw0rd
+      WORDPRESS_DB_NAME: db01
+    # command: ["core", "install", "--url=http://localhost:8080", "--title=My WordPress Site", "--admin_user=admin", "--admin_password=password", "--]
+    command: ["/run-wp-cli.sh"]
+    volumes:
+      # - entrypoint.sh:/entrypoint.sh
+      - ./run-wp-cli.sh:/run-wp-cli.sh
+      - wordpress:/var/www/html
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - app-network
+      - data-network
+
+networks:
+  app-network:
+    driver: bridge
+  intra-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  wordpress:

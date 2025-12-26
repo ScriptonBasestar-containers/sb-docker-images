@@ -1,0 +1,87 @@
+services:
+  nginx-proxy:
+    build: nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - ENABLE_IPV6=true
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    volumes:
+      - nginx-certs:/etc/nginx/certs
+      - nginx-html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./misago/media:/misago/media:z
+      - ./misago/static:/misago/static:z
+      - ./config/vhost.d:/etc/nginx/vhost.d:z
+      - ./logs/nginx:/var/log/nginx:z
+
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${MISAGO_POSTGRES_DB:-db01}
+      - POSTGRES_USER=${MISAGO_POSTGRES_USER:-user01}
+      - POSTGRES_PASSWORD=${MISAGO_POSTGRES_PASSWORD:-passw0rd}
+      - ENABLE_IPV6=true
+    volumes:
+      - misago-postgres-15:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+    volumes:
+      - misago-redis-6:/data
+
+  misago:
+    image: misago
+    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST=${MISAGO_POSTGRES_HOST:-postgres}
+      - POSTGRES_DB=${MISAGO_POSTGRES_DB:-db01}
+      - POSTGRES_USER=${MISAGO_POSTGRES_USER:-user01}
+      - POSTGRES_PASSWORD=${MISAGO_POSTGRES_PASSWORD:-passw0rd}
+      - SSL_POLICY=Mozilla-Modern
+      - VIRTUAL_PROTO=uwsgi
+    env_file:
+      - .env.sample
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./misago/devproject/media:/misago/media:z
+      - ./misago/devproject/static:/misago/static:z
+      - ./misago/devproject/avatargallery:/misago/avatargallery:ro
+      - ./misago/misago/theme:/misago/theme/static:ro
+      - ./misago/misago/theme:/misago/theme/templates:ro
+      - ./backups:/misago/backups:Z
+      - ./logs:/misago/logs:z
+
+  celery-worker:
+    image: misago
+    command: celery -A misagodocker worker --loglevel=info
+    restart: unless-stopped
+    environment:
+      - POSTGRES_HOST=${MISAGO_POSTGRES_HOST:-postgres}
+      - POSTGRES_DB=${MISAGO_POSTGRES_DB:-db01}
+      - POSTGRES_USER=${MISAGO_POSTGRES_USER:-user01}
+      - POSTGRES_PASSWORD=${MISAGO_POSTGRES_PASSWORD:-passw0rd}
+    env_file:
+      - .env.sample
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./misago/media:/misago/media:z
+      - ./misago/static:/misago/static:z
+      - ./misago/theme:/misago/theme:ro
+      - ./logs:/misago/logs:z
+
+volumes:
+  nginx-certs:
+  nginx-html:
+  lets-encrypt-acme:
+  misago-postgres-15:
+  misago-redis-6:

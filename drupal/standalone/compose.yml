@@ -1,0 +1,66 @@
+services:
+
+  # https://hub.docker.com/_/drupal
+  # admin // *V3FYY8fdK2rBYT
+  drupal:
+    image: drupal:10-apache-bookworm
+    # image: drupal:10-php8-fpm
+    container_name: drupal
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      DRUPAL_DATABASE_HOST: mariadb
+      DRUPAL_DATABASE_PORT: 3306
+      DRUPAL_DATABASE_NAME: db01
+      DRUPAL_DATABASE_USERNAME: user01
+      DRUPAL_DATABASE_PASSWORD: passw0rd
+      DRUPAL_DATABASE_PREFIX: dr_
+      # Generate a salt with: `php -r "echo bin2hex(random_bytes(25));"`
+      DRUPAL_HASH_SALT: db0de8a1556aa5348f87cfc950cd2c9641713d46e9412c8b05
+      DB_HOST: "mariadb"
+      DB_NAME: "db01"
+      DB_USER: "user01"
+      DB_PASS: "passw0rd"
+      # S3_BUCKET: ""
+      # S3_ROOT_FOLDER: "local"
+      # S3FS_ACCESS_KEY: ""
+      # S3FS_SECRET_KEY: ""
+      SITE_NAME: "Drupal Core - LOCAL"
+      # API_KEY: ""
+    volumes:
+      - drupal:/var/www/html
+    #   # - /var/www/html/modules
+    #   # - /var/www/html/profiles
+    #   # - /var/www/html/themes
+    #   # # this takes advantage of the feature in Docker that a new anonymous
+    #   # # volume (which is what we're creating here) will be initialized with the
+    #   # # existing content of the image at the same location
+    #   - /var/www/html/sites
+    depends_on:
+      # - drupal-cli
+      - mariadb
+      - redis
+    networks:
+      - app-network
+      - data-network
+  
+  # drupal-cli:
+  #   image: drupal:10-apache-bookworm
+  #   container_name: drupal-cli
+  #   restart: always
+  #   volumes:
+  #     - drupal:/var/www/html
+  #   networks:
+  #     - app-network
+  #     - data-network
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  drupal:
+  # db:

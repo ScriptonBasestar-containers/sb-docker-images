@@ -1,0 +1,37 @@
+services:
+
+  joomla:
+    # image: joomla:php8.3-apache
+    image: joomla:5-php8.3-apache
+    # image: joomla:6-php8-fpm
+    container_name: joomla_dev
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      JOOMLA_DB_HOST: mariadb
+      JOOMLA_DB_USER: user01
+      JOOMLA_DB_PASSWORD: passw0rd
+      JOOMLA_DB_NAME: db01
+      JOOMLA_SITE_NAME: Joomla
+      JOOMLA_ADMIN_USER: Joomla Hero
+      JOOMLA_ADMIN_USERNAME: joomla
+      JOOMLA_ADMIN_PASSWORD: joomla@secured
+      JOOMLA_ADMIN_EMAIL: joomla@example.com
+    volumes:
+      - joomla:/var/www/html
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - app-network
+      - data-network
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  joomla:

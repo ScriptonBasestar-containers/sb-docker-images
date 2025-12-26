@@ -1,0 +1,40 @@
+services:
+  mediawiki:
+    image: mediawiki
+    container_name: mediawiki
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - mediawiki-images:/var/www/html/images
+      - ./docker-entrypoint-install.sh:/docker-entrypoint-install.sh
+      # After initial setup, download LocalSettings.php to the same directory as
+      # this yaml and uncomment the following line and use compose to restart
+      # the mediawiki service
+      # - ./config/LocalSettings.php:/var/www/html/LocalSettings.php
+    environment:
+      - DB_HOST=mariadb
+      - DB_NAME=db01
+      - DB_USER=user01
+      - DB_PASS=passw0rd
+      - DB_INSTALL_USER=root
+      - DB_INSTALL_PASS=rootpass
+      - SERVER_HOSTNAME=http://localhost:8080
+      - ADMIN_USER=admin1
+      - ADMIN_PASS=qwer1234!@
+      - WIKI_NAME=MyWiki
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - app-network
+      - data-network
+
+networks:
+  app-network:
+    driver: bridge
+  data-network:
+    driver: bridge
+
+volumes:
+  mediawiki-images:

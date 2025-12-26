@@ -1,0 +1,5 @@
+nextcloud-*/
+
+standalone/all-in-one/
+standalone/docker/
+standalone/server/

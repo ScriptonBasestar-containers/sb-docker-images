@@ -1,0 +1,40 @@
+services:
+  flarum:
+    build:
+      context: .
+      dockerfile: flarum-apache.dockerfile
+    image: flarum-apache
+    container_name: flarum
+    ports:
+      - 8080:80
+    environment:
+      MYSQL_USER: user01
+      MYSQL_PASSWORD: passw0rd
+      MYSQL_DATABASE: db01
+      MYSQL_HOST: mariadb
+      MYSQL_PORT: 3306
+      DB_DRIVER: mysql
+      # Update this to match the URL you use to connect to the forum
+      # This might be an IP (http://192.168.0.25) or a hostname (http://localhost)
+      # BASE_URL: "http://localhost:8080"
+      DEBUG: "true"
+      LOCAL: "true"
+
+      FLARUM_TITLE: "Flarum Ttitle"
+      FLARUM_URL: "http://localhost:8080"
+      FLARUM_ADMIN_USER: "a01"
+      FLARUM_ADMIN_PASSWORD: "passw0rd"
+      FLARUM_ADMIN_EMAIL: "a01@a.com"
+      FLARUM_DB_HOST: "mariadb"
+      FLARUM_DB_NAME: "db01"
+      FLARUM_DB_USER: "user01"
+      FLARUM_DB_PASSWORD: "passw0rd"
+    volumes:
+      - ./flarum-config.yaml:/flarum-config.yaml
+      - ./docker-entrypoint.sh:/entrypoint.sh
+      # - ./flarum-app:/var/www
+    networks:
+      - code-network
+      - db-network
+    depends_on:
+      - mariadb

@@ -1,0 +1,15 @@
+services:
+  pyweb:
+    build:
+      context: .
+      dockerfile: gnuboard6-debian.dockerfile
+    image: pyweb:latest
+    container_name: pyweb
+    ports:
+      - 8080:3000
+    networks:
+      - code-network
+    depends_on:
+      - pyweb-fpm
+
+
