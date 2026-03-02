@@ -126,7 +126,7 @@ jobs:
 
       - name: Upload scan report as artifact
         if: steps.tag.outputs.skip != 'true'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: security-scan-${{ matrix.project }}-${{ matrix.platform }}
           path: trivy-report-*.txt
@@ -188,7 +188,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload Dockerfile report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: dockerfile-security-scan
           path: trivy-dockerfile-report.txt

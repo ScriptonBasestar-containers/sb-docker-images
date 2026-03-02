@@ -148,7 +148,7 @@ jobs:
           make essential-test
 
       - name: Save build artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: postgres-exts-images
           path: |
@@ -209,7 +209,7 @@ jobs:
           ./scripts/ci-validation-suite.sh --verbose --report ci-validation-report.json
 
       - name: Upload Validation Report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: ci-validation-report

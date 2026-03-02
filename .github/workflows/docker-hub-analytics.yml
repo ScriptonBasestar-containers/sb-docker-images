@@ -43,7 +43,7 @@ jobs:
             --verbose
 
       - name: Upload Analytics Report
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: docker-hub-analytics-${{ github.run_number }}
           path: docker-hub-analytics.json
