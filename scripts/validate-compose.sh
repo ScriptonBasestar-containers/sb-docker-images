@@ -21,8 +21,19 @@ echo "Docker Compose File Validation"
 echo "======================================"
 echo ""
 
-# Find all compose files
-COMPOSE_FILES=$(find "$TARGET_DIR" -type f \( -name "compose.yml" -o -name "compose.*.yml" -o -name "docker-compose.yml" -o -name "docker-compose.*.yml" \) | sort)
+# Find all compose files (only under images/ to exclude legacy root dirs)
+COMPOSE_FILES=$(find "$TARGET_DIR/images" -type f \( -name "compose.yml" -o -name "compose.*.yml" -o -name "docker-compose.yml" -o -name "docker-compose.*.yml" \) 2>/dev/null | sort)
+
+# Also include compose files at buildbox/ and root level that are standalone
+if [ -d "$TARGET_DIR/buildbox" ]; then
+  COMPOSE_FILES="$COMPOSE_FILES
+$(find "$TARGET_DIR/buildbox" -type f \( -name "compose.yml" -o -name "compose.*.yml" -o -name "docker-compose.yml" -o -name "docker-compose.*.yml" \) | sort)"
+fi
+if [ -f "$TARGET_DIR/compose.yml" ]; then
+  COMPOSE_FILES="$COMPOSE_FILES
+$TARGET_DIR/compose.yml"
+fi
+COMPOSE_FILES=$(echo "$COMPOSE_FILES" | grep -v '^$' | sort -u)
 
 if [ -z "$COMPOSE_FILES" ]; then
     echo -e "${YELLOW}No compose files found in $TARGET_DIR${NC}"

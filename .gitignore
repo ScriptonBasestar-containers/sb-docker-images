@@ -8,6 +8,7 @@
 tmp-*/
 tmp/
 logs/
+reports/
 
 # Gitea data
 gitea/data/
