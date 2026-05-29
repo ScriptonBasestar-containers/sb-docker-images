@@ -5,7 +5,7 @@
 ## Category Overview
 
 **Purpose**: Development & CI/CD Tools
-**Projects**: 8 (Jenkins, Jupyter, Jupyter2, Ansible, Chef, Ruby-dev, Node-pnpm, Taiga)
+**Projects**: 10 (Jenkins, Jenkins-controller, Jenkins-agent, Jupyter, Jupyter2, Ansible, Chef, Ruby-dev, Node-pnpm, Taiga)
 **Focus**: CI/CD automation, development environments, project management
 
 ## Projects
@@ -17,6 +17,8 @@
 5. **Ruby-dev** - Ruby development environment
 6. **Node-pnpm** - Node.js with pnpm (Debian, Alpine, Builder variants)
 7. **Taiga** - Agile project management (Jira/Trello alternative)
+8. **Jenkins-controller** - Jenkins controller build image (Harbor registry, build-only)
+9. **Jenkins-agent** - Jenkins inbound agent build image (Harbor registry, build-only)
 
 ## Technology Stack
 
@@ -53,4 +55,4 @@ TAIGA_DB_NAME=taiga
 ---
 
 **Category**: devtools
-**Last Updated**: 2025-12-28
+**Last Updated**: 2026-05-29

@@ -5,7 +5,7 @@
 ## Category Overview
 
 **Purpose**: Deprecated & Archived Projects
-**Projects**: 6
+**Projects**: 8
 **Status**: Not actively maintained
 
 ## Archived Projects
@@ -16,6 +16,8 @@
 4. **Solidus** - Ruby ecommerce (upstream inactive)
 5. **discourse_fast_switch** - Discourse testing tool (7+ years old)
 6. **discourse_bench** - Discourse benchmark tool (7+ years old)
+7. **traefik_v1.7-test** - Traefik v1.7 EOL test stacks (Consul/WordPress/Portainer)
+8. **traefik_v2.1-test** - Traefik v2.1 test config samples (HTTPS redirect/dynamic)
 
 ## Archive Policy
 
@@ -39,9 +41,10 @@
 | OpenNamu | Wiki.js, MediaWiki, DokuWiki |
 | Spree/Solidus | WooCommerce, Magento, PrestaShop |
 | Discourse benchmarks | Use official Discourse tools |
+| Traefik v1.7/v2.1 | Traefik v3.x, Caddy, nginx-proxy |
 
 ---
 
 **Category**: archive
-**Last Updated**: 2025-12-28
+**Last Updated**: 2026-05-29
 **Note**: Projects in this category should not be used for new deployments

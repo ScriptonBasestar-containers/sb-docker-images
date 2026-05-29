@@ -5,7 +5,7 @@
 ## Category Overview
 
 **Purpose**: Database Systems & Caching
-**Projects**: 4 (PostgreSQL Extensions, MariaDB, Redis, Memcached)
+**Projects**: 5 (PostgreSQL Extensions, MariaDB, Redis, Memcached, Berkeley DB)
 **Focus**: Data persistence, caching, performance optimization
 
 ## Projects
@@ -14,6 +14,7 @@
 2. **mariadb** - MySQL-compatible relational database
 3. **redis** - In-memory data store, cache, message broker
 4. **memcached** - High-performance memory caching
+5. **berkely-db** - Berkeley DB build images (Bitcoin Core wallet dependency, build-only)
 
 ## Configuration Patterns
 
@@ -53,4 +54,4 @@ REDIS_MAXMEMORY_POLICY=allkeys-lru
 ---
 
 **Category**: database
-**Last Updated**: 2025-12-28
+**Last Updated**: 2026-05-29

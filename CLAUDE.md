@@ -4,7 +4,7 @@
 
 **Type**: Docker Images Monorepo
 **Purpose**: Development/testing Docker images and Docker Compose templates
-**Structure**: 58 active projects across 19 categories + 6 archived
+**Structure**: 61 active projects across 19 categories + 8 archived
 **License**: MIT-oriented (follows upstream for GPL/AGPL images)
 
 ## Repository Structure
@@ -312,6 +312,6 @@ Refer to category CLAUDE.md when working on projects within that category.
 
 ---
 
-**Last Updated**: 2025-12-28
+**Last Updated**: 2026-05-29
 **Repository**: https://github.com/scriptonbasestar/sb-docker-images
 **Maintainer**: scriptonbasestar

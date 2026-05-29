@@ -45,7 +45,7 @@ All images now support both **AMD64** and **ARM64** architectures!
 
 상세 검증 결과: [`QUALITY_REPORT.md`](./QUALITY_REPORT.md)
 
-### 프로젝트 카테고리 (56개 + 6 archived)
+### 프로젝트 카테고리 (61개 + 8 archived)
 
 #### 🚀 웹 애플리케이션 & CMS (19개)
 Wiki.js, Gitea, Flarum, Gnuboard5, Gnuboard6, WordPress, MediaWiki, Joomla, XpressEngine, Discourse, DokuWiki, Forem, Misago, Django CMS, TSBoard, Drupal, Jupyter, Mailslurper, Mastodon, Nextcloud, NodeBB
