@@ -20,6 +20,16 @@ on:
           - gitea
           - flarum
           - all
+      pg_version:
+        description: 'PostgreSQL major version (postgres-exts only)'
+        required: false
+        default: '18'
+        type: choice
+        options:
+          - '15'
+          - '16'
+          - '17'
+          - '18'
 
 jobs:
   # Detect project from tag
@@ -104,18 +114,25 @@ jobs:
           fi
 
       - name: Build AMD64 Image
+        env:
+          PG: ${{ github.event.inputs.pg_version || '18' }}
+          VARIANT: ${{ matrix.variant }}
         run: |
           cd images/database/postgres-exts
-          docker buildx build \
-            --platform linux/amd64 \
-            -t scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-amd64 \
-            -f Dockerfile.${{ matrix.variant }} \
-            --push \
-            .
+          # Override the bundle's canonical push tag with an arch-suffixed one so the
+          # later imagetools merge can combine amd64 + arm64 into one manifest.
+          TAGVAR="$(echo "$VARIANT" | tr a-z A-Z)_TAG"
+          make "${VARIANT}-buildx" \
+            PG_VERSION="$PG" \
+            PLATFORMS=linux/amd64 \
+            "${TAGVAR}=scriptonbasestar/postgres-exts:${PG}-${VARIANT}-amd64"
 
       - name: Save image digest
+        env:
+          PG: ${{ github.event.inputs.pg_version || '18' }}
+          VARIANT: ${{ matrix.variant }}
         run: |
-          docker buildx imagetools inspect scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-amd64 --raw > /tmp/digest-${{ matrix.variant }}-amd64.txt
+          docker buildx imagetools inspect "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-amd64" --raw > "/tmp/digest-${VARIANT}-amd64.txt"
 
       - name: Upload digest
         uses: actions/upload-artifact@v7
@@ -162,18 +179,25 @@ jobs:
           fi
 
       - name: Build ARM64 Image
+        env:
+          PG: ${{ github.event.inputs.pg_version || '18' }}
+          VARIANT: ${{ matrix.variant }}
         run: |
           cd images/database/postgres-exts
-          docker buildx build \
-            --platform linux/arm64 \
-            -t scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-arm64 \
-            -f Dockerfile.${{ matrix.variant }} \
-            --push \
-            .
+          # Override the bundle's canonical push tag with an arch-suffixed one so the
+          # later imagetools merge can combine amd64 + arm64 into one manifest.
+          TAGVAR="$(echo "$VARIANT" | tr a-z A-Z)_TAG"
+          make "${VARIANT}-buildx" \
+            PG_VERSION="$PG" \
+            PLATFORMS=linux/arm64 \
+            "${TAGVAR}=scriptonbasestar/postgres-exts:${PG}-${VARIANT}-arm64"
 
       - name: Save image digest
+        env:
+          PG: ${{ github.event.inputs.pg_version || '18' }}
+          VARIANT: ${{ matrix.variant }}
         run: |
-          docker buildx imagetools inspect scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-arm64 --raw > /tmp/digest-${{ matrix.variant }}-arm64.txt
+          docker buildx imagetools inspect "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-arm64" --raw > "/tmp/digest-${VARIANT}-arm64.txt"
 
       - name: Upload digest
         uses: actions/upload-artifact@v7
@@ -225,16 +249,23 @@ jobs:
           fi
 
       - name: Create and push manifest
+        env:
+          PG: ${{ github.event.inputs.pg_version || '18' }}
+          VARIANT: ${{ matrix.variant }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           docker buildx imagetools create \
-            -t scriptonbasestar/postgres-exts:16-${{ matrix.variant }} \
-            -t scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-${{ steps.version.outputs.version }} \
-            scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-amd64 \
-            scriptonbasestar/postgres-exts:16-${{ matrix.variant }}-arm64
+            -t "scriptonbasestar/postgres-exts:${PG}-${VARIANT}" \
+            -t "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-${VERSION}" \
+            "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-amd64" \
+            "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-arm64"
 
       - name: Verify manifest
+        env:
+          PG: ${{ github.event.inputs.pg_version || '18' }}
+          VARIANT: ${{ matrix.variant }}
         run: |
-          docker buildx imagetools inspect scriptonbasestar/postgres-exts:16-${{ matrix.variant }}
+          docker buildx imagetools inspect "scriptonbasestar/postgres-exts:${PG}-${VARIANT}"
 
       - name: Create Release Summary
         if: github.event_name == 'push'

@@ -20,6 +20,16 @@ on:
           - gitea
           - flarum
           - all
+      pg_version:
+        description: 'PostgreSQL major version (postgres-exts only)'
+        required: false
+        default: '18'
+        type: choice
+        options:
+          - '15'
+          - '16'
+          - '17'
+          - '18'
 
 jobs:
   # Detect project from tag
@@ -103,27 +113,25 @@ jobs:
 
       - name: Build & Push Essential Image
         if: github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push'
+        env:
+          PG: ${{ github.event.inputs.pg_version || '18' }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           cd images/database/postgres-exts
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            -t scriptonbasestar/postgres-exts:16-essential \
-            -t scriptonbasestar/postgres-exts:16-essential-${{ steps.version.outputs.version }} \
-            -f Dockerfile.essential \
-            --push \
-            .
+          make essential-buildx \
+            PG_VERSION="$PG" \
+            EXTRA_TAGS="scriptonbasestar/postgres-exts:$PG-essential-$VERSION"
 
       - name: Build & Push Full Image
         if: github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all'
+        env:
+          PG: ${{ github.event.inputs.pg_version || '18' }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           cd images/database/postgres-exts
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            -t scriptonbasestar/postgres-exts:16-full \
-            -t scriptonbasestar/postgres-exts:16-full-${{ steps.version.outputs.version }} \
-            -f Dockerfile.full \
-            --push \
-            .
+          make full-buildx \
+            PG_VERSION="$PG" \
+            EXTRA_TAGS="scriptonbasestar/postgres-exts:$PG-full-$VERSION"
 
       - name: Verify Multi-Arch Build
         run: |

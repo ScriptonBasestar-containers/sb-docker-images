@@ -73,7 +73,7 @@ body:
         - Architecture: [e.g. AMD64, ARM64/Apple Silicon]
         - Docker Version: [e.g. 24.0.0]
         - Docker Compose Version: [e.g. 2.20.0]
-        - Image Version/Tag: [e.g. postgres-exts:16-essential-1.0.0]
+        - Image Version/Tag: [e.g. postgres-exts:18-essential-1.0.0]
     validations:
       required: true
 
