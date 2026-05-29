@@ -2,7 +2,7 @@
 
 데이터베이스 및 캐싱 솔루션 - 데이터 저장 및 성능 최적화
 
-## 📚 프로젝트 목록 (4개)
+## 📚 프로젝트 목록 (5개)
 
 ### [MariaDB](mariadb/)
 **MySQL 호환 오픈소스 RDBMS**
@@ -31,6 +31,12 @@
 - Pub/Sub 메시징
 - 영구 저장 옵션
 - 클러스터링 지원
+
+### [Berkeley DB](berkely-db/)
+**Berkeley DB 빌드 이미지**
+- 버전 4.8.30.NC / 5.3.28.NC
+- Bitcoin Core 지갑 빌드 의존성
+- 빌드 전용 (compose 미사용)
 
 ## 🚀 빠른 시작
 

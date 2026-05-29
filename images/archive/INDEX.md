@@ -6,7 +6,7 @@ This directory contains projects that are no longer actively maintained.
 
 These projects are archived for reference purposes only. They should NOT be used in production.
 
-## Archived Projects (6)
+## Archived Projects (8)
 
 ### Community/Forum
 
@@ -47,6 +47,18 @@ These projects are archived for reference purposes only. They should NOT be used
 - **Reason:** 7+ years old, uses EOL PostgreSQL 9.5
 - **Base Image:** `discourse/discourse_test:1.4.0`
 - **Alternatives:** Use modern Discourse Docker setup
+
+### Reverse Proxy (Legacy Test Stacks)
+
+#### [traefik_v1.7-test](traefik_v1.7-test/)
+- **Status:** DEPRECATED
+- **Reason:** Traefik v1.7 is EOL; test-only Compose configs (Consul, WordPress, Portainer)
+- **Alternatives:** Traefik v3.x, Caddy, nginx-proxy
+
+#### [traefik_v2.1-test](traefik_v2.1-test/)
+- **Status:** DEPRECATED
+- **Reason:** Traefik v2.1 superseded; test-only HTTPS redirect/dynamic config samples
+- **Alternatives:** Traefik v3.x, Caddy, nginx-proxy
 
 ## Migration Guide
 

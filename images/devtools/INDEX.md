@@ -2,7 +2,7 @@
 
 개발 환경 및 도구 - 코딩, 빌드, 테스트, 배포 자동화
 
-## 📚 프로젝트 목록 (8개)
+## 📚 프로젝트 목록 (10개)
 
 ### [Ansible Dev](ansible-dev/)
 **Ansible 개발 환경**
@@ -24,6 +24,20 @@
 - 플러그인 생태계
 - 파이프라인 지원
 - Standalone 구성 제공
+
+### [Jenkins Controller](jenkins-controller/)
+**Jenkins 컨트롤러 빌드 이미지**
+- 플러그인 사전 설치 (plugins.txt)
+- Jenkins 2.528.3-jdk21
+- Harbor 레지스트리 빌드/푸시
+- compose 미사용 (빌드 전용)
+
+### [Jenkins Agent](jenkins-agent/)
+**Jenkins 인바운드 에이전트 이미지**
+- 컨트롤러 연결용 빌드 에이전트
+- Jenkins agent 2.528.3-jdk21
+- Harbor 레지스트리 빌드/푸시
+- compose 미사용 (빌드 전용)
 
 ### [Jupyter](jupyter/)
 **데이터 과학 노트북**

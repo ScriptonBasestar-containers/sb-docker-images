@@ -1,0 +1,9 @@
+# Project Version
+# Format: MAJOR.MINOR.PATCH (semantic versioning)
+# Git tag format: berkely-db-vMAJOR.MINOR.PATCH
+VERSION=1.0.0
+
+# Version history (most recent first)
+# v1.0.0 - 2026-05-29 - Initial release
+#   - Berkeley DB 4.8.30.NC and 5.3.28.NC build images
+#   - Build dependency for Bitcoin Core wallet
