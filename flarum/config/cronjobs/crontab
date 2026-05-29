@@ -1,3 +1,0 @@
-# cron
-* * * * * . ~/.profile; cd /var/www && /usr/local/bin/php flarum schedule:run >> /dev/null 2>&1
-# end cron
