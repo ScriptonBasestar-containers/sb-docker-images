@@ -76,7 +76,8 @@ RUN if [ "$WITH_POSTGIS" = "true" ]; then \
         cd /tmp && \
         git clone --depth 1 --branch ${POSTGIS_VERSION} https://github.com/postgis/postgis.git && \
         cd postgis && ./autogen.sh && \
-        cp /usr/share/automake-*/config.guess /usr/share/automake-*/config.sub /usr/share/automake-*/install-sh build-aux/ && \
+        AM_DIR=$(ls -d /usr/share/automake-* | sort -V | tail -1) && \
+        cp "$AM_DIR/config.guess" "$AM_DIR/config.sub" "$AM_DIR/install-sh" build-aux/ && \
         ./configure --with-pgconfig=/usr/lib/postgresql/${PG_VERSION}/bin/pg_config && \
         make && make install && \
         cd / && rm -rf /tmp/postgis /var/lib/apt/lists/*; \
