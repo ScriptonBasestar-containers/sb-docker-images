@@ -62,7 +62,7 @@ jobs:
 
       - name: Checkout code
         if: steps.gate.outputs.run == 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         if: steps.gate.outputs.run == 'true'
@@ -100,7 +100,7 @@ jobs:
 
       - name: Upload digest
         if: steps.gate.outputs.run == 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: digest-${{ matrix.variant }}-amd64
           path: /tmp/digest-${{ matrix.variant }}-amd64.txt
@@ -131,7 +131,7 @@ jobs:
 
       - name: Checkout code
         if: steps.gate.outputs.run == 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         if: steps.gate.outputs.run == 'true'
@@ -167,7 +167,7 @@ jobs:
 
       - name: Upload digest
         if: steps.gate.outputs.run == 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: digest-${{ matrix.variant }}-arm64
           path: /tmp/digest-${{ matrix.variant }}-arm64.txt
@@ -197,14 +197,14 @@ jobs:
 
       - name: Download AMD64 digest
         if: steps.gate.outputs.run == 'true'
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: digest-${{ matrix.variant }}-amd64
           path: /tmp
 
       - name: Download ARM64 digest
         if: steps.gate.outputs.run == 'true'
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: digest-${{ matrix.variant }}-arm64
           path: /tmp
