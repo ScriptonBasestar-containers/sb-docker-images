@@ -49,9 +49,13 @@ git tag discourse-v1.2.3
 git tag wikijs-v2.0.0
 git tag postgres-exts-v16.2.1
 
-# Push tags
+# Push tags — ONE AT A TIME (push triggers CD per tag)
 git push origin discourse-v1.2.3
-git push origin --tags
+git push origin wikijs-v2.0.0
+git push origin postgres-exts-v16.2.1
+
+# ⚠️ Do NOT run `git push origin --tags`: pushing many tags at once makes
+# GitHub Actions skip the tag push events, so CD runs for NONE of them.
 ```
 
 ### Phase Tags
@@ -215,8 +219,8 @@ git show discourse-v1.2.3 --stat
 # 3a. Push single tag
 git push origin discourse-v1.2.3
 
-# OR: Push all new tags (use with caution!)
-# git push origin --tags
+# ⚠️ Never `git push origin --tags` here: a bulk tag push does NOT trigger
+#    CD (GitHub drops tag push events when many tags arrive at once).
 
 # 3b. Verify tag was pushed
 git ls-remote --tags origin | grep discourse
@@ -298,10 +302,9 @@ git push origin metabase-v1.0.0
 git push origin owa-v1.0.0
 # Repeat...
 
-# OR: Push all at once (only if confident)
-git push origin --tags
-# Note: This triggers CD for ALL new tags simultaneously
-# May cause resource contention on GitHub Actions runners
+# ⚠️ Do NOT `git push origin --tags`: GitHub does NOT create tag push events
+#    for a bulk tag push, so CD silently runs for NONE of the tags.
+#    Always push tags individually, as shown above.
 ```
 
 ### Troubleshooting
