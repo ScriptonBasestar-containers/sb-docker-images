@@ -10,6 +10,10 @@ tmp/
 logs/
 reports/
 
+# claude-ce-plugin local state (per-project)
+.ce/
+.ce-metrics/
+
 # Gitea data
 gitea/data/
 gitea/postgres/
