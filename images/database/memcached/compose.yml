@@ -2,14 +2,23 @@ services:
   # Memcached - High-performance distributed memory object caching system
   # https://hub.docker.com/_/memcached
   memcached:
-    image: memcached:1.6-alpine
-    container_name: memcached
+    image: memcached:${MEMCACHED_TAG:-1.6-alpine}
+    container_name: ${MEMCACHED_CONTAINER_NAME:-memcached}
     restart: unless-stopped
     ports:
-      - "11211:11211"
-    command: memcached -m 64
+      - "${MEMCACHED_PORT:-11211}:11211"
+    command: >
+      memcached
+      -m ${MEMCACHED_MEMORY:-64}
+      -c ${MEMCACHED_MAX_CONNECTIONS:-1024}
+      -I ${MEMCACHED_MAX_ITEM_SIZE:-1m}
     networks:
       - cache-network
+    healthcheck:
+      test: ["CMD-SHELL", "echo stats | nc -w 1 127.0.0.1 11211 | grep -q uptime"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
 networks:
   cache-network:
