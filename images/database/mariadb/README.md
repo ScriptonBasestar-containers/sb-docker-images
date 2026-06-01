@@ -1,8 +1,24 @@
-# MariaDB Backup Toolkit
+# MariaDB Server + Backup Toolkit
 
-**MariaDB Backup Toolkit**은 MariaDB 데이터베이스의 자동 백업을 위한 Docker 기반 유틸리티 모음입니다.
+이 디렉토리는 두 가지를 함께 제공합니다:
 
-> **Note**: 이 디렉토리는 MariaDB 서버 자체를 실행하는 것이 아니라, **기존 MariaDB 컨테이너의 백업**을 담당합니다.
+1. **MariaDB 서버** — `compose.yml` 한 개로 바로 띄울 수 있는 단독 MariaDB 인스턴스 (`make up` / `make down`).
+2. **백업 툴킷** — `backup/` 서브디렉토리. MariaBackup 기반 자동 백업을 Rclone(클라우드 동기화) 또는 Restic(암호화·중복제거 스냅샷)으로 보냅니다.
+
+서버와 백업은 독립적입니다 — 백업 이미지(`make backup-rclone-build`, `make backup-restic-build`)는 본 프로젝트의 MariaDB 뿐 아니라 기존에 운영 중인 다른 MariaDB 컨테이너에도 그대로 사용할 수 있습니다.
+
+```
+mariadb/
+├── compose.yml         ← MariaDB 서버 (parameterized via .env)
+├── .env.example        ← 서버 + 백업 변수 모두 포함
+├── Makefile            ← up/down/logs + backup-*-build
+└── backup/             ← 백업 컨테이너 빌드 컨텍스트
+    ├── rclone.dockerfile
+    ├── restic.dockerfile
+    ├── backup-rclone.sh
+    ├── backup-restic.sh
+    └── backup_cron
+```
 
 ## 주요 기능
 
@@ -89,8 +105,8 @@ services:
 
   mariadb-backup:
     build:
-      context: ./mariadb
-      dockerfile: mariadb-backup-rclone.dockerfile
+      context: ./mariadb/backup
+      dockerfile: rclone.dockerfile
     environment:
       - RCLONE_REMOTE=${RCLONE_REMOTE}
       - RCLONE_BWLIMIT=${RCLONE_BWLIMIT}
@@ -151,8 +167,8 @@ AWS_SECRET_ACCESS_KEY=your-secret-key
 services:
   mariadb-backup-restic:
     build:
-      context: ./mariadb
-      dockerfile: mariadb-backup-restic.dockerfile
+      context: ./mariadb/backup
+      dockerfile: restic.dockerfile
     environment:
       - RESTIC_REPOSITORY=${RESTIC_REPOSITORY}
       - RESTIC_PASSWORD=${RESTIC_PASSWORD}
@@ -518,8 +534,8 @@ services:
 
   mariadb-backup:
     build:
-      context: ./mariadb
-      dockerfile: mariadb-backup-rclone.dockerfile
+      context: ./mariadb/backup
+      dockerfile: rclone.dockerfile
     environment:
       - RCLONE_REMOTE=s3:my-bucket/nextcloud-db
       - MYSQL_HOST=mariadb
@@ -547,8 +563,8 @@ services:
 
   mariadb-backup:
     build:
-      context: ./mariadb
-      dockerfile: mariadb-backup-restic.dockerfile
+      context: ./mariadb/backup
+      dockerfile: restic.dockerfile
     environment:
       - RESTIC_REPOSITORY=s3:bucket/wordpress-db
       - RESTIC_PASSWORD=${RESTIC_PASSWORD}
