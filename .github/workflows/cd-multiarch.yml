@@ -64,7 +64,7 @@ jobs:
 
       - name: Checkout code
         if: steps.gate.outputs.run == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         if: steps.gate.outputs.run == 'true'
@@ -133,7 +133,7 @@ jobs:
 
       - name: Checkout code
         if: steps.gate.outputs.run == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         if: steps.gate.outputs.run == 'true'
