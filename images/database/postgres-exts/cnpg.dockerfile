@@ -78,6 +78,7 @@ RUN if [ "$WITH_POSTGIS" = "true" ]; then \
         cd postgis && ./autogen.sh && \
         AM_DIR=$(ls -d /usr/share/automake-* | sort -V | tail -1) && \
         cp "$AM_DIR/config.guess" "$AM_DIR/config.sub" "$AM_DIR/install-sh" build-aux/ && \
+        CFLAGS="-Wno-error=implicit-function-declaration" \
         ./configure --with-pgconfig=/usr/lib/postgresql/${PG_VERSION}/bin/pg_config && \
         make && make install && \
         cd / && rm -rf /tmp/postgis /var/lib/apt/lists/*; \

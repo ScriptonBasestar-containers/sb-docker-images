@@ -120,7 +120,9 @@ jobs:
           fi
 
       - name: Build & Push Essential Image
-        if: github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push'
+        id: essential
+        continue-on-error: true
+        if: always() && (github.event.inputs.project == 'postgres-exts-essential' || github.event.inputs.project == 'all' || github.event_name == 'push')
         env:
           PG: ${{ github.event.inputs.pg_version || '18' }}
           VERSION: ${{ steps.version.outputs.version }}
@@ -131,7 +133,9 @@ jobs:
             EXTRA_TAGS="scriptonbasestar/postgres:$PG-essential-$VERSION"
 
       - name: Build & Push Full Image
-        if: github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all' || github.event_name == 'push'
+        id: full
+        continue-on-error: true
+        if: always() && (github.event.inputs.project == 'postgres-exts-full' || github.event.inputs.project == 'all' || github.event_name == 'push')
         env:
           PG: ${{ github.event.inputs.pg_version || '18' }}
           VERSION: ${{ steps.version.outputs.version }}
@@ -142,7 +146,9 @@ jobs:
             EXTRA_TAGS="scriptonbasestar/postgres:$PG-full-$VERSION"
 
       - name: Build & Push Vector Image
-        if: github.event.inputs.project == 'postgres-exts-vector' || github.event.inputs.project == 'all' || github.event_name == 'push'
+        id: vector
+        continue-on-error: true
+        if: always() && (github.event.inputs.project == 'postgres-exts-vector' || github.event.inputs.project == 'all' || github.event_name == 'push')
         env:
           PG: ${{ github.event.inputs.pg_version || '18' }}
           VERSION: ${{ steps.version.outputs.version }}
@@ -153,7 +159,9 @@ jobs:
             EXTRA_TAGS="scriptonbasestar/postgres:$PG-vector-$VERSION"
 
       - name: Build & Push PostGIS Image
-        if: github.event.inputs.project == 'postgres-exts-postgis' || github.event.inputs.project == 'all' || github.event_name == 'push'
+        id: postgis
+        continue-on-error: true
+        if: always() && (github.event.inputs.project == 'postgres-exts-postgis' || github.event.inputs.project == 'all' || github.event_name == 'push')
         env:
           PG: ${{ github.event.inputs.pg_version || '18' }}
           VERSION: ${{ steps.version.outputs.version }}
@@ -164,9 +172,25 @@ jobs:
             EXTRA_TAGS="scriptonbasestar/postgres:$PG-postgis-$VERSION"
 
       - name: Verify Multi-Arch Build
+        if: always()
         run: |
           echo "Multi-arch images built and pushed to Docker Hub"
           echo "Verify at: https://hub.docker.com/r/scriptonbasestar/postgres/tags"
+
+      - name: Check bundle build results
+        if: always()
+        run: |
+          echo "essential=${{ steps.essential.outcome }}"
+          echo "full=${{ steps.full.outcome }}"
+          echo "vector=${{ steps.vector.outcome }}"
+          echo "postgis=${{ steps.postgis.outcome }}"
+          if [ "${{ steps.essential.outcome }}" == "failure" ] || \
+             [ "${{ steps.full.outcome }}" == "failure" ] || \
+             [ "${{ steps.vector.outcome }}" == "failure" ] || \
+             [ "${{ steps.postgis.outcome }}" == "failure" ]; then
+            echo "One or more bundle builds failed — see step logs above."
+            exit 1
+          fi
 
       - name: Create Release Summary
         if: github.event_name == 'push'
