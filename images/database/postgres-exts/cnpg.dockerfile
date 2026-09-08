@@ -70,7 +70,7 @@ RUN if [ "$WITH_PGVECTOR" = "true" ]; then \
 RUN if [ "$WITH_POSTGIS" = "true" ]; then \
         apt-get update && \
         apt-get install -y --no-install-recommends \
-            autoconf automake libtool \
+            autoconf automake libtool bison flex \
             libgeos-dev libproj-dev libgdal-dev \
             libjson-c-dev libxml2-dev libprotobuf-c-dev protobuf-c-compiler && \
         cd /tmp && \
