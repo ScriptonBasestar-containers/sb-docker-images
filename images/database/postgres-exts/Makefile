@@ -9,7 +9,7 @@
 #   make full-build PG_VERSION=17
 
 # Variables
-IMAGE_NAME := postgres-exts
+IMAGE_NAME := postgres
 REGISTRY   := docker.io/scriptonbasestar
 DOCKERFILE := cnpg.dockerfile
 
@@ -220,6 +220,12 @@ vector-push:
 	docker push $(VECTOR_TAG)
 	@echo "✅ Vector-only image pushed to $(VECTOR_TAG)"
 
+.PHONY: vector-buildx
+vector-buildx:
+	docker buildx build --platform $(PLATFORMS) $(VECTOR_ARGS) $(COMMON_ARGS) \
+	    -t $(VECTOR_TAG) $(addprefix -t ,$(EXTRA_TAGS)) --push -f $(DOCKERFILE) .
+	@echo "✅ Vector-only multi-arch build pushed"
+
 # ============================================================================
 # Curated bundle: PostGIS-only (geospatial)
 # ============================================================================
@@ -270,7 +276,7 @@ push-all: essential-push full-push vector-push postgis-push
 	@echo "✅ All images pushed"
 
 .PHONY: buildx-all
-buildx-all: essential-buildx full-buildx postgis-buildx
+buildx-all: essential-buildx full-buildx vector-buildx postgis-buildx
 	@echo "✅ All multi-arch builds pushed"
 
 # ============================================================================

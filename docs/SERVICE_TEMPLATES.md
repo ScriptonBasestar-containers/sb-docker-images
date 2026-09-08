@@ -97,7 +97,7 @@ innodb_log_file_size=256M
 ```yaml
 services:
   postgres:
-    image: postgres:16-alpine  # 또는 확장 버전: scriptonbasestar/postgres-exts:16-essential
+    image: postgres:16-alpine  # 또는 확장 버전: scriptonbasestar/postgres:16-essential
     container_name: ${PROJECT_NAME:-myapp}_postgres
     restart: unless-stopped
     environment:
@@ -136,7 +136,7 @@ networks:
 ```yaml
 services:
   postgres:
-    image: scriptonbasestar/postgres-exts:16-essential
+    image: scriptonbasestar/postgres:16-essential
     environment:
       POSTGRES_DB: aidb
       POSTGRES_USER: aiuser

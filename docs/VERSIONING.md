@@ -106,10 +106,11 @@ scriptonbasestar/wikijs:2.0
 scriptonbasestar/wikijs:2
 scriptonbasestar/wikijs:latest
 
-scriptonbasestar/postgres-exts:16.2.1
-scriptonbasestar/postgres-exts:16.2
-scriptonbasestar/postgres-exts:16
-scriptonbasestar/postgres-exts:latest
+scriptonbasestar/postgres:16-essential-1.0.0  # PG major + bundle variant + version
+scriptonbasestar/postgres:16-essential
+scriptonbasestar/postgres:16-full
+scriptonbasestar/postgres:16-vector
+scriptonbasestar/postgres:16-postgis
 ```
 
 ## Project Types

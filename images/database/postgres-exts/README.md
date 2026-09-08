@@ -30,7 +30,7 @@ make full-build PG_VERSION=16        # full bundle for PG 16
 make versions PG_VERSION=17          # print the resolved extension pins
 ```
 
-Local images are tagged `postgres-exts:<pg>-<bundle>` (e.g. `postgres-exts:17-full`),
+Local images are tagged `postgres:<pg>-<bundle>` (e.g. `postgres:17-full`),
 so builds for different majors never overwrite each other.
 
 ### Compatibility Matrix
@@ -107,7 +107,7 @@ Build only what you need — any subset of the 7 extensions:
 make build EXTS=pgvector,pg_cron
 
 # geospatial + time-series, custom tag
-make build EXTS=postgis,timescaledb CUSTOM_TAG=postgres-exts:geo-ts
+make build EXTS=postgis,timescaledb CUSTOM_TAG=postgres:geo-ts
 
 # Available: pgvector postgis timescaledb pg_cron pg_repack pgaudit pg_partman
 ```
@@ -118,7 +118,7 @@ Or call the Dockerfile directly:
 docker build \
   --build-arg WITH_PGVECTOR=true \
   --build-arg WITH_PG_CRON=true \
-  -f cnpg.dockerfile -t postgres-exts:custom .
+  -f cnpg.dockerfile -t postgres:custom .
 ```
 
 `shared_preload_libraries` and related settings are generated at build time to match
@@ -165,8 +165,8 @@ make essential-push          # or full-push / postgis-push
 make full-push PG_VERSION=17 # push the PG 17 build
 
 # Manual equivalent (local images are already tagged <pg>-<bundle>)
-docker tag postgres-exts:18-essential scriptonbasestar/postgres-exts:18-essential
-docker push scriptonbasestar/postgres-exts:18-essential
+docker tag postgres:18-essential scriptonbasestar/postgres:18-essential
+docker push scriptonbasestar/postgres:18-essential
 ```
 
 ---
@@ -262,7 +262,7 @@ metadata:
   name: postgres-ai
 spec:
   instances: 3
-  imageName: scriptonbasestar/postgres-exts:18-essential
+  imageName: scriptonbasestar/postgres:18-essential
 
   postgresql:
     parameters:
@@ -295,7 +295,7 @@ metadata:
   name: postgres-enterprise
 spec:
   instances: 3
-  imageName: scriptonbasestar/postgres-exts:18-full
+  imageName: scriptonbasestar/postgres:18-full
 
   postgresql:
     parameters:
@@ -346,7 +346,7 @@ spec:
 docker build \
   --build-arg PGVECTOR_VERSION=v0.8.0 \
   -f cnpg.dockerfile \
-  -t postgres-exts:essential-custom .
+  -t postgres:essential-custom .
 
 # Full set with custom versions
 docker build \
@@ -361,14 +361,14 @@ docker build \
   --build-arg POSTGIS_VERSION=3.5.2 \
   --build-arg TIMESCALEDB_VERSION=2.18.0 \
   -f cnpg.dockerfile \
-  -t postgres-exts:full-custom .
+  -t postgres:full-custom .
 ```
 
 ### Verify Extensions
 
 ```bash
 # Start container
-docker run -d --name pg-test -e POSTGRES_PASSWORD=test postgres-exts:18-full
+docker run -d --name pg-test -e POSTGRES_PASSWORD=test postgres:18-full
 
 # Check installed extensions
 docker exec pg-test psql -U postgres -c "SELECT * FROM pg_available_extensions WHERE name LIKE 'pg%' OR name IN ('vector', 'postgis', 'timescaledb');"

@@ -110,10 +110,10 @@ When using images from this repository:
 1. **Always use specific version tags** instead of `latest`
    ```yaml
    # Good
-   image: scriptonbasestar/postgres-exts:16-essential-1.0.0
+   image: scriptonbasestar/postgres:16-essential-1.0.0
 
    # Avoid
-   image: scriptonbasestar/postgres-exts:latest
+   image: scriptonbasestar/postgres:latest
    ```
 
 2. **Regularly update base images**
@@ -124,7 +124,7 @@ When using images from this repository:
 3. **Scan for vulnerabilities**
    ```bash
    # Use Trivy or similar tools
-   trivy image scriptonbasestar/postgres-exts:16-essential
+   trivy image scriptonbasestar/postgres:16-essential
    ```
 
 4. **Review Dockerfiles before building**

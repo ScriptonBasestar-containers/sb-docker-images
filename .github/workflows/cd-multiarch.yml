@@ -20,7 +20,9 @@ on:
         options:
           - essential
           - full
-          - both
+          - vector
+          - postgis
+          - all
       pg_version:
         description: 'PostgreSQL major version'
         required: false
@@ -43,7 +45,7 @@ jobs:
 
     strategy:
       matrix:
-        variant: [essential, full]
+        variant: [essential, full, vector, postgis]
       fail-fast: false
 
     steps:
@@ -53,7 +55,7 @@ jobs:
           SELECTED: ${{ github.event.inputs.variant }}
           VARIANT: ${{ matrix.variant }}
         run: |
-          if [ "$SELECTED" = "both" ] || [ "$SELECTED" = "$VARIANT" ]; then
+          if [ "$SELECTED" = "all" ] || [ "$SELECTED" = "$VARIANT" ]; then
             echo "run=true" >> $GITHUB_OUTPUT
           else
             echo "run=false" >> $GITHUB_OUTPUT
@@ -88,7 +90,7 @@ jobs:
           make "${VARIANT}-buildx" \
             PG_VERSION="$PG" \
             PLATFORMS=linux/amd64 \
-            "${TAGVAR}=scriptonbasestar/postgres-exts:${PG}-${VARIANT}-amd64"
+            "${TAGVAR}=scriptonbasestar/postgres:${PG}-${VARIANT}-amd64"
 
       - name: Save image digest
         if: steps.gate.outputs.run == 'true'
@@ -96,7 +98,7 @@ jobs:
           PG: ${{ github.event.inputs.pg_version }}
           VARIANT: ${{ matrix.variant }}
         run: |
-          docker buildx imagetools inspect "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-amd64" --raw > "/tmp/digest-${VARIANT}-amd64.txt"
+          docker buildx imagetools inspect "scriptonbasestar/postgres:${PG}-${VARIANT}-amd64" --raw > "/tmp/digest-${VARIANT}-amd64.txt"
 
       - name: Upload digest
         if: steps.gate.outputs.run == 'true'
@@ -112,7 +114,7 @@ jobs:
 
     strategy:
       matrix:
-        variant: [essential, full]
+        variant: [essential, full, vector, postgis]
       fail-fast: false
 
     steps:
@@ -122,7 +124,7 @@ jobs:
           SELECTED: ${{ github.event.inputs.variant }}
           VARIANT: ${{ matrix.variant }}
         run: |
-          if [ "$SELECTED" = "both" ] || [ "$SELECTED" = "$VARIANT" ]; then
+          if [ "$SELECTED" = "all" ] || [ "$SELECTED" = "$VARIANT" ]; then
             echo "run=true" >> $GITHUB_OUTPUT
           else
             echo "run=false" >> $GITHUB_OUTPUT
@@ -155,7 +157,7 @@ jobs:
           make "${VARIANT}-buildx" \
             PG_VERSION="$PG" \
             PLATFORMS=linux/arm64 \
-            "${TAGVAR}=scriptonbasestar/postgres-exts:${PG}-${VARIANT}-arm64"
+            "${TAGVAR}=scriptonbasestar/postgres:${PG}-${VARIANT}-arm64"
 
       - name: Save image digest
         if: steps.gate.outputs.run == 'true'
@@ -163,7 +165,7 @@ jobs:
           PG: ${{ github.event.inputs.pg_version }}
           VARIANT: ${{ matrix.variant }}
         run: |
-          docker buildx imagetools inspect "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-arm64" --raw > "/tmp/digest-${VARIANT}-arm64.txt"
+          docker buildx imagetools inspect "scriptonbasestar/postgres:${PG}-${VARIANT}-arm64" --raw > "/tmp/digest-${VARIANT}-arm64.txt"
 
       - name: Upload digest
         if: steps.gate.outputs.run == 'true'
@@ -180,7 +182,7 @@ jobs:
 
     strategy:
       matrix:
-        variant: [essential, full]
+        variant: [essential, full, vector, postgis]
 
     steps:
       - name: Skip non-selected variant
@@ -189,7 +191,7 @@ jobs:
           SELECTED: ${{ github.event.inputs.variant }}
           VARIANT: ${{ matrix.variant }}
         run: |
-          if [ "$SELECTED" = "both" ] || [ "$SELECTED" = "$VARIANT" ]; then
+          if [ "$SELECTED" = "all" ] || [ "$SELECTED" = "$VARIANT" ]; then
             echo "run=true" >> $GITHUB_OUTPUT
           else
             echo "run=false" >> $GITHUB_OUTPUT
@@ -236,10 +238,10 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           docker buildx imagetools create \
-            -t "scriptonbasestar/postgres-exts:${PG}-${VARIANT}" \
-            -t "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-${VERSION}" \
-            "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-amd64" \
-            "scriptonbasestar/postgres-exts:${PG}-${VARIANT}-arm64"
+            -t "scriptonbasestar/postgres:${PG}-${VARIANT}" \
+            -t "scriptonbasestar/postgres:${PG}-${VARIANT}-${VERSION}" \
+            "scriptonbasestar/postgres:${PG}-${VARIANT}-amd64" \
+            "scriptonbasestar/postgres:${PG}-${VARIANT}-arm64"
 
       - name: Verify manifest
         if: steps.gate.outputs.run == 'true'
@@ -247,7 +249,7 @@ jobs:
           PG: ${{ github.event.inputs.pg_version }}
           VARIANT: ${{ matrix.variant }}
         run: |
-          docker buildx imagetools inspect "scriptonbasestar/postgres-exts:${PG}-${VARIANT}"
+          docker buildx imagetools inspect "scriptonbasestar/postgres:${PG}-${VARIANT}"
 
       - name: Create Release Summary
         if: steps.gate.outputs.run == 'true'
@@ -266,5 +268,5 @@ jobs:
             echo ""
             echo "**Performance**: 5-10x faster than QEMU emulation"
             echo ""
-            echo "Verify at: https://hub.docker.com/r/scriptonbasestar/postgres-exts/tags"
+            echo "Verify at: https://hub.docker.com/r/scriptonbasestar/postgres/tags"
           } >> "$GITHUB_STEP_SUMMARY"
