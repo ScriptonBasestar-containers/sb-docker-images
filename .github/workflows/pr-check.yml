@@ -147,11 +147,21 @@ jobs:
   pr-check-summary:
     name: PR Check Summary
     runs-on: ubuntu-latest
-    needs: [pr-info, changed-files, code-quality]
+    # 필수 체크로 쓰이므로 모든 PR 체크 job을 needs에 두고, 하나라도 실패하면
+    # 이 job도 실패해야 한다. 조건부 job은 변경이 없으면 skipped이며 통과로 본다.
+    needs:
+      - pr-info
+      - changed-files
+      - code-quality
+      - validate-compose-changes
+      - test-postgres-changes
+      - validate-makefile-changes
     if: always()
 
     steps:
       - name: Generate summary
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
         run: |
           echo "## PR Check Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -162,8 +172,12 @@ jobs:
           echo "- PostgreSQL: ${{ needs.changed-files.outputs.postgres_changed }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ needs.code-quality.result }}" == "success" ]; then
+          failed=$(jq -r 'to_entries[] | select(.value.result != "success" and .value.result != "skipped") | "- \(.key): \(.value.result)"' <<<"$NEEDS_JSON")
+          if [ -z "$failed" ]; then
             echo "✅ All PR checks passed" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ Some PR checks failed" >> $GITHUB_STEP_SUMMARY
+            echo "$failed" >> $GITHUB_STEP_SUMMARY
+            echo "$failed"
+            exit 1
           fi
